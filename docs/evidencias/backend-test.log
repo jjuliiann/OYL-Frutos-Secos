@@ -1,0 +1,104 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ---------------------------< cl.oyl:oyl-api >---------------------------
+[INFO] Building oyl-api 1.0.0
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ oyl-api ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] Copying 0 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ oyl-api ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 8 source files with javac [debug parameters release 17] to target/classes
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ oyl-api ---
+[INFO] Copying 2 resources from src/test/resources to target/test-classes
+[INFO] 
+[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ oyl-api ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 2 source files with javac [debug parameters release 17] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.2.5:test (default-test) @ oyl-api ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running cl.oyl.api.ApiIntegrationTest
+18:04:46.408 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [cl.oyl.api.ApiIntegrationTest]: ApiIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+18:04:46.560 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration cl.oyl.api.OylApplication for test class cl.oyl.api.ApiIntegrationTest
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.3.5)
+
+2026-10-17T18:04:47.008-04:00  INFO 66 --- [           main] cl.oyl.api.ApiIntegrationTest            : Starting ApiIntegrationTest using Java 17.0.20 with PID 66 (started by root in /workspace/scratch/6ac7d2ef72a2/entrega/OYL_Frutos_Secos_Mejorado/backend)
+2026-10-17T18:04:47.010-04:00  INFO 66 --- [           main] cl.oyl.api.ApiIntegrationTest            : No active profile set, falling back to 1 default profile: "default"
+2026-10-17T18:04:47.738-04:00  INFO 66 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-10-17T18:04:47.826-04:00  INFO 66 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 81 ms. Found 3 JPA repository interfaces.
+2026-10-17T18:04:48.317-04:00  INFO 66 --- [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-10-17T18:04:48.388-04:00  INFO 66 --- [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.5.3.Final
+2026-10-17T18:04:48.418-04:00  INFO 66 --- [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-10-17T18:04:48.766-04:00  INFO 66 --- [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-10-17T18:04:48.805-04:00  INFO 66 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-10-17T18:04:48.994-04:00  INFO 66 --- [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:oyltest user=SA
+2026-10-17T18:04:48.995-04:00  INFO 66 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-10-17T18:04:50.100-04:00  INFO 66 --- [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-10-17T18:04:50.182-04:00  INFO 66 --- [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-10-17T18:04:50.438-04:00  INFO 66 --- [           main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-10-17T18:04:51.394-04:00  INFO 66 --- [           main] cl.oyl.api.ApiIntegrationTest            : Started ApiIntegrationTest in 4.69 seconds (process running for 5.802)
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 17.07 s -- in cl.oyl.api.ApiIntegrationTest
+[INFO] Running cl.oyl.api.HttpContractTest
+2026-10-17T18:05:03.300-04:00  INFO 66 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [cl.oyl.api.HttpContractTest]: HttpContractTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-17T18:05:03.302-04:00  INFO 66 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration cl.oyl.api.OylApplication for test class cl.oyl.api.HttpContractTest
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.3.5)
+
+2026-10-17T18:05:03.340-04:00  INFO 66 --- [           main] cl.oyl.api.HttpContractTest              : Starting HttpContractTest using Java 17.0.20 with PID 66 (started by root in /workspace/scratch/6ac7d2ef72a2/entrega/OYL_Frutos_Secos_Mejorado/backend)
+2026-10-17T18:05:03.340-04:00  INFO 66 --- [           main] cl.oyl.api.HttpContractTest              : No active profile set, falling back to 1 default profile: "default"
+2026-10-17T18:05:03.493-04:00  INFO 66 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-10-17T18:05:03.501-04:00  INFO 66 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 8 ms. Found 3 JPA repository interfaces.
+2026-10-17T18:05:03.712-04:00  INFO 66 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 0 (http)
+2026-10-17T18:05:03.729-04:00  INFO 66 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-17T18:05:03.729-04:00  INFO 66 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.31]
+2026-10-17T18:05:03.802-04:00  INFO 66 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-10-17T18:05:03.803-04:00  INFO 66 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 459 ms
+2026-10-17T18:05:03.934-04:00  INFO 66 --- [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-10-17T18:05:03.937-04:00  INFO 66 --- [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-10-17T18:05:03.949-04:00  INFO 66 --- [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-10-17T18:05:03.950-04:00  INFO 66 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Starting...
+2026-10-17T18:05:03.952-04:00  INFO 66 --- [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-2 - Added connection conn10: url=jdbc:h2:mem:oyltest user=SA
+2026-10-17T18:05:03.952-04:00  INFO 66 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Start completed.
+2026-10-17T18:05:04.052-04:00  INFO 66 --- [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-10-17T18:05:04.067-04:00  INFO 66 --- [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-10-17T18:05:04.322-04:00  INFO 66 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 44275 (http) with context path '/'
+2026-10-17T18:05:04.327-04:00  INFO 66 --- [           main] cl.oyl.api.HttpContractTest              : Started HttpContractTest in 1.022 seconds (process running for 18.736)
+2026-10-17T18:05:04.602-04:00  INFO 66 --- [o-auto-1-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-10-17T18:05:04.603-04:00  INFO 66 --- [o-auto-1-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-10-17T18:05:04.605-04:00  INFO 66 --- [o-auto-1-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.887 s -- in cl.oyl.api.HttpContractTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  23.805 s
+[INFO] Finished at: 2026-10-17T18:05:05-04:00
+[INFO] ------------------------------------------------------------------------

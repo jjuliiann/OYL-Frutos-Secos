@@ -1,0 +1,12 @@
+Api.kt: idéntico al original
+Models.kt: idéntico al original
+LocalDb.kt: idéntico al original
+ApiController.java: idéntico al backend reconstruido
+12 endpoints Retrofit y BASE_URL preservados
+XML de código y configuración: bien formados
+7 PNG 512x512 RGBA con transparencia real; recursos del mapeo presentes
+Leaflet 1.9.4 JS: hash SRI coincide con distribución oficial
+JAR oficial del wrapper: ZIP íntegro; gradlew y gradlew.bat presentes
+Respaldos ZIP: idénticos byte a byte a las entradas
+Funciones públicas/pantallas originales: todas presentes (revisión estática, no prueba funcional)
+Fuentes de lógica verificadas en arnés JVM: coinciden con app
