@@ -1,6 +1,6 @@
 # OYL Frutos Secos
 
-Somos Julián Martínez y Lukas Gómez, estudiantes de Ingeniería en Informática de Duoc UC. Desarrollamos este proyecto para la asignatura **Desarrollo de Aplicaciones Móviles**, sección **004D**, con el profesor **Cristian Gómez**.
+Somos Julián Martínez y Lukas Gómez, estudiantes de Ingeniería en Informática de Duoc UC. Desarrollamos este proyecto para la asignatura Desarrollo de Aplicaciones Móviles, sección 004D, con el profesor Cristian Gómez.
 
 OYL Frutos Secos es una aplicación móvil para explorar y comprar frutos secos. La app se conecta a un backend propio para gestionar productos, inventario y pedidos. En esta versión mejoramos algunas partes de la aplicación y conservamos las funciones que ya tenía el proyecto.
 
