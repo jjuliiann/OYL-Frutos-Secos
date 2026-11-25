@@ -130,8 +130,4 @@ Desde `backend`, `mvn verify` ejecuta las pruebas del servidor. Desde `android`,
 
 Usamos [GitHub](https://github.com/jjuliiann/OYL-Frutos-Secos) para versionar el código y Trello para organizar el trabajo de ambos integrantes. Para la defensa podemos relacionar una tarjeta terminada con un cambio del repositorio y demostrar ese comportamiento en la app.
 
-## 7. Si aparece un error
-- **Puerto ocupado:** la consola indica el puerto y el servicio que intentabas iniciar. Cierra la copia anterior o Docker que reconoces. El lanzador no mata procesos ajenos. Un PC sin Java 21 necesita el JDK antes de ejecutar los JAR.
-- **Un servicio no inicia:** mira los últimos mensajes de `backend/logs/<módulo>.log` y la salida de la consola. `estado.bat` prueba las rutas reales. Cualquier fallo impide anunciar el backend listo.
-- **El PC abre el catálogo pero el emulador no:** abre Chrome **dentro del emulador** y prueba `http://10.0.2.2:8080/api/products`. Si Chrome recibe JSON, mantén pulsado el nombre OYL FRUTOS SECOS en la barra superior de la variante aula y verifica la dirección guardada allí. Si Chrome tampoco responde, el fallo está antes de Retrofit; revisa VPN/proxy del emulador. Alternativa de desarrollo: con un solo emulador en adb, ejecuta `adb reverse tcp:8080 tcp:8080`, elige `http://127.0.0.1:8080/api/` en OYL y prueba. Este reenvío requiere que adb esté conectado.
-- **Mapa:** los mosaicos del mapa usan OpenStreetMap y «Cómo llegar» abre la aplicación de mapas. Los proveedores de cartografía necesitan internet. El catálogo, el inventario y los pedidos usan el Gateway de OYL.
+
