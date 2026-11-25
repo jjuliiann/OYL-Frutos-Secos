@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>QrScreen.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">cl.oyl.mobile.ui.qr</a> &gt; <span class="el_source">QrScreen.kt</span></div><h1>QrScreen.kt</h1><pre class="source lang-java linenums">package cl.oyl.mobile.ui.qr
+
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import cl.oyl.mobile.R
+import cl.oyl.mobile.model.productos.Product
+import cl.oyl.mobile.model.qr.QrResolution
+import cl.oyl.mobile.viewmodel.qr.QrViewModel
+import cl.oyl.mobile.domain.qr.qrProductId
+import cl.oyl.mobile.ui.components.ActionButton
+import cl.oyl.mobile.ui.components.FormField
+import cl.oyl.mobile.ui.components.OylOutlinedButton
+import cl.oyl.mobile.ui.components.OylTextButton
+import cl.oyl.mobile.ui.components.ProductPicture
+import cl.oyl.mobile.ui.components.ScreenTitle
+import cl.oyl.mobile.util.money
+import com.google.mlkit.vision.barcode.BarcodeScannerOptions
+import com.google.mlkit.vision.barcode.BarcodeScanning
+import com.google.mlkit.vision.barcode.common.Barcode
+import com.google.mlkit.vision.common.InputImage
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
+<span class="nc" id="L41">data class QrSample(val label: String, val resource: Int, val payload: String)</span>
+<span class="nc" id="L42">val qrSamples = listOf(</span>
+<span class="nc" id="L43">    QrSample(&quot;Almendras&quot;,R.drawable.qr_almendras,&quot;oyl://product/1&quot;), QrSample(&quot;Nueces&quot;,R.drawable.qr_nueces,&quot;oyl://product/2&quot;),</span>
+<span class="nc" id="L44">    QrSample(&quot;Mix Premium&quot;,R.drawable.qr_mix_premium,&quot;oyl://product/3&quot;), QrSample(&quot;Pasas&quot;,R.drawable.qr_pasas,&quot;oyl://product/4&quot;),</span>
+<span class="nc" id="L45">    QrSample(&quot;Semillas de chía&quot;,R.drawable.qr_chia,&quot;oyl://product/5&quot;), QrSample(&quot;Cranberries&quot;,R.drawable.qr_cranberries,&quot;oyl://product/6&quot;),</span>
+<span class="nc" id="L46">    QrSample(&quot;Avellanas&quot;,R.drawable.qr_avellanas,&quot;oyl://product/7&quot;), QrSample(&quot;Producto inexistente&quot;,R.drawable.qr_inexistente,&quot;oyl://product/999999&quot;),</span>
+<span class="nc" id="L47">    QrSample(&quot;Código ajeno&quot;,R.drawable.qr_invalido,&quot;CODIGO AJENO A OYL&quot;))</span>
+
+@Composable
+<span class="nc" id="L50">fun QrScreen(vm: QrViewModel, canManage: Boolean, found: (Product) -&gt; Unit,</span>
+<span class="nc bnc" id="L51" title="All 22 branches missed.">             inventory: (Product) -&gt; Unit) {</span>
+<span class="nc" id="L52">    val context = LocalContext.current</span>
+<span class="nc" id="L53">    val scanner = remember { BarcodeScanning.getClient(BarcodeScannerOptions.Builder().setBarcodeFormats(Barcode.FORMAT_QR_CODE).build()) }</span>
+<span class="nc" id="L54">    DisposableEffect(scanner) { onDispose { scanner.close() } }</span>
+<span class="nc" id="L55">    val resolution by vm.result.collectAsState()</span>
+<span class="nc bnc" id="L56" title="All 4 branches missed.">    val scanned = (resolution as? QrResolution.Found)?.product</span>
+<span class="nc bnc" id="L57" title="All 2 branches missed.">    LaunchedEffect(vm) { vm.reset() }</span>
+<span class="nc" id="L58">    var message by remember { mutableStateOf&lt;String?&gt;(null) }</span>
+<span class="nc" id="L59">    var decoding by remember { mutableStateOf(false) }</span>
+<span class="nc" id="L60">    var manual by remember { mutableStateOf(&quot;&quot;) }</span>
+<span class="nc" id="L61">    val scope = rememberCoroutineScope()</span>
+<span class="nc" id="L62">    var customBitmap by remember { mutableStateOf&lt;Bitmap?&gt;(null) }</span>
+<span class="nc" id="L63">    var simulator by remember { mutableStateOf(false) }</span>
+<span class="nc" id="L64">    var liveScanning by remember { mutableStateOf(false) }</span>
+<span class="nc" id="L65">    var sampleIndex by remember { mutableIntStateOf(0) }</span>
+<span class="nc" id="L66">    fun resolve(payload: String?, openDetail: Boolean = false) {</span>
+<span class="nc" id="L67">        decoding = true</span>
+<span class="nc" id="L68">        vm.reset()</span>
+<span class="nc" id="L69">        message = &quot;Consultando producto…&quot;</span>
+<span class="nc" id="L70">        scope.launch {</span>
+<span class="nc" id="L71">            try {</span>
+<span class="nc" id="L72">                val result = vm.resolve(payload)</span>
+<span class="nc" id="L73">                message = null</span>
+<span class="nc bnc" id="L74" title="All 4 branches missed.">                if (openDetail &amp;&amp; result is QrResolution.Found) found(result.product)</span>
+<span class="nc" id="L75">            } finally { decoding = false }</span>
+<span class="nc" id="L76">        }</span>
+<span class="nc" id="L77">    }</span>
+    fun scan(image: InputImage) {
+<span class="nc bnc" id="L79" title="All 2 branches missed.">        if (decoding) return</span>
+<span class="nc" id="L80">        decoding = true; vm.reset(); message = &quot;Analizando imagen…&quot;</span>
+<span class="nc" id="L81">        scanner.process(image).addOnSuccessListener { codes -&gt;</span>
+<span class="nc bnc" id="L82" title="All 6 branches missed.">            val code = codes.firstOrNull { qrProductId(it.rawValue.orEmpty()) != null } ?: codes.firstOrNull()</span>
+<span class="nc bnc" id="L83" title="All 2 branches missed.">            resolve(code?.rawValue)</span>
+<span class="nc" id="L84">        }.addOnFailureListener { message = &quot;No se pudo analizar la imagen. Intenta otra.&quot;; decoding = false }</span>
+<span class="nc" id="L85">    }</span>
+<span class="nc bnc" id="L86" title="All 2 branches missed.">    val gallery = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri -&gt;</span>
+<span class="nc bnc" id="L87" title="All 2 branches missed.">        if (uri != null) scope.launch {</span>
+<span class="nc" id="L88">            decoding = true; vm.reset(); message = &quot;Abriendo imagen…&quot;</span>
+<span class="nc bnc" id="L89" title="All 2 branches missed.">            val bitmap = withContext(Dispatchers.IO) {</span>
+<span class="nc" id="L90">                try {</span>
+<span class="nc" id="L91">                    val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }</span>
+<span class="nc bnc" id="L92" title="All 2 branches missed.">                    context.contentResolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it, null, bounds) }</span>
+<span class="nc" id="L93">                    var sample = 1</span>
+<span class="nc bnc" id="L94" title="All 4 branches missed.">                    while (bounds.outWidth / sample &gt; 2048 || bounds.outHeight / sample &gt; 2048) sample *= 2</span>
+<span class="nc bnc" id="L95" title="All 2 branches missed.">                    context.contentResolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it, null, BitmapFactory.Options().apply { inSampleSize = sample }) }</span>
+<span class="nc" id="L96">                } catch (_: Exception) { null }</span>
+            }
+<span class="nc" id="L98">            decoding = false</span>
+<span class="nc bnc" id="L99" title="All 2 branches missed.">            if (bitmap == null) message = &quot;No se pudo abrir esa imagen.&quot;</span>
+<span class="nc" id="L100">            else { customBitmap = bitmap; simulator = true; scan(InputImage.fromBitmap(bitmap,0)) }</span>
+<span class="nc" id="L101">        }</span>
+<span class="nc" id="L102">    }</span>
+<span class="nc" id="L103">    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {</span>
+<span class="nc" id="L104">        ScreenTitle(&quot;Escanear QR&quot;, &quot;Apunta la cámara al código del producto&quot;)</span>
+<span class="nc bnc" id="L105" title="All 4 branches missed.">        ActionButton(if (liveScanning) &quot;Detener escáner&quot; else &quot;Abrir escáner QR&quot;, enabled = !decoding, onClick = {</span>
+<span class="nc bnc" id="L106" title="All 2 branches missed.">            liveScanning = !liveScanning</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">            if (liveScanning) simulator = false</span>
+<span class="nc" id="L108">            vm.reset()</span>
+<span class="nc" id="L109">            message = null</span>
+<span class="nc" id="L110">        })</span>
+<span class="nc bnc" id="L111" title="All 4 branches missed.">        if (liveScanning) LiveQrScanner(onPayload = { payload -&gt;</span>
+<span class="nc" id="L112">            liveScanning = false</span>
+<span class="nc" id="L113">            resolve(payload, openDetail = true)</span>
+<span class="nc" id="L114">        })</span>
+<span class="nc bnc" id="L115" title="All 4 branches missed.">        OylOutlinedButton(onClick = { liveScanning = false; try { gallery.launch(&quot;image/*&quot;) } catch (_: Exception) { message = &quot;No se pudo abrir la galería.&quot; } }, enabled = !decoding, modifier = Modifier.fillMaxWidth()) { Text(&quot;Seleccionar imagen QR&quot;) }</span>
+<span class="nc bnc" id="L116" title="All 6 branches missed.">        OylOutlinedButton(onClick = { liveScanning = false; simulator = !simulator }, modifier = Modifier.fillMaxWidth()) { Text(if (simulator) &quot;Cerrar cámara simulada&quot; else &quot;Abrir cámara simulada&quot;) }</span>
+<span class="nc" id="L117">        AnimatedVisibility(simulator) {</span>
+<span class="nc bnc" id="L118" title="All 2 branches missed.">            Card {</span>
+<span class="nc" id="L119">                Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {</span>
+<span class="nc" id="L120">                    Text(&quot;Cámara simulada · lector QR&quot;, style = MaterialTheme.typography.titleMedium)</span>
+<span class="nc" id="L121">                    Text(&quot;No usa la cámara física. ML Kit decodifica realmente la imagen mostrada.&quot;, style = MaterialTheme.typography.bodySmall)</span>
+<span class="nc" id="L122">                    val sample = qrSamples[sampleIndex]</span>
+<span class="nc" id="L123">                    val bundled = remember(sample.resource) { BitmapFactory.decodeResource(context.resources,sample.resource) }</span>
+<span class="nc bnc" id="L124" title="All 2 branches missed.">                    val bitmap = customBitmap ?: bundled</span>
+<span class="nc" id="L125">                    val transition = rememberInfiniteTransition(label = &quot;Escáner&quot;)</span>
+<span class="nc" id="L126">                    val line by transition.animateFloat(0f, 200f, infiniteRepeatable(tween(1800), RepeatMode.Reverse), label = &quot;Línea de lectura&quot;)</span>
+<span class="nc" id="L127">                    Box(Modifier.fillMaxWidth().height(240.dp).background(Color.White), contentAlignment = androidx.compose.ui.Alignment.Center) {</span>
+<span class="nc" id="L128">                        Image(bitmap.asImageBitmap(),&quot;Imagen QR: ${sample.label}&quot;,Modifier.size(232.dp))</span>
+<span class="nc" id="L129">                        Box(Modifier.offset(y = (line - 100).dp).fillMaxWidth(.8f).height(2.dp).background(MaterialTheme.colorScheme.primary))</span>
+<span class="nc" id="L130">                    }</span>
+<span class="nc bnc" id="L131" title="All 2 branches missed.">                    Text(if (customBitmap != null) &quot;Tu imagen seleccionada&quot; else sample.label, style = MaterialTheme.typography.titleSmall)</span>
+<span class="nc" id="L132">                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {</span>
+<span class="nc bnc" id="L133" title="All 4 branches missed.">                        OylTextButton(onClick = { customBitmap = null; sampleIndex = (sampleIndex + qrSamples.size - 1) % qrSamples.size; vm.reset(); message = null }, enabled = !decoding) { Text(&quot;Anterior&quot;) }</span>
+<span class="nc" id="L134">                        Text(&quot;${sampleIndex+1} / ${qrSamples.size}&quot;)</span>
+<span class="nc bnc" id="L135" title="All 4 branches missed.">                        OylTextButton(onClick = { customBitmap = null; sampleIndex = (sampleIndex+1) % qrSamples.size; vm.reset(); message = null }, enabled = !decoding) { Text(&quot;Siguiente&quot;) }</span>
+<span class="nc" id="L136">                    }</span>
+<span class="nc bnc" id="L137" title="All 2 branches missed.">                    ActionButton(&quot;Analizar imagen del simulador&quot;, enabled = !decoding, onClick = { scan(InputImage.fromBitmap(bitmap,0)) })</span>
+<span class="nc bnc" id="L138" title="All 4 branches missed.">                    OylOutlinedButton(onClick = { liveScanning = false; try { gallery.launch(&quot;image/*&quot;) } catch (_: Exception) { message = &quot;No se pudo abrir la galería.&quot; } }, enabled = !decoding, modifier = Modifier.fillMaxWidth()) { Text(&quot;Cargar mi QR en el simulador&quot;) }</span>
+<span class="nc" id="L139">                    Text(&quot;También puedes cargar una imagen propia con ‘Seleccionar imagen QR’.&quot;, style = MaterialTheme.typography.labelSmall)</span>
+<span class="nc" id="L140">                }</span>
+<span class="nc" id="L141">            }</span>
+<span class="nc" id="L142">        }</span>
+<span class="nc" id="L143">        FormField(manual, { manual = it }, &quot;Código manual (ej.: OYL:1)&quot;)</span>
+<span class="nc bnc" id="L144" title="All 4 branches missed.">        ActionButton(&quot;Verificar código manual&quot;, enabled = !decoding, onClick = { liveScanning = false; resolve(manual) })</span>
+<span class="nc bnc" id="L145" title="All 2 branches missed.">        if (decoding) LinearProgressIndicator(Modifier.fillMaxWidth())</span>
+<span class="nc bnc" id="L146" title="All 10 branches missed.">        (message ?: resolution.message.takeIf { it.isNotBlank() })?.let { Text(it, color = if (scanned != null) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error, modifier = Modifier.padding(4.dp)) }</span>
+<span class="nc bnc" id="L147" title="All 2 branches missed.">        AnimatedVisibility(scanned != null) {</span>
+<span class="nc bnc" id="L148" title="All 4 branches missed.">            scanned?.let { product -&gt; Card { Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {</span>
+<span class="nc" id="L149">                ProductPicture(product)</span>
+<span class="nc" id="L150">                Text(product.name, style = MaterialTheme.typography.titleMedium)</span>
+<span class="nc" id="L151">                Text(&quot;${money(product.price)} · Stock: ${product.stock}&quot;)</span>
+<span class="nc" id="L152">                ActionButton(&quot;Ver detalles del producto&quot;, onClick = { found(product) })</span>
+<span class="nc bnc" id="L153" title="All 4 branches missed.">                if (canManage) OylOutlinedButton(onClick = { inventory(product) }) { Text(&quot;Ajustar inventario&quot;) }</span>
+<span class="nc" id="L154">            } } }</span>
+<span class="nc" id="L155">        }</span>
+<span class="nc" id="L156">    }</span>
+<span class="nc bnc" id="L157" title="All 2 branches missed.">}</span>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span>Generated by the Android Gradle plugin 8.11.1</div></body></html>

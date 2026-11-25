@@ -1,0 +1,1 @@
+OK: 3 XML válidos, permiso CAMERA y filtro VIEW/BROWSABLE oyl://product registrados; singleTop. QR sin TakePicturePreview y sin mensajes SQLite. No verifica instalación ni resolución en dispositivo.

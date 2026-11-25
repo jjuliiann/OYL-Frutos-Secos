@@ -1,0 +1,17 @@
+Comparación con 3.4: ningún archivo eliminado. Base de datos, migraciones, QR PNG, parser y escáner idénticos.
+
+MODIFICADOS
+CAMBIOS.md
+PRUEBAS.md
+README.md
+android/app/build.gradle.kts
+android/app/src/main/java/cl/oyl/mobile/ui/catalogo/ProductDetailScreen.kt
+android/app/src/main/java/cl/oyl/mobile/ui/inicio/DashboardScreen.kt
+android/app/src/main/java/cl/oyl/mobile/ui/navigation/OylNavigation.kt
+android/app/src/main/java/cl/oyl/mobile/viewmodel/OylViewModel.kt
+
+AGREGADOS
+ROLES_3_5.md
+verificacion/intento_gradle_3_5.txt
+verificacion/paquetes_3_5.txt
+verificacion/sintaxis_3_5.txt

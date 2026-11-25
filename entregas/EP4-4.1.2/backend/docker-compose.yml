@@ -1,0 +1,64 @@
+services:
+  eureka-server:
+    build:
+      context: .
+      dockerfile: Dockerfile-eureka
+    environment:
+      SERVER_ADDRESS: 0.0.0.0
+    ports: ["8761:8761"]
+  user-service:
+    build:
+      context: .
+      dockerfile: Dockerfile-user
+    environment:
+      OYL_DISCOVERY_HOST: user-service
+      OYL_PUBLIC_GATEWAY: ${OYL_PUBLIC_GATEWAY:-http://localhost:8080}
+      SERVER_ADDRESS: 0.0.0.0
+      EUREKA_URL: http://eureka-server:8761/eureka/
+      OYL_JWT_SECRET: ${OYL_JWT_SECRET:-OYL-dev-secret-change-before-publishing-2026-11}
+      SPRING_DATASOURCE_URL: jdbc:h2:file:/app/data/oyl-users;DB_CLOSE_ON_EXIT=FALSE
+    volumes: ["oyl-users:/app/data"]
+    depends_on: [eureka-server]
+  product-service:
+    build:
+      context: .
+      dockerfile: Dockerfile-product
+    environment:
+      OYL_DISCOVERY_HOST: product-service
+      OYL_PUBLIC_GATEWAY: ${OYL_PUBLIC_GATEWAY:-http://localhost:8080}
+      SERVER_ADDRESS: 0.0.0.0
+      EUREKA_URL: http://eureka-server:8761/eureka/
+      OYL_JWT_SECRET: ${OYL_JWT_SECRET:-OYL-dev-secret-change-before-publishing-2026-11}
+      SPRING_DATASOURCE_URL: jdbc:h2:file:/app/data/oyl-products;DB_CLOSE_ON_EXIT=FALSE
+    volumes: ["oyl-products:/app/data"]
+    depends_on: [eureka-server]
+  order-service:
+    build:
+      context: .
+      dockerfile: Dockerfile-order
+    environment:
+      OYL_DISCOVERY_HOST: order-service
+      OYL_PUBLIC_GATEWAY: ${OYL_PUBLIC_GATEWAY:-http://localhost:8080}
+      SERVER_ADDRESS: 0.0.0.0
+      EUREKA_URL: http://eureka-server:8761/eureka/
+      OYL_JWT_SECRET: ${OYL_JWT_SECRET:-OYL-dev-secret-change-before-publishing-2026-11}
+      SPRING_DATASOURCE_URL: jdbc:h2:file:/app/data/oyl-orders;DB_CLOSE_ON_EXIT=FALSE
+      PRODUCTS_URL: http://oyl-product-service
+    volumes: ["oyl-orders:/app/data"]
+    depends_on: [eureka-server, product-service]
+  api-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile-gateway
+    environment:
+      OYL_DISCOVERY_HOST: api-gateway
+      OYL_PUBLIC_GATEWAY: ${OYL_PUBLIC_GATEWAY:-http://localhost:8080}
+      SERVER_ADDRESS: 0.0.0.0
+      EUREKA_URL: http://eureka-server:8761/eureka/
+      OYL_JWT_SECRET: ${OYL_JWT_SECRET:-OYL-dev-secret-change-before-publishing-2026-11}
+    depends_on: [eureka-server, user-service, product-service, order-service]
+    ports: ["8080:8080"]
+volumes:
+  oyl-users:
+  oyl-products:
+  oyl-orders:

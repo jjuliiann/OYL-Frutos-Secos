@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LiveQrScanner.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">cl.oyl.mobile.ui.qr</a> &gt; <span class="el_source">LiveQrScanner.kt</span></div><h1>LiveQrScanner.kt</h1><pre class="source lang-java linenums">package cl.oyl.mobile.ui.qr
+
+import cl.oyl.mobile.domain.qr.qrProductId
+import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.provider.Settings
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.ExperimentalGetImage
+import androidx.camera.core.ImageAnalysis
+import androidx.camera.core.Preview
+import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.view.PreviewView
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import cl.oyl.mobile.ui.components.OylOutlinedButton
+import com.google.mlkit.vision.barcode.BarcodeScannerOptions
+import com.google.mlkit.vision.barcode.BarcodeScanning
+import com.google.mlkit.vision.barcode.common.Barcode
+import com.google.mlkit.vision.common.InputImage
+import java.util.concurrent.atomic.AtomicBoolean
+
+/** Vista previa y análisis continuo. No toma ni guarda fotografías. */
+@androidx.annotation.OptIn(ExperimentalGetImage::class)
+@Composable
+<span class="nc bnc" id="L38" title="All 10 branches missed.">fun LiveQrScanner(onPayload: (String) -&gt; Unit) {</span>
+<span class="nc" id="L39">    val context = LocalContext.current</span>
+<span class="nc" id="L40">    val owner = LocalLifecycleOwner.current</span>
+<span class="nc" id="L41">    val currentPayload by rememberUpdatedState(onPayload)</span>
+<span class="nc bnc" id="L42" title="All 2 branches missed.">    var granted by remember { mutableStateOf(ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) }</span>
+<span class="nc" id="L43">    var error by remember { mutableStateOf&lt;String?&gt;(null) }</span>
+<span class="nc" id="L44">    var retry by remember { mutableIntStateOf(0) }</span>
+<span class="nc" id="L45">    val permission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {</span>
+<span class="nc" id="L46">        granted = it</span>
+<span class="nc bnc" id="L47" title="All 2 branches missed.">        if (!it) error = &quot;Permite el acceso a la cámara para usar el escáner. Puedes seguir usando galería o simulador.&quot;</span>
+<span class="nc" id="L48">    }</span>
+    // Actualiza el permiso también al volver de Ajustes.
+<span class="nc" id="L50">    DisposableEffect(owner) {</span>
+<span class="nc" id="L51">        val observer = LifecycleEventObserver { _, event -&gt;</span>
+<span class="nc bnc" id="L52" title="All 2 branches missed.">            if (event == Lifecycle.Event.ON_RESUME) {</span>
+<span class="nc bnc" id="L53" title="All 2 branches missed.">                granted = ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED</span>
+            }
+<span class="nc" id="L55">        }</span>
+<span class="nc" id="L56">        owner.lifecycle.addObserver(observer)</span>
+<span class="nc" id="L57">        onDispose { owner.lifecycle.removeObserver(observer) }</span>
+    }
+<span class="nc bnc" id="L59" title="All 4 branches missed.">    LaunchedEffect(Unit) { if (!granted) permission.launch(Manifest.permission.CAMERA) }</span>
+<span class="nc" id="L60">    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {</span>
+<span class="nc bnc" id="L61" title="All 2 branches missed.">        if (!granted) {</span>
+<span class="nc bnc" id="L62" title="All 2 branches missed.">            Text(error ?: &quot;La cámara necesita tu autorización.&quot;)</span>
+<span class="nc bnc" id="L63" title="All 2 branches missed.">            OylOutlinedButton(onClick = { permission.launch(Manifest.permission.CAMERA) }) { Text(&quot;Permitir cámara&quot;) }</span>
+<span class="nc" id="L64">            OylOutlinedButton(onClick = {</span>
+<span class="nc" id="L65">                try { context.startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse(&quot;package:${context.packageName}&quot;))) }</span>
+<span class="nc" id="L66">                catch (_: Exception) { error = &quot;Abre Ajustes del teléfono → Aplicaciones → OYL → Permisos → Cámara.&quot; }</span>
+<span class="nc bnc" id="L67" title="All 2 branches missed.">            }) { Text(&quot;Abrir ajustes de permisos&quot;) }</span>
+<span class="nc" id="L68">        } else {</span>
+<span class="nc" id="L69">            val previewView = remember(context) { PreviewView(context).apply {</span>
+<span class="nc" id="L70">                implementationMode = PreviewView.ImplementationMode.COMPATIBLE</span>
+<span class="nc" id="L71">                scaleType = PreviewView.ScaleType.FILL_CENTER</span>
+<span class="nc" id="L72">            } }</span>
+<span class="nc" id="L73">            AndroidView(factory = { previewView }, modifier = Modifier.fillMaxWidth().height(300.dp))</span>
+<span class="nc bnc" id="L74" title="All 2 branches missed.">            Text(error ?: &quot;Buscando QR… Acerca el código y mantén la cámara estable.&quot;, style = MaterialTheme.typography.bodyMedium)</span>
+<span class="nc bnc" id="L75" title="All 4 branches missed.">            if (error != null) OylOutlinedButton(onClick = { retry++ }) { Text(&quot;Reintentar cámara&quot;) }</span>
+<span class="nc" id="L76">            DisposableEffect(owner, previewView, retry) {</span>
+<span class="nc" id="L77">                error = null</span>
+<span class="nc" id="L78">                val disposed = AtomicBoolean(false)</span>
+<span class="nc" id="L79">                val delivered = AtomicBoolean(false)</span>
+<span class="nc" id="L80">                val processing = AtomicBoolean(false)</span>
+<span class="nc" id="L81">                val executor = ContextCompat.getMainExecutor(context)</span>
+<span class="nc" id="L82">                val scanner = BarcodeScanning.getClient(BarcodeScannerOptions.Builder().setBarcodeFormats(Barcode.FORMAT_QR_CODE).build())</span>
+<span class="nc" id="L83">                val preview = Preview.Builder().build().also { it.setSurfaceProvider(previewView.surfaceProvider) }</span>
+<span class="nc" id="L84">                val analysis = ImageAnalysis.Builder().setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST).build()</span>
+<span class="nc" id="L85">                var provider: ProcessCameraProvider? = null</span>
+<span class="nc" id="L86">                var cameraStates: androidx.lifecycle.LiveData&lt;androidx.camera.core.CameraState&gt;? = null</span>
+<span class="nc" id="L87">                val cameraObserver = androidx.lifecycle.Observer&lt;androidx.camera.core.CameraState&gt; { state -&gt;</span>
+<span class="nc bnc" id="L88" title="All 4 branches missed.">                    if (!disposed.get() &amp;&amp; state.error != null) error = &quot;La cámara no está disponible. Cierra otras aplicaciones y reintenta.&quot;</span>
+<span class="nc" id="L89">                }</span>
+<span class="nc" id="L90">                analysis.setAnalyzer(executor) { frame -&gt;</span>
+<span class="nc bnc" id="L91" title="All 6 branches missed.">                    if (disposed.get() || delivered.get() || !processing.compareAndSet(false, true)) {</span>
+<span class="nc" id="L92">                        frame.close()</span>
+                    } else {
+<span class="nc" id="L94">                        val image = frame.image</span>
+<span class="nc bnc" id="L95" title="All 2 branches missed.">                        if (image == null) {</span>
+<span class="nc" id="L96">                            processing.set(false); frame.close()</span>
+<span class="nc" id="L97">                        } else try {</span>
+<span class="nc" id="L98">                            scanner.process(InputImage.fromMediaImage(image, frame.imageInfo.rotationDegrees))</span>
+<span class="nc" id="L99">                                .addOnSuccessListener { codes -&gt;</span>
+<span class="nc bnc" id="L100" title="All 2 branches missed.">                                    if (!disposed.get()) {</span>
+<span class="nc bnc" id="L101" title="All 6 branches missed.">                                        val code = codes.firstOrNull { qrProductId(it.rawValue.orEmpty()) != null } ?: codes.firstOrNull()</span>
+<span class="nc bnc" id="L102" title="All 4 branches missed.">                                        code?.rawValue?.let { value -&gt;</span>
+<span class="nc bnc" id="L103" title="All 2 branches missed.">                                            if (delivered.compareAndSet(false, true)) currentPayload(value)</span>
+<span class="nc" id="L104">                                        }</span>
+                                    }
+<span class="nc" id="L106">                                }</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">                                .addOnFailureListener { if (!disposed.get()) error = &quot;No se pudo leer el QR. Reintenta o usa otra imagen.&quot; }</span>
+<span class="nc" id="L108">                                .addOnCompleteListener { processing.set(false); frame.close() }</span>
+<span class="nc" id="L109">                        } catch (_: Exception) {</span>
+<span class="nc" id="L110">                            processing.set(false); frame.close()</span>
+<span class="nc bnc" id="L111" title="All 2 branches missed.">                            if (!disposed.get()) error = &quot;No se pudo analizar la cámara. Pulsa Reintentar cámara.&quot;</span>
+                        }
+                    }
+<span class="nc" id="L114">                }</span>
+<span class="nc" id="L115">                val future = ProcessCameraProvider.getInstance(context)</span>
+<span class="nc" id="L116">                future.addListener({</span>
+<span class="nc bnc" id="L117" title="All 2 branches missed.">                    if (!disposed.get()) try {</span>
+<span class="nc" id="L118">                        val cameraProvider = future.get()</span>
+<span class="nc" id="L119">                        provider = cameraProvider</span>
+<span class="nc bnc" id="L120" title="All 2 branches missed.">                        val selector = if (cameraProvider.hasCamera(CameraSelector.DEFAULT_BACK_CAMERA)) CameraSelector.DEFAULT_BACK_CAMERA</span>
+<span class="nc" id="L121">                            else CameraSelector.DEFAULT_FRONT_CAMERA</span>
+<span class="nc" id="L122">                        val camera = cameraProvider.bindToLifecycle(owner, selector, preview, analysis)</span>
+<span class="nc" id="L123">                        cameraStates = camera.cameraInfo.cameraState</span>
+<span class="nc bnc" id="L124" title="All 2 branches missed.">                        cameraStates?.observe(owner, cameraObserver)</span>
+<span class="nc" id="L125">                    } catch (_: Exception) {</span>
+<span class="nc" id="L126">                        error = &quot;No se pudo abrir la cámara. Reintenta o usa galería o simulador.&quot;</span>
+                    }
+<span class="nc" id="L128">                }, executor)</span>
+<span class="nc" id="L129">                onDispose {</span>
+                    disposed.set(true)
+                    cameraStates?.removeObserver(cameraObserver)
+                    analysis.clearAnalyzer()
+                    provider?.unbind(preview, analysis)
+                    scanner.close()
+<span class="nc" id="L135">                }</span>
+            }
+        }
+<span class="nc" id="L138">    }</span>
+<span class="nc bnc" id="L139" title="All 2 branches missed.">}</span>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span>Generated by the Android Gradle plugin 8.11.1</div></body></html>

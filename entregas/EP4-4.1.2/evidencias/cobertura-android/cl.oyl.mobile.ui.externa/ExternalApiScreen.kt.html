@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ExternalApiScreen.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">cl.oyl.mobile.ui.externa</a> &gt; <span class="el_source">ExternalApiScreen.kt</span></div><h1>ExternalApiScreen.kt</h1><pre class="source lang-java linenums">package cl.oyl.mobile.ui.externa
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import cl.oyl.mobile.viewmodel.externa.ExternalApiViewModel
+
+@Composable
+<span class="nc bnc" id="L24" title="All 10 branches missed.">fun ExternalApiScreen(viewModel: ExternalApiViewModel) {</span>
+<span class="nc" id="L25">    val foods by viewModel.foods.collectAsState()</span>
+<span class="nc" id="L26">    val loading by viewModel.loading.collectAsState()</span>
+<span class="nc" id="L27">    val error by viewModel.error.collectAsState()</span>
+<span class="nc bnc" id="L28" title="All 4 branches missed.">    LaunchedEffect(Unit) { if (foods.isEmpty()) viewModel.search() }</span>
+<span class="nc" id="L29">    Column(Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {</span>
+<span class="nc" id="L30">        Text(&quot;Información externa de alimentos&quot;, style = MaterialTheme.typography.headlineSmall)</span>
+<span class="nc" id="L31">        Text(&quot;Datos consultados en Open Food Facts. No cambian precios, inventario ni pedidos de OYL.&quot;, style = MaterialTheme.typography.bodyMedium)</span>
+<span class="nc bnc" id="L32" title="All 4 branches missed.">        Button(onClick = viewModel::search, enabled = !loading) { Text(&quot;Consultar API externa&quot;) }</span>
+<span class="nc bnc" id="L33" title="All 2 branches missed.">        if (loading) CircularProgressIndicator()</span>
+<span class="nc bnc" id="L34" title="All 2 branches missed.">        if (error != null) Text(error!!, color = MaterialTheme.colorScheme.error)</span>
+<span class="nc" id="L35">        LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {</span>
+<span class="nc" id="L36">            items(foods) { item -&gt;</span>
+<span class="nc" id="L37">                Card(Modifier.fillMaxWidth()) {</span>
+<span class="nc" id="L38">                    Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {</span>
+<span class="nc bnc" id="L39" title="All 2 branches missed.">                        Text(item.name.orEmpty(), style = MaterialTheme.typography.titleMedium)</span>
+<span class="nc bnc" id="L40" title="All 6 branches missed.">                        if (!item.brands.isNullOrBlank()) Text(&quot;Marca: ${item.brands}&quot;)</span>
+<span class="nc bnc" id="L41" title="All 6 branches missed.">                        if (!item.quantity.isNullOrBlank()) Text(&quot;Formato informado: ${item.quantity}&quot;)</span>
+<span class="nc bnc" id="L42" title="All 6 branches missed.">                        if (!item.nutritionGrade.isNullOrBlank()) Text(&quot;Nutri-Score: ${item.nutritionGrade.uppercase()}&quot;)</span>
+<span class="nc" id="L43">                    }</span>
+<span class="nc" id="L44">                }</span>
+            }
+<span class="nc" id="L46">        }</span>
+<span class="nc" id="L47">    }</span>
+<span class="nc bnc" id="L48" title="All 2 branches missed.">}</span>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span>Generated by the Android Gradle plugin 8.11.1</div></body></html>

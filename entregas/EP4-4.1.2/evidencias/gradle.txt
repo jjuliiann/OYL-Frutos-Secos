@@ -1,0 +1,6 @@
+> Task :app:assembleDebug
+> Task :app:assembleDebugAndroidTest
+> Task :app:createDebugUnitTestCoverageReport
+> Task :app:lintVitalAula
+> Task :app:assembleAula
+BUILD SUCCESSFUL in 2m 34s

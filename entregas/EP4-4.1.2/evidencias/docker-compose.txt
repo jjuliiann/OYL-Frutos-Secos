@@ -1,0 +1,8 @@
+docker compose config --quiet: código de salida 0.
+docker compose config --services:
+eureka-server
+product-service
+order-service
+user-service
+api-gateway
+Se comprobó la configuración. No se ejecutó un motor Docker aquí.

@@ -1,0 +1,7 @@
+40a2469697485bb6c9341bbaf796486ea220fca360da9ced5320d229ea7c29f5  apk/OYL_Frutos_Secos_Aula.apk
+1d06cc7bbe92e1e42c1a3e2f28ddd286fe5af51033c894718e9856b09d8248b7  backend/runtime/api-gateway-1.0.0.jar
+7bba5a71280db80630ee1d5dea33683847924fccb65fb84f4a20f6b00f55a096  backend/runtime/eureka-server-1.0.0.jar
+695dea9d43d9553c49e01581094831a6dbe5b8def4445b59e913aea86545df21  backend/runtime/order-service-1.0.0.jar
+285cf3d2f687d7a7346cf963b1a54df733a84bec30db3f55b62d4c49c66485fb  backend/runtime/product-service-1.0.0.jar
+ac928f054d26e780d74ae06c0da9400603d041ef6bf6a4581453d892618a00f0  backend/runtime/user-service-1.0.0.jar
+510dbb674fe11b835a6de33c73a818dd4fa589b676dfee4471188b6deba24502  backend/scripts/cli/cierre-cmd.jar

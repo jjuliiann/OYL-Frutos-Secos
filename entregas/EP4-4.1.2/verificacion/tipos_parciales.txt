@@ -1,0 +1,4 @@
+Comprobación parcial realizada con Kotlin 2.2.20 y coroutines JVM.
+Archivos: Models, LocalDb, StoreDao, LocalRepository, PasswordHash, Validation y OylViewModel.
+Resultado: sin errores de tipos con stubs mínimos de Android/Room/Lifecycle.
+No ejecuta Room ni sustituye kapt/compilación Android.

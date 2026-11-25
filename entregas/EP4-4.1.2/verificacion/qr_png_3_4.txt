@@ -1,0 +1,4 @@
+ZXing-C++: 18 PNG decodificados correctamente (9 entregables y 9 recursos Android).
+7 productos + inexistente + código ajeno.
+Los 8 enlaces de producto contienen oyl://product/ID.
+Esto comprueba imágenes/payload; no cámara física ni apertura por aplicaciones externas.

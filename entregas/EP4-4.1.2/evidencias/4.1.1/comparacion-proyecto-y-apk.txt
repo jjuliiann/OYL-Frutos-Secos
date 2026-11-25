@@ -1,0 +1,7 @@
+72 archivos del backend idénticos byte a byte, incluidos los cinco JAR y los comandos de arranque.
+Las 14 operaciones Retrofit de OYL conservan el contrato.
+El panel conserva todos los botones por rol excepto los tres accesos retirados.
+APK: 31022 clases DEX sin duplicados. Se conservaron las clases de las dependencias, las pantallas restantes y los recursos compilados.
+Clases principales retiradas: ExternalApiScreenKt, ExternalApiViewModel, ExternalFood, ExternalFoodSearchResponse, OpenFoodFactsApi.
+Ningún DEX contiene el rótulo retirado ni el dominio del proveedor.
+Paquete cl.oyl.mobile.aula, versión 4.1.1-aula (14), SDK mínimo 26. Manifiesto equivalente salvo la versión.

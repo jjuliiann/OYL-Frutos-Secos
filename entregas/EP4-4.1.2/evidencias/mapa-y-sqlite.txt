@@ -1,0 +1,3 @@
+OK: selección inicial, clic de marcador, selección desde lista y rechazo de ID inexistente.
+OK: migración 3→4, 16 columnas, pedidos anteriores conservados, dirección guardada y eliminación en cascada comprobada en SQLite.
+OK: 9 consultas; textos actualizados; pedidos, stock, carrito, coordenadas y datos personalizados conservados; SQL idempotente.

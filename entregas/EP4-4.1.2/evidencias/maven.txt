@@ -1,0 +1,20 @@
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.599 s -- in cl.oyl.security.TokenServiceTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 11.76 s -- in cl.oyl.users.UserControllerTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.032 s -- in cl.oyl.products.ProductRulesTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 11.10 s -- in cl.oyl.products.ProductControllerTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.037 s -- in cl.oyl.OrderPolicyTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 11.35 s -- in cl.oyl.orders.OrderControllerTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.109 s -- in cl.oyl.discovery.RegistryRootTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
+[INFO] oyl-backend ........................................ SUCCESS [  0.267 s]
+[INFO] security-core ...................................... SUCCESS [  2.580 s]
+[INFO] user-service ....................................... SUCCESS [ 12.930 s]
+[INFO] product-service .................................... SUCCESS [ 11.746 s]
+[INFO] order-service ...................................... SUCCESS [ 11.983 s]
+[INFO] api-gateway ........................................ SUCCESS [  0.132 s]
+[INFO] eureka-server ...................................... SUCCESS [  1.473 s]
+[INFO] BUILD SUCCESS

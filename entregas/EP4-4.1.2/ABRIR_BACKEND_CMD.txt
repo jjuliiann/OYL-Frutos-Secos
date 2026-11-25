@@ -1,0 +1,53 @@
+﻿OYL FRUTOS SECOS | Guía para la defensa en Windows 11
+Julián Martínez y Lukas Gómez | Desarrollo de Aplicaciones Móviles | 004D
+
+Si el backend ya está activo y solo quieres actualizar el teléfono, salta a ABRIR_EN_ANDROID_STUDIO.md.
+Deja esa CMD abierta: no necesitas reiniciar ni copiar las bases.
+
+1. Extrae TODO este ZIP en una carpeta nueva. No borres la entrega anterior.
+   Entra en OYL_Frutos_Secos y luego en backend. Debes ver oyl.bat, pom.xml y runtime.
+   Si una edición anterior sigue ejecutándose, usa stop-local.bat en el backend
+   de ESA edición. Si la iniciaste con Docker, allí usa docker compose down (sin -v).
+
+2. Ya dentro de backend, escribe cmd en la barra de direcciones del Explorador y
+   presiona Enter. Los siguientes comandos se escriben en esa misma ventana.
+   Tu Temurin 21.0.12.1 sirve. Los cinco JAR ya están compilados. La APK se firma según ABRIR_EN_ANDROID_STUDIO.md.
+
+3. Escribe cada línea por separado. Espera el mensaje OK y que vuelva el
+   indicador de CMD antes de la siguiente. Los servicios quedan activos:
+   si siguen apareciendo líneas de Spring, puedes escribir el siguiente comando.
+
+   oyl.bat eureka
+   oyl.bat usuarios
+   oyl.bat productos
+   oyl.bat pedidos
+   oyl.bat gateway
+   oyl.bat estado
+
+   Eureka registra los servicios (8761). Usuarios gestiona cuentas (8081).
+   Productos gestiona catálogo y stock (8082). Pedidos registra compras (8083).
+   El Gateway recibe las solicitudes de la app (8080).
+   Para cada arranque verás el comando Java, su PID, puerto y mensajes de Spring.
+   Con oyl.bat por sí solo aparece la ayuda: no arranca nada ni abre el navegador.
+
+4. Cuando veas BACKEND LISTO, muestra los productos desde esa misma CMD:
+   curl.exe http://localhost:8080/api/products
+
+   Si quieres mostrar Eureka, abre tú http://localhost:8761/ en el navegador.
+   Las cuatro instancias deben estar UP. Eureka no cuenta como cliente de sí mismo.
+
+5. En Android Studio abre la carpeta android. Genera tu APK de aula siguiendo ABRIR_EN_ANDROID_STUDIO.md.
+   Emulador nuevo: ya apunta a http://10.0.2.2:8080/api/.
+   Samsung: mantén pulsado OYL FRUTOS SECOS en la barra superior y guarda la URL de tu PC.
+   Con una base nueva: cliente / Cliente1234!    admin / Admin1234!
+   Para la defensa, compra una unidad y vuelve a consultar el stock en CMD.
+
+6. Al terminar, con la CMD aún abierta:
+   oyl.bat detener
+
+   Se solicita el cierre a cada proceso Spring iniciado por esta copia; las
+   bases en backend/data se conservan. Si quieres llevar los datos anteriores
+   a esta carpeta nueva, consulta primero la sección 4 del README.
+
+Si un puerto ya está ocupado, no repitas el arranque: verifica qué instalación
+está abierta. Los mensajes quedan también en backend/logs/<nombre-del-módulo>.log.

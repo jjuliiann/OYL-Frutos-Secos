@@ -1,0 +1,4 @@
+OK: APK de aula -> botón Probar conexión -> los tres microservicios responden.
+OK: inicio de sesión cliente desde la pantalla de la APK.
+OK: enlace QR externo de Almendras abre el detalle en la APK.
+OK: un ID ausente abre el aviso de producto inexistente.

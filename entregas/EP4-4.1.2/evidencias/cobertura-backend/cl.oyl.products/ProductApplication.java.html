@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProductApplication.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">OYL - pruebas unitarias del backend completo</a> &gt; <a href="index.source.html" class="el_package">cl.oyl.products</a> &gt; <span class="el_source">ProductApplication.java</span></div><h1>ProductApplication.java</h1><pre class="source lang-java linenums">package cl.oyl.products;
+import cl.oyl.security.SecurityConfiguration;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
+@Import(SecurityConfiguration.class)
+<span class="nc" id="L8">@SpringBootApplication public class ProductApplication {</span>
+<span class="nc" id="L9"> @Bean org.springframework.boot.ApplicationRunner prepareDataDirectory() { return args -&gt; java.nio.file.Files.createDirectories(java.nio.file.Path.of(&quot;./data&quot;)); }</span>
+<span class="nc" id="L10"> public static void main(String[] args) { SpringApplication.run(ProductApplication.class, args); }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

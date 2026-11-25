@@ -1,0 +1,10 @@
+qr_almendras.png: OYL:1
+qr_avellanas.png: OYL:7
+qr_chia.png: OYL:5
+qr_cranberries.png: OYL:6
+qr_inexistente.png: OYL:999999
+qr_invalido.png: CODIGO AJENO A OYL
+qr_mix_premium.png: OYL:3
+qr_nueces.png: OYL:2
+qr_pasas.png: OYL:4
+9 imágenes PNG decodificadas con ZXing-C++ (no sustituye prueba ML Kit en Android).

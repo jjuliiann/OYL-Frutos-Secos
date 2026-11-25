@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LocalRepository.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">cl.oyl.mobile.data.repository</a> &gt; <span class="el_source">LocalRepository.kt</span></div><h1>LocalRepository.kt</h1><pre class="source lang-java linenums">package cl.oyl.mobile.data.repository
+
+import cl.oyl.mobile.model.checkout.CheckoutData
+import cl.oyl.mobile.data.local.entity.OrderFulfillment
+import cl.oyl.mobile.util.CheckoutValidation
+import androidx.room.withTransaction
+import cl.oyl.mobile.data.local.LocalDb
+import cl.oyl.mobile.data.local.entity.CartLine
+import cl.oyl.mobile.data.local.entity.LocalNotice
+import cl.oyl.mobile.data.local.entity.StoredAccount
+import cl.oyl.mobile.data.local.entity.StoredLine
+import cl.oyl.mobile.data.local.entity.StoredLocation
+import cl.oyl.mobile.data.local.entity.StoredOrder
+import cl.oyl.mobile.model.auth.Account
+import cl.oyl.mobile.model.auth.Credentials
+import cl.oyl.mobile.model.pedidos.OrderLine
+import cl.oyl.mobile.model.productos.Product
+import cl.oyl.mobile.model.perfil.ProfileUpdate
+import cl.oyl.mobile.model.pedidos.PurchaseOrder
+import cl.oyl.mobile.model.auth.RegisterData
+import cl.oyl.mobile.util.PasswordHash
+import cl.oyl.mobile.util.Validation
+import java.time.LocalDateTime
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+
+/** Acceso Room local, reglas reutilizables y caché para la app conectada al backend. */
+<span class="nc" id="L28">class LocalRepository(private val db: LocalDb) {</span>
+<span class="nc" id="L29">    val store = db.store()</span>
+<span class="nc" id="L30">    private val local = db.dao()</span>
+    /** Sincroniza el catálogo remoto con la tabla local para lectura rápida y soporte del carrito. */
+<span class="nc" id="L32">    suspend fun cacheRemoteProducts(products: List&lt;Product&gt;) = db.withTransaction {</span>
+<span class="nc" id="L33">        products.forEach { product -&gt; store.insertProduct(product) }</span>
+<span class="nc" id="L34">    }</span>
+
+    // Una respuesta completa reemplaza el catálogo; una edición solo actualiza una fila.
+<span class="nc" id="L37">    suspend fun replaceCatalog(products: List&lt;Product&gt;) = db.withTransaction {</span>
+<span class="nc" id="L38">        store.clearProducts()</span>
+<span class="nc" id="L39">        products.forEach { store.insertProduct(it) }</span>
+<span class="nc" id="L40">    }</span>
+
+<span class="nc" id="L42">    suspend fun replaceLocations(locations: List&lt;cl.oyl.mobile.model.mapa.PickupLocation&gt;) = db.withTransaction {</span>
+<span class="nc" id="L43">        store.clearLocations()</span>
+<span class="nc" id="L44">        store.insertLocations(locations.map { StoredLocation(it.id, it.name, it.address, it.hours, it.latitude, it.longitude) })</span>
+<span class="nc" id="L45">    }</span>
+
+    /** Conserva el carrito local, pero refleja compra e inventario confirmados por el backend. */
+<span class="nc" id="L48">    suspend fun completeRemoteCheckout(userId: Long, orderId: Long) = db.withTransaction {</span>
+<span class="nc" id="L49">        local.clearCart(userId)</span>
+<span class="nc" id="L50">        local.saveNotice(LocalNotice(userId = userId, title = &quot;Pedido #$orderId&quot;, content = &quot;Pedido registrado en el servidor&quot;))</span>
+<span class="nc" id="L51">    }</span>
+
+<span class="nc" id="L53">    suspend fun login(c: Credentials): Account = withContext(Dispatchers.IO) {</span>
+<span class="nc bnc" id="L54" title="All 2 branches missed.">        val u = store.account(c.alias.trim()) ?: error(&quot;Alias o contraseña incorrectos&quot;)</span>
+<span class="nc bnc" id="L55" title="All 2 branches missed.">        check(PasswordHash.matches(c.password, u.salt, u.passwordHash)) { &quot;Alias o contraseña incorrectos&quot; }; u.account()</span>
+<span class="nc" id="L56">    }</span>
+<span class="nc" id="L57">    suspend fun register(r: RegisterData): Account = withContext(Dispatchers.IO) {</span>
+<span class="nc bnc" id="L58" title="All 2 branches missed.">        require(Validation.register(r).isEmpty()) { &quot;Revisa los campos del registro&quot; }</span>
+<span class="nc" id="L59">        val salt = PasswordHash.salt()</span>
+<span class="nc" id="L60">        val hash = PasswordHash.hash(r.password, salt)</span>
+<span class="nc" id="L61">        db.withTransaction {</span>
+<span class="nc bnc" id="L62" title="All 4 branches missed.">            check(store.account(r.alias.trim()) == null) { &quot;El alias ya está registrado&quot; }</span>
+<span class="nc" id="L63">            val user = StoredAccount(alias = r.alias.trim(), name = r.name.trim(), email = r.email.trim(), phone = r.phone.trim(), address = r.address.trim(), salt = salt, passwordHash = hash)</span>
+<span class="nc" id="L64">            user.copy(id = store.insertAccount(user)).account()</span>
+<span class="nc" id="L65">        }</span>
+<span class="nc" id="L66">    }</span>
+<span class="nc" id="L67">    suspend fun updateProfile(id: Long, p: ProfileUpdate): Account = db.withTransaction {</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">        require(Validation.profile(p.name,p.email,p.phone,p.address).isEmpty()) { &quot;Revisa los campos del perfil&quot; }</span>
+<span class="nc bnc" id="L69" title="All 2 branches missed.">        val u = store.account(id) ?: error(&quot;Usuario inexistente&quot;)</span>
+<span class="nc" id="L70">        val updated = u.copy(name = p.name.trim(), email = p.email.trim(), phone = p.phone.trim(), address = p.address.trim())</span>
+<span class="nc" id="L71">        store.updateAccount(updated); updated.account()</span>
+<span class="nc" id="L72">    }</span>
+<span class="nc bnc" id="L73" title="All 4 branches missed.">    private suspend fun admin(id: Long) { check(store.account(id)?.role == &quot;ADMIN&quot;) { &quot;Solo administrador&quot; } }</span>
+<span class="nc" id="L74">    suspend fun saveProduct(adminId: Long, product: Product) = db.withTransaction {</span>
+<span class="nc" id="L75">        admin(adminId)</span>
+<span class="nc bnc" id="L76" title="All 2 branches missed.">        require(Validation.product(product.name, product.category, product.description, product.presentation, product.price.toString(), product.stock.toString(), product.minStock.toString()).isEmpty()) { &quot;Producto inválido&quot; }</span>
+<span class="nc bnc" id="L77" title="All 2 branches missed.">        if (product.id == null) store.insertProduct(product)</span>
+<span class="nc bnc" id="L78" title="All 4 branches missed.">        else { check(store.product(product.id) != null) { &quot;Producto inexistente&quot; }; store.updateProduct(product) }</span>
+<span class="nc" id="L79">    }</span>
+<span class="nc" id="L80">    suspend fun stock(adminId: Long, id: Long, delta: Int) = db.withTransaction {</span>
+<span class="nc" id="L81">        admin(adminId)</span>
+<span class="nc bnc" id="L82" title="All 2 branches missed.">        val p = store.product(id) ?: error(&quot;Producto inexistente&quot;)</span>
+<span class="nc" id="L83">        val stock = p.stock.toLong() + delta</span>
+<span class="nc bnc" id="L84" title="All 6 branches missed.">        require(stock in 0..Int.MAX_VALUE.toLong()) { &quot;Stock fuera de rango&quot; }</span>
+<span class="nc" id="L85">        store.updateProduct(p.copy(stock = stock.toInt()))</span>
+<span class="nc" id="L86">    }</span>
+<span class="nc" id="L87">    suspend fun addCart(userId: Long, productId: Long, delta: Int, adding: Boolean = false) = db.withTransaction {</span>
+<span class="nc bnc" id="L88" title="All 4 branches missed.">        check(store.account(userId)?.role == &quot;CLIENT&quot;) { &quot;Inicia sesión como cliente para comprar&quot; }</span>
+<span class="nc" id="L89">        adjustLine(userId, productId, delta, adding)</span>
+<span class="nc" id="L90">    }</span>
+
+    // La cuenta autenticada puede haberse creado en otro teléfono.
+<span class="nc" id="L93">    suspend fun addForSession(userId: Long, productId: Long, delta: Int, adding: Boolean = false) = db.withTransaction {</span>
+<span class="nc" id="L94">        val active = local.currentSession()</span>
+<span class="nc bnc" id="L95" title="All 10 branches missed.">        check(active?.id == userId &amp;&amp; active.role == &quot;CLIENT&quot;) { &quot;Inicia sesión como cliente para comprar&quot; }</span>
+<span class="nc" id="L96">        adjustLine(userId, productId, delta, adding)</span>
+<span class="nc" id="L97">    }</span>
+
+<span class="nc" id="L99">    private suspend fun adjustLine(userId: Long, productId: Long, delta: Int, adding: Boolean) {</span>
+<span class="nc" id="L100">        val product = store.product(productId)</span>
+<span class="nc bnc" id="L101" title="All 4 branches missed.">        if (product == null &amp;&amp; delta &lt; 0) { local.removeCart(userId, productId); return }</span>
+<span class="nc bnc" id="L102" title="All 2 branches missed.">        checkNotNull(product) { &quot;Producto inexistente&quot; }</span>
+<span class="nc bnc" id="L103" title="All 4 branches missed.">        if (delta &gt; 0) check(product.active) { &quot;El producto está desactivado&quot; }</span>
+<span class="nc bnc" id="L104" title="All 2 branches missed.">        val current = store.cartLine(userId, productId)?.quantity ?: 0</span>
+<span class="nc" id="L105">        val next = current.toLong() + delta</span>
+<span class="nc bnc" id="L106" title="All 6 branches missed.">        if (adding) require(delta &gt; 0) { &quot;Cantidad inválida&quot; }</span>
+<span class="nc bnc" id="L107" title="All 6 branches missed.">        if (delta &gt; 0) check(next &lt;= product.stock) { &quot;Stock insuficiente&quot; }</span>
+<span class="nc bnc" id="L108" title="All 2 branches missed.">        if (next &lt;= 0) local.removeCart(userId, productId) else local.saveCart(CartLine(userId, productId, next.toInt()))</span>
+<span class="nc" id="L109">    }</span>
+<span class="nc" id="L110">    suspend fun checkout(userId: Long, input: CheckoutData): Long = db.withTransaction {</span>
+<span class="nc bnc" id="L111" title="All 4 branches missed.">        check(store.account(userId)?.role == &quot;CLIENT&quot;) { &quot;Solo clientes pueden comprar&quot; }</span>
+<span class="nc" id="L112">        val data = input.normalized()</span>
+<span class="nc" id="L113">        val locations = store.locations()</span>
+<span class="nc" id="L114">        val errors = CheckoutValidation.validate(data, locations.map { it.id }.toSet())</span>
+<span class="nc bnc" id="L115" title="All 2 branches missed.">        require(errors.isEmpty()) { errors.values.first() }</span>
+<span class="nc bnc" id="L116" title="All 6 branches missed.">        val pickup = if (data.delivery == &quot;RETIRO&quot;) locations.first { it.id == data.pickupLocationId } else null</span>
+<span class="nc" id="L117">        val cart = store.cartNow(userId)</span>
+<span class="nc bnc" id="L118" title="All 4 branches missed.">        check(cart.isNotEmpty()) { &quot;El carrito está vacío&quot; }</span>
+<span class="nc" id="L119">        val lines = cart.map { item -&gt;</span>
+<span class="nc bnc" id="L120" title="All 2 branches missed.">            val p = store.product(item.productId) ?: error(&quot;Producto inexistente&quot;)</span>
+<span class="nc bnc" id="L121" title="All 8 branches missed.">            check(p.active &amp;&amp; item.quantity &gt; 0 &amp;&amp; p.stock &gt;= item.quantity) { &quot;Stock insuficiente o producto desactivado: ${p.name}&quot; }</span>
+<span class="nc" id="L122">            p to item.quantity</span>
+        }
+<span class="nc bnc" id="L124" title="All 2 branches missed.">        val total = lines.sumOf { (p,q) -&gt; p.price.toLong() * q }</span>
+<span class="nc bnc" id="L125" title="All 6 branches missed.">        require(total in 0..Int.MAX_VALUE.toLong()) { &quot;Total fuera de rango&quot; }</span>
+<span class="nc" id="L126">        val id = store.insertOrder(StoredOrder(userId = userId, createdAt = LocalDateTime.now().toString(), status = &quot;PENDIENTE_VALIDACION&quot;, delivery = data.delivery, contact = &quot;${data.recipientName} · ${data.phone}&quot;, total = total.toInt()))</span>
+<span class="nc" id="L127">        store.insertFulfillment(OrderFulfillment(orderId = id, delivery = data.delivery,</span>
+<span class="nc" id="L128">            recipientName = data.recipientName, phone = data.phone, email = data.email,</span>
+<span class="nc bnc" id="L129" title="All 6 branches missed.">            pickupLocationId = pickup?.id, pickupName = pickup?.name.orEmpty(),</span>
+<span class="nc bnc" id="L130" title="All 8 branches missed.">            pickupAddress = pickup?.address.orEmpty(), pickupHours = pickup?.hours.orEmpty(),</span>
+<span class="nc bnc" id="L131" title="All 4 branches missed.">            street = if (pickup == null) data.street else &quot;&quot;, number = if (pickup == null) data.number else &quot;&quot;,</span>
+<span class="nc bnc" id="L132" title="All 4 branches missed.">            apartment = if (pickup == null) data.apartment else &quot;&quot;, commune = if (pickup == null) data.commune else &quot;&quot;,</span>
+<span class="nc bnc" id="L133" title="All 4 branches missed.">            region = if (pickup == null) data.region else &quot;&quot;, postalCode = if (pickup == null) data.postalCode else &quot;&quot;,</span>
+<span class="nc" id="L134">            instructions = data.instructions))</span>
+<span class="nc bnc" id="L135" title="All 2 branches missed.">        for ((p,q) in lines) {</span>
+<span class="nc" id="L136">            store.updateProduct(p.copy(stock = p.stock - q))</span>
+<span class="nc" id="L137">            store.insertLine(StoredLine(orderId = id, productId = p.id!!, productName = p.name, quantity = q, unitPrice = p.price))</span>
+        }
+<span class="nc" id="L139">        local.clearCart(userId)</span>
+<span class="nc" id="L140">        local.saveNotice(LocalNotice(userId = userId, title = &quot;Pedido #$id&quot;, content = &quot;Pedido registrado: PENDIENTE_VALIDACION&quot;))</span>
+<span class="nc" id="L141">        id</span>
+<span class="nc" id="L142">    }</span>
+<span class="nc" id="L143">    suspend fun status(adminId: Long, orderId: Long, state: String) = db.withTransaction {</span>
+<span class="nc" id="L144">        admin(adminId)</span>
+<span class="nc bnc" id="L145" title="All 2 branches missed.">        require(state in listOf(&quot;PENDIENTE_VALIDACION&quot;,&quot;CONFIRMADO&quot;,&quot;PREPARADO&quot;,&quot;ENTREGADO&quot;)) { &quot;Estado inválido&quot; }</span>
+<span class="nc bnc" id="L146" title="All 2 branches missed.">        val order = store.order(orderId) ?: error(&quot;Pedido inexistente&quot;)</span>
+<span class="nc" id="L147">        store.updateOrder(order.copy(status = state))</span>
+<span class="nc" id="L148">        local.saveNotice(LocalNotice(userId = order.userId, title = &quot;Pedido actualizado&quot;, content = &quot;Pedido #$orderId: $state&quot;))</span>
+<span class="nc" id="L149">    }</span>
+<span class="nc" id="L150">    suspend fun orderView(order: StoredOrder): PurchaseOrder = PurchaseOrder(order.id, order.userId, order.createdAt, order.status, order.delivery, order.contact, order.total,</span>
+<span class="nc" id="L151">        store.lines(order.id).map { OrderLine(it.id,it.productId,it.productName,it.quantity,it.unitPrice) },</span>
+<span class="nc bnc" id="L152" title="All 2 branches missed.">        fulfillment = store.fulfillment(order.id)?.details())</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span>Generated by the Android Gradle plugin 8.11.1</div></body></html>

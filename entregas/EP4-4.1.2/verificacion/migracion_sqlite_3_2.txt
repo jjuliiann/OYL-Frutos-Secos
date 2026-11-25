@@ -1,0 +1,1 @@
+OK: 9 consultas; textos actualizados; pedidos, stock, carrito, coordenadas y datos personalizados conservados; SQL idempotente.

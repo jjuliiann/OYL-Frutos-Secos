@@ -1,0 +1,8 @@
+Emulador Android 11 (API 30); mismo identificador y certificado de ensayo entre versiones. El origen alternativo del ensayo usó un reenvío local ADB al Gateway; en el Samsung se usa la dirección Wi-Fi del PC.
+OK: 4.1.1 guardó una dirección distinta del valor predeterminado y los tres servicios respondieron.
+OK: actualización de ensayo a 4.1.2 sin desinstalar ni borrar datos.
+OK: Bienvenida sin botón de conexión.
+OK: Inicio de sesión sin botón de conexión.
+OK: una pulsación larga abrió el ajuste; conservó la dirección elegida en 4.1.1 y llegó a los tres servicios.
+OK: inicio de sesión y catálogo de Almendras contra el Gateway real en esa dirección.
+OK: se cambió de dirección desde el catálogo, se validó y quedó guardada tras cerrar y reabrir.

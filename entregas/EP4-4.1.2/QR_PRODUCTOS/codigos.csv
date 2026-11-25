@@ -1,0 +1,10 @@
+﻿Producto,ID,Contenido QR,Archivo
+Almendras,1,oyl://product/1,qr_almendras.png
+Nueces,2,oyl://product/2,qr_nueces.png
+Mix Premium,3,oyl://product/3,qr_mix_premium.png
+Pasas,4,oyl://product/4,qr_pasas.png
+Semillas de chía,5,oyl://product/5,qr_chia.png
+Cranberries,6,oyl://product/6,qr_cranberries.png
+Avellanas,7,oyl://product/7,qr_avellanas.png
+Producto inexistente,999999,oyl://product/999999,qr_inexistente.png
+Código ajeno,,CODIGO AJENO A OYL,qr_invalido.png

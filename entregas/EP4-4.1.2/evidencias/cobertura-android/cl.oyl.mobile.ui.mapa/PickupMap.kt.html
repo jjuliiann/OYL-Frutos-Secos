@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PickupMap.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">cl.oyl.mobile.ui.mapa</a> &gt; <span class="el_source">PickupMap.kt</span></div><h1>PickupMap.kt</h1><pre class="source lang-java linenums">package cl.oyl.mobile.ui.mapa
+
+import android.annotation.SuppressLint
+import android.content.Intent
+import android.os.SystemClock
+import android.view.ViewGroup
+import android.webkit.WebResourceRequest
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
+import cl.oyl.mobile.model.mapa.PickupLocation
+import cl.oyl.mobile.ui.components.OylOutlinedButton
+import java.util.UUID
+import kotlin.coroutines.resume
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withTimeoutOrNull
+import org.json.JSONArray
+import org.json.JSONObject
+
+<span class="nc" id="L30">private suspend fun WebView.mapReport(): String? = withTimeoutOrNull(3000) {</span>
+<span class="nc" id="L31">    suspendCancellableCoroutine { continuation -&gt;</span>
+<span class="nc" id="L32">        evaluateJavascript(&quot;JSON.stringify(window.oylMapReport || {})&quot;) { value -&gt;</span>
+<span class="nc bnc" id="L33" title="All 2 branches missed.">            if (continuation.isActive) continuation.resume(value)</span>
+<span class="nc" id="L34">        }</span>
+<span class="nc" id="L35">    }</span>
+<span class="nc" id="L36">}</span>
+
+@SuppressLint(&quot;SetJavaScriptEnabled&quot;)
+@Composable
+<span class="nc bnc" id="L40" title="All 22 branches missed.">fun PickupMap(place: PickupLocation, locations: List&lt;PickupLocation&gt;, onSelect: (Long) -&gt; Unit = {}) {</span>
+<span class="nc" id="L41">    val select by rememberUpdatedState(onSelect)</span>
+<span class="nc" id="L42">    val context = LocalContext.current</span>
+<span class="nc" id="L43">    val assets = remember(context) {</span>
+<span class="nc" id="L44">        runCatching { listOf(&quot;leaflet.css&quot;, &quot;leaflet.js&quot;, &quot;pickup-map.js&quot;).map { file -&gt;</span>
+<span class="nc bnc" id="L45" title="All 2 branches missed.">            context.assets.open(&quot;leaflet/$file&quot;).bufferedReader().use { it.readText() }</span>
+<span class="nc bnc" id="L46" title="All 2 branches missed.">        } }.getOrNull()</span>
+    }
+<span class="nc" id="L48">    var attempt by remember { mutableIntStateOf(0) }</span>
+<span class="nc" id="L49">    var message by remember { mutableStateOf&lt;String?&gt;(&quot;Cargando mapa de OpenStreetMap…&quot;) }</span>
+<span class="nc" id="L50">    var failed by remember { mutableStateOf(false) }</span>
+    // Instancia estable y tamaño MATCH_PARENT: no depende del alto del contenido HTML.
+<span class="nc" id="L52">    val web = remember(context) {</span>
+<span class="nc" id="L53">        WebView(context).apply {</span>
+<span class="nc" id="L54">            layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)</span>
+<span class="nc" id="L55">            settings.javaScriptEnabled = true</span>
+<span class="nc" id="L56">            settings.allowFileAccess = false</span>
+<span class="nc" id="L57">            settings.allowContentAccess = false</span>
+<span class="nc" id="L58">            settings.userAgentString += &quot; OYLFrutosSecosAcademico/2.2&quot;</span>
+<span class="nc" id="L59">            webViewClient = object : WebViewClient() {</span>
+                override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
+<span class="nc bnc" id="L61" title="All 4 branches missed.">                    if (request.url.scheme == &quot;https&quot; &amp;&amp; request.url.host == &quot;www.openstreetmap.org&quot;) {</span>
+<span class="nc" id="L62">                        try { context.startActivity(Intent(Intent.ACTION_VIEW, request.url)) } catch (_: Exception) { }</span>
+                    }
+<span class="nc" id="L64">                    return true</span>
+                }
+            }
+<span class="nc" id="L67">        }</span>
+    }
+<span class="nc bnc" id="L69" title="All 7 branches missed.">    LaunchedEffect(web, locations, attempt, assets) {</span>
+<span class="nc" id="L70">        message = &quot;Cargando mapa de OpenStreetMap…&quot;</span>
+<span class="nc" id="L71">        failed = false</span>
+<span class="nc bnc" id="L72" title="All 2 branches missed.">        if (assets == null) {</span>
+<span class="nc" id="L73">            failed = true; message = &quot;No se pudieron abrir los recursos del mapa.&quot;; return@LaunchedEffect</span>
+        }
+<span class="nc" id="L75">        val token = UUID.randomUUID().toString()</span>
+<span class="nc" id="L76">        val points = JSONArray().apply {</span>
+<span class="nc" id="L77">            locations.forEach { p -&gt; put(JSONObject().apply {</span>
+<span class="nc" id="L78">                put(&quot;id&quot;, p.id); put(&quot;name&quot;, p.name)</span>
+<span class="nc" id="L79">                put(&quot;latitude&quot;, p.latitude); put(&quot;longitude&quot;, p.longitude)</span>
+<span class="nc" id="L80">            }) }</span>
+<span class="nc" id="L81">        }.toString().replace(&quot;&lt;&quot;, &quot;\\u003c&quot;)</span>
+<span class="nc" id="L82">        val html = &quot;&quot;&quot;</span>
+            &lt;!doctype html&gt;&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+<span class="nc" id="L84">            &lt;style&gt;${assets[0]}</span>
+            html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#edf4e6;}
+            #map{position:absolute;top:0;left:0;right:0;bottom:0;min-height:220px;}&lt;/style&gt;&lt;/head&gt;
+            &lt;body&gt;&lt;div id=&quot;map&quot; role=&quot;img&quot; aria-label=&quot;Puntos de retiro OYL&quot;&gt;&lt;/div&gt;
+            &lt;script&gt;
+<span class="nc" id="L89">            ${assets[1]}</span>
+            &lt;/script&gt;&lt;script&gt;
+<span class="nc" id="L91">            ${assets[2]}</span>
+<span class="nc" id="L92">            initPickupMap($points, ${place.id}, '$token');</span>
+            &lt;/script&gt;&lt;/body&gt;&lt;/html&gt;
+<span class="nc" id="L94">        &quot;&quot;&quot;.trimIndent()</span>
+        // Esperar al frame donde AndroidView ya se incorporó al árbol visual.
+<span class="nc bnc" id="L96" title="All 2 branches missed.">        withFrameNanos { }</span>
+<span class="nc" id="L97">        web.loadDataWithBaseURL(&quot;https://oyl.local/&quot;, html, &quot;text/html&quot;, &quot;UTF-8&quot;, null)</span>
+<span class="nc" id="L98">        var lastSelection = place.id</span>
+<span class="nc" id="L99">        var waitingSince = SystemClock.elapsedRealtime()</span>
+<span class="nc" id="L100">        var wasReady = false</span>
+<span class="nc bnc" id="L101" title="All 2 branches missed.">        while (isActive) {</span>
+<span class="nc bnc" id="L102" title="All 2 branches missed.">            delay(750)</span>
+<span class="nc bnc" id="L103" title="All 2 branches missed.">            val raw = web.mapReport()</span>
+<span class="nc" id="L104">            val report = runCatching {</span>
+                // evaluateJavascript devuelve JSON doblemente codificado para una cadena.
+<span class="nc bnc" id="L106" title="All 4 branches missed.">                val decoded = org.json.JSONTokener(raw ?: &quot;null&quot;).nextValue() as? String</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">                if (decoded == null) null else JSONObject(decoded)</span>
+<span class="nc bnc" id="L108" title="All 2 branches missed.">            }.getOrNull()</span>
+<span class="nc bnc" id="L109" title="All 2 branches missed.">            val chosenId = report?.optLong(&quot;selectedId&quot;, -1) ?: -1</span>
+<span class="nc bnc" id="L110" title="All 6 branches missed.">            if (chosenId != lastSelection &amp;&amp; locations.any { it.id == chosenId }) {</span>
+<span class="nc" id="L111">                lastSelection = chosenId</span>
+<span class="nc" id="L112">                select(chosenId)</span>
+            }
+<span class="nc bnc" id="L114" title="All 2 branches missed.">            val current = report?.optString(&quot;token&quot;) == token</span>
+<span class="nc bnc" id="L115" title="All 6 branches missed.">            val ready = report != null &amp;&amp; current &amp;&amp; report.optString(&quot;status&quot;) == &quot;ready&quot; &amp;&amp;</span>
+<span class="nc bnc" id="L116" title="All 4 branches missed.">                (report.optDouble(&quot;width&quot;, 0.0) &gt; 0) &amp;&amp; (report.optDouble(&quot;height&quot;, 0.0) &gt; 0) &amp;&amp;</span>
+<span class="nc bnc" id="L117" title="All 2 branches missed.">                (report.optInt(&quot;visibleTiles&quot;, 0) &gt; 0)</span>
+<span class="nc bnc" id="L118" title="All 2 branches missed.">            if (ready) {</span>
+<span class="nc" id="L119">                message = null; failed = false; wasReady = true</span>
+            } else {
+<span class="nc bnc" id="L121" title="All 2 branches missed.">                if (wasReady) { waitingSince = SystemClock.elapsedRealtime(); wasReady = false }</span>
+<span class="nc bnc" id="L122" title="All 2 branches missed.">                val timedOut = SystemClock.elapsedRealtime() - waitingSince &gt;= 25000</span>
+<span class="nc bnc" id="L123" title="All 2 branches missed.">                failed = timedOut</span>
+<span class="nc bnc" id="L124" title="All 2 branches missed.">                message = if (timedOut) &quot;No se pudo mostrar el mapa. Comprueba internet y vuelve a intentar.&quot;</span>
+<span class="nc" id="L125">                    else &quot;Cargando mapa de OpenStreetMap…&quot;</span>
+            }
+        }
+<span class="nc" id="L128">    }</span>
+<span class="nc bnc" id="L129" title="All 4 branches missed.">    LaunchedEffect(web, place.id) {</span>
+<span class="nc" id="L130">        web.evaluateJavascript(&quot;window.selectPickupPoint &amp;&amp; window.selectPickupPoint(${place.id})&quot;, null)</span>
+<span class="nc" id="L131">    }</span>
+<span class="nc" id="L132">    DisposableEffect(web) { onDispose { web.stopLoading(); web.destroy() } }</span>
+<span class="nc" id="L133">    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {</span>
+<span class="nc" id="L134">        Box(Modifier.fillMaxWidth().height(300.dp).clipToBounds()) {</span>
+<span class="nc" id="L135">            AndroidView(factory = { web }, modifier = Modifier.fillMaxSize())</span>
+            // Un estado pendiente/fallido nunca queda representado por un rectángulo vacío.
+<span class="nc bnc" id="L137" title="All 2 branches missed.">            if (message != null) Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceVariant) {</span>
+<span class="nc" id="L138">                Column(Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally,</span>
+<span class="nc" id="L139">                    verticalArrangement = Arrangement.Center) {</span>
+<span class="nc bnc" id="L140" title="All 2 branches missed.">                    if (!failed) CircularProgressIndicator(Modifier.size(28.dp))</span>
+<span class="nc" id="L141">                    Spacer(Modifier.height(8.dp))</span>
+<span class="nc bnc" id="L142" title="All 2 branches missed.">                    Text(message.orEmpty())</span>
+<span class="nc bnc" id="L143" title="All 4 branches missed.">                    if (failed) OylOutlinedButton(onClick = { attempt++ }) { Text(&quot;Reintentar mapa&quot;) }</span>
+<span class="nc" id="L144">                }</span>
+<span class="nc" id="L145">            }</span>
+<span class="nc" id="L146">        }</span>
+<span class="nc" id="L147">        Text(&quot;© OpenStreetMap contributors · Selecciona un punto para centrar su marcador.&quot;, style = MaterialTheme.typography.labelSmall)</span>
+<span class="nc" id="L148">    }</span>
+<span class="nc bnc" id="L149" title="All 2 branches missed.">}</span>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span>Generated by the Android Gradle plugin 8.11.1</div></body></html>

@@ -1,0 +1,4 @@
+OK: cuatro instancias UP y sus cuatro enlaces de estado.
+OK: 3 rutas de salud, catálogo (10 productos), retiro (3 puntos).
+200 http://localhost:8761/
+No se anuncia una réplica de sí mismo

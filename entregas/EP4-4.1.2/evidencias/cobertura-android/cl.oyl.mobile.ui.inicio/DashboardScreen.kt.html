@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DashboardScreen.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">cl.oyl.mobile.ui.inicio</a> &gt; <span class="el_source">DashboardScreen.kt</span></div><h1>DashboardScreen.kt</h1><pre class="source lang-java linenums">package cl.oyl.mobile.ui.inicio
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import cl.oyl.mobile.data.local.entity.CartLine
+import cl.oyl.mobile.data.local.entity.Session
+import cl.oyl.mobile.model.productos.Product
+import cl.oyl.mobile.model.pedidos.PurchaseOrder
+import cl.oyl.mobile.ui.components.ActionButton
+import cl.oyl.mobile.ui.components.ProductCard
+import cl.oyl.mobile.ui.components.ScreenTitle
+import cl.oyl.mobile.ui.navigation.Page
+
+@Composable
+<span class="nc" id="L27">fun DashboardScreen(</span>
+    session: Session?,
+    products: List&lt;Product&gt;,
+    orders: List&lt;PurchaseOrder&gt;,
+    cart: List&lt;CartLine&gt;,
+    open: (Page) -&gt; Unit,
+    detail: (Product) -&gt; Unit,
+    add: (Product, Int) -&gt; Unit
+<span class="nc bnc" id="L35" title="All 34 branches missed.">) {</span>
+<span class="nc bnc" id="L36" title="All 2 branches missed.">    val admin = session?.role == &quot;ADMIN&quot;</span>
+<span class="nc bnc" id="L37" title="All 2 branches missed.">    val client = session?.role == &quot;CLIENT&quot;</span>
+<span class="nc" id="L38">    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {</span>
+<span class="nc bnc" id="L39" title="All 6 branches missed.">        ScreenTitle(&quot;Hola, ${session?.name ?: &quot;visitante&quot;}&quot;, if (admin) &quot;Panel de administración&quot; else &quot;Compra saludable, vive mejor&quot;)</span>
+<span class="nc bnc" id="L40" title="All 2 branches missed.">        if (admin) {</span>
+<span class="nc" id="L41">            Card { Column(Modifier.fillMaxWidth().padding(14.dp)) {</span>
+<span class="nc" id="L42">                Text(&quot;Pedidos recibidos: ${orders.size}&quot;)</span>
+<span class="nc bnc" id="L43" title="All 2 branches missed.">                Text(&quot;Productos con stock bajo: ${products.count { it.stock &lt;= it.minStock }}&quot;)</span>
+<span class="nc" id="L44">            } }</span>
+<span class="nc bnc" id="L45" title="All 2 branches missed.">            ActionButton(&quot;Gestionar productos&quot;, onClick = { open(Page.PRODUCTS) })</span>
+<span class="nc bnc" id="L46" title="All 2 branches missed.">            ActionButton(&quot;Gestionar inventario&quot;, onClick = { open(Page.INVENTORY) })</span>
+<span class="nc bnc" id="L47" title="All 2 branches missed.">            ActionButton(&quot;Gestionar pedidos&quot;, onClick = { open(Page.ORDERS) })</span>
+<span class="nc bnc" id="L48" title="All 2 branches missed.">            ActionButton(&quot;Información de API externa&quot;, onClick = { open(Page.EXTERNAL_API) })</span>
+<span class="nc bnc" id="L49" title="All 2 branches missed.">        } else if (client) {</span>
+<span class="nc bnc" id="L50" title="All 2 branches missed.">            ActionButton(&quot;Explorar catálogo&quot;, onClick = { open(Page.CATALOG) })</span>
+<span class="nc bnc" id="L51" title="All 4 branches missed.">            ActionButton(&quot;Mi carrito (${cart.sumOf { it.quantity }})&quot;, onClick = { open(Page.CART) })</span>
+<span class="nc bnc" id="L52" title="All 2 branches missed.">            ActionButton(&quot;Mis pedidos&quot;, onClick = { open(Page.ORDERS) })</span>
+<span class="nc bnc" id="L53" title="All 2 branches missed.">            ActionButton(&quot;Información de API externa&quot;, onClick = { open(Page.EXTERNAL_API) })</span>
+<span class="nc" id="L54">        } else {</span>
+<span class="nc bnc" id="L55" title="All 2 branches missed.">            ActionButton(&quot;Explorar catálogo&quot;, onClick = { open(Page.CATALOG) })</span>
+<span class="nc bnc" id="L56" title="All 2 branches missed.">            ActionButton(&quot;Iniciar sesión&quot;, onClick = { open(Page.LOGIN) })</span>
+<span class="nc bnc" id="L57" title="All 2 branches missed.">            ActionButton(&quot;Información de API externa&quot;, onClick = { open(Page.EXTERNAL_API) })</span>
+        }
+<span class="nc" id="L59">        Text(&quot;Productos destacados&quot;, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)</span>
+<span class="nc" id="L60">        products.filter { it.active }.take(4).forEach { p -&gt;</span>
+<span class="nc bnc" id="L61" title="All 6 branches missed.">            ProductCard(p, open = { detail(p) }, add = if (client) {{ add(p, 1) }} else null)</span>
+<span class="nc" id="L62">        }</span>
+<span class="nc" id="L63">    }</span>
+<span class="nc bnc" id="L64" title="All 2 branches missed.">}</span>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span>Generated by the Android Gradle plugin 8.11.1</div></body></html>

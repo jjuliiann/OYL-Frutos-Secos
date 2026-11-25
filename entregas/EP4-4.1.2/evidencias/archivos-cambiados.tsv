@@ -1,0 +1,87 @@
+Cambio	Ruta (relativa a la raíz del ZIP)
+Modificado	.gitignore
+Agregado	ABRIR_BACKEND_CMD.txt
+Reubicado a documentacion/historial	ACTUALIZACION_3_1.md
+Modificado	CAMBIOS.md
+Reubicado a documentacion/historial	CONFIRMACION_COMPRA_3_3.md
+Reubicado a documentacion/historial	EP4_INTEGRACION.md
+Reubicado a documentacion/historial	ESCANER_QR_3_4.md
+Reubicado a documentacion/historial	ESTRUCTURA_3_2.md
+Reubicado a documentacion/historial	INFORME_EP4.md
+Reubicado a documentacion/historial	MVVM_3_6.md
+Reubicado a documentacion/historial	NOMBRE_APP.md
+Modificado	PRUEBAS.md
+Modificado	README.md
+Reubicado a documentacion/historial	ROLES_3_5.md
+Modificado	RUBRICA.md
+Agregado	RUTAS.md
+Modificado	android/app/build.gradle.kts
+Modificado	android/app/src/androidTest/java/cl/oyl/mobile/data/local/migration/CheckoutMigrationTest.kt
+Modificado	android/app/src/androidTest/java/cl/oyl/mobile/data/local/migration/DisplayCopyMigrationTest.kt
+Agregado	android/app/src/androidTest/java/cl/oyl/mobile/data/repository/GatewayEmulatorTest.kt
+Agregado	android/app/src/androidTest/java/cl/oyl/mobile/data/repository/LegacyFixture.kt
+Modificado	android/app/src/main/java/cl/oyl/mobile/data/OylGraph.kt
+Modificado	android/app/src/main/java/cl/oyl/mobile/data/local/LocalDb.kt
+Modificado	android/app/src/main/java/cl/oyl/mobile/data/local/dao/LocalDao.kt
+Modificado	android/app/src/main/java/cl/oyl/mobile/data/local/dao/StoreDao.kt
+Agregado	android/app/src/main/java/cl/oyl/mobile/data/remote/GatewayAddress.kt
+Modificado	android/app/src/main/java/cl/oyl/mobile/data/remote/OylApi.kt
+Modificado	android/app/src/main/java/cl/oyl/mobile/data/repository/LocalRepository.kt
+Modificado	android/app/src/main/java/cl/oyl/mobile/model/qr/QrResolution.kt
+Modificado	android/app/src/main/java/cl/oyl/mobile/ui/auth/LoginScreen.kt
+Agregado	android/app/src/main/java/cl/oyl/mobile/ui/bienvenida/GatewayDialog.kt
+Modificado	android/app/src/main/java/cl/oyl/mobile/ui/bienvenida/WelcomeScreen.kt
+Modificado	android/app/src/main/java/cl/oyl/mobile/ui/catalogo/CatalogScreen.kt
+Modificado	android/app/src/main/java/cl/oyl/mobile/ui/mapa/MapScreen.kt
+Modificado	android/app/src/main/java/cl/oyl/mobile/ui/navigation/OylNavigation.kt
+Modificado	android/app/src/main/java/cl/oyl/mobile/ui/pedidos/OrdersScreen.kt
+Modificado	android/app/src/main/java/cl/oyl/mobile/ui/productos/AdminProductsScreen.kt
+Modificado	android/app/src/main/java/cl/oyl/mobile/util/Validation.kt
+Modificado	android/app/src/main/java/cl/oyl/mobile/viewmodel/auth/AuthViewModel.kt
+Modificado	android/app/src/main/java/cl/oyl/mobile/viewmodel/carrito/CartViewModel.kt
+Modificado	android/app/src/main/java/cl/oyl/mobile/viewmodel/checkout/CheckoutViewModel.kt
+Modificado	android/app/src/main/java/cl/oyl/mobile/viewmodel/mapa/MapViewModel.kt
+Modificado	android/app/src/main/java/cl/oyl/mobile/viewmodel/pedidos/OrdersViewModel.kt
+Modificado	android/app/src/main/java/cl/oyl/mobile/viewmodel/productos/ProductsViewModel.kt
+Modificado	android/app/src/main/java/cl/oyl/mobile/viewmodel/qr/QrViewModel.kt
+Agregado	backend/.dockerignore
+Modificado	backend/Dockerfile-eureka
+Modificado	backend/Dockerfile-gateway
+Modificado	backend/Dockerfile-order
+Modificado	backend/Dockerfile-product
+Modificado	backend/Dockerfile-user
+Modificado	backend/README.md
+Modificado	backend/api-gateway/src/main/resources/application.properties
+Agregado	backend/compilar-backend.bat
+Modificado	backend/docker-compose.yml
+Agregado	backend/estado.bat
+Modificado	backend/eureka-server/pom.xml
+Agregado	backend/eureka-server/src/main/java/cl/oyl/discovery/RegistryRoot.java
+Modificado	backend/eureka-server/src/main/resources/application.properties
+Agregado	backend/eureka-server/src/test/java/cl/oyl/discovery/RegistryRootTest.java
+Modificado	backend/order-service/src/main/java/cl/oyl/orders/FulfillmentEmbeddable.java
+Modificado	backend/order-service/src/main/java/cl/oyl/orders/OrderController.java
+Modificado	backend/order-service/src/main/java/cl/oyl/orders/OrderPolicy.java
+Modificado	backend/order-service/src/main/resources/application.properties
+Agregado	backend/order-service/src/test/java/cl/oyl/orders/OrderControllerTest.java
+Agregado	backend/order-service/src/test/resources/mockito-extensions/org.mockito.plugins.MockMaker
+Agregado	backend/oyl.bat
+Modificado	backend/pom.xml
+Modificado	backend/product-service/src/main/java/cl/oyl/products/ProductController.java
+Modificado	backend/product-service/src/main/resources/application.properties
+Agregado	backend/product-service/src/test/java/cl/oyl/products/ProductControllerTest.java
+Agregado	backend/product-service/src/test/resources/mockito-extensions/org.mockito.plugins.MockMaker
+Modificado	backend/run-local.bat
+Agregado	backend/scripts/cli/CierreConsola.java
+Agregado	backend/scripts/cli/MANIFEST.MF
+Agregado	backend/scripts/cli/cierre-cmd.jar
+Agregado	backend/scripts/comprobar_api.py
+Agregado	backend/scripts/servicios.ps1
+Modificado	backend/security-core/pom.xml
+Modificado	backend/security-core/src/main/java/cl/oyl/security/TokenService.java
+Modificado	backend/security-core/src/test/java/cl/oyl/security/TokenServiceTest.java
+Modificado	backend/stop-local.bat
+Modificado	backend/user-service/src/main/resources/application.properties
+Modificado	backend/user-service/src/test/java/cl/oyl/users/UserControllerTest.java
+Agregado	backend/user-service/src/test/resources/mockito-extensions/org.mockito.plugins.MockMaker
+Agregado	evidencias/arranque-manual.txt

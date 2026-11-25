@@ -1,0 +1,71 @@
+OK: comprobación parcial de tipos de modelos, repositorio, DAO, grafo y ViewModels con stubs externos. No es build Android, no ejecuta Room ni Compose.
+mvvm/fuentes/OYL_Frutos_Secos_SQLite/android/app/src/main/java/cl/oyl/mobile/data/local/entity/CachedProduct.kt:9:5: warning: this annotation is currently applied to the value parameter only, but in the future it will also be applied to property.
+- To opt in to applying to both value parameter and property, add '-Xannotation-default-target=param-property' to your compiler arguments.
+- To keep applying to the value parameter only, use the '@param:' annotation target.
+
+See https://youtrack.jetbrains.com/issue/KT-73255 for more details.
+    @PrimaryKey val id: Long,
+    ^^^^^^^^^^^
+mvvm/fuentes/OYL_Frutos_Secos_SQLite/android/app/src/main/java/cl/oyl/mobile/data/local/entity/LocalAvatar.kt:7:24: warning: this annotation is currently applied to the value parameter only, but in the future it will also be applied to property.
+- To opt in to applying to both value parameter and property, add '-Xannotation-default-target=param-property' to your compiler arguments.
+- To keep applying to the value parameter only, use the '@param:' annotation target.
+
+See https://youtrack.jetbrains.com/issue/KT-73255 for more details.
+data class LocalAvatar(@PrimaryKey val userId: Long, val dataUri: String)
+                       ^^^^^^^^^^^
+mvvm/fuentes/OYL_Frutos_Secos_SQLite/android/app/src/main/java/cl/oyl/mobile/data/local/entity/LocalNotice.kt:8:5: warning: this annotation is currently applied to the value parameter only, but in the future it will also be applied to property.
+- To opt in to applying to both value parameter and property, add '-Xannotation-default-target=param-property' to your compiler arguments.
+- To keep applying to the value parameter only, use the '@param:' annotation target.
+
+See https://youtrack.jetbrains.com/issue/KT-73255 for more details.
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+mvvm/fuentes/OYL_Frutos_Secos_SQLite/android/app/src/main/java/cl/oyl/mobile/data/local/entity/OrderFulfillment.kt:10:5: warning: this annotation is currently applied to the value parameter only, but in the future it will also be applied to property.
+- To opt in to applying to both value parameter and property, add '-Xannotation-default-target=param-property' to your compiler arguments.
+- To keep applying to the value parameter only, use the '@param:' annotation target.
+
+See https://youtrack.jetbrains.com/issue/KT-73255 for more details.
+    @PrimaryKey val orderId: Long,
+    ^^^^^^^^^^^
+mvvm/fuentes/OYL_Frutos_Secos_SQLite/android/app/src/main/java/cl/oyl/mobile/data/local/entity/Session.kt:8:5: warning: this annotation is currently applied to the value parameter only, but in the future it will also be applied to property.
+- To opt in to applying to both value parameter and property, add '-Xannotation-default-target=param-property' to your compiler arguments.
+- To keep applying to the value parameter only, use the '@param:' annotation target.
+
+See https://youtrack.jetbrains.com/issue/KT-73255 for more details.
+    @PrimaryKey val key: Int = 1,
+    ^^^^^^^^^^^
+mvvm/fuentes/OYL_Frutos_Secos_SQLite/android/app/src/main/java/cl/oyl/mobile/data/local/entity/StoredAccount.kt:8:5: warning: this annotation is currently applied to the value parameter only, but in the future it will also be applied to property.
+- To opt in to applying to both value parameter and property, add '-Xannotation-default-target=param-property' to your compiler arguments.
+- To keep applying to the value parameter only, use the '@param:' annotation target.
+
+See https://youtrack.jetbrains.com/issue/KT-73255 for more details.
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+mvvm/fuentes/OYL_Frutos_Secos_SQLite/android/app/src/main/java/cl/oyl/mobile/data/local/entity/StoredLine.kt:7:5: warning: this annotation is currently applied to the value parameter only, but in the future it will also be applied to property.
+- To opt in to applying to both value parameter and property, add '-Xannotation-default-target=param-property' to your compiler arguments.
+- To keep applying to the value parameter only, use the '@param:' annotation target.
+
+See https://youtrack.jetbrains.com/issue/KT-73255 for more details.
+    @PrimaryKey(autoGenerate = true) val id: Long = 0, val orderId: Long,
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+mvvm/fuentes/OYL_Frutos_Secos_SQLite/android/app/src/main/java/cl/oyl/mobile/data/local/entity/StoredLocation.kt:8:5: warning: this annotation is currently applied to the value parameter only, but in the future it will also be applied to property.
+- To opt in to applying to both value parameter and property, add '-Xannotation-default-target=param-property' to your compiler arguments.
+- To keep applying to the value parameter only, use the '@param:' annotation target.
+
+See https://youtrack.jetbrains.com/issue/KT-73255 for more details.
+    @PrimaryKey val id: Long, val name: String, val address: String,
+    ^^^^^^^^^^^
+mvvm/fuentes/OYL_Frutos_Secos_SQLite/android/app/src/main/java/cl/oyl/mobile/data/local/entity/StoredOrder.kt:7:5: warning: this annotation is currently applied to the value parameter only, but in the future it will also be applied to property.
+- To opt in to applying to both value parameter and property, add '-Xannotation-default-target=param-property' to your compiler arguments.
+- To keep applying to the value parameter only, use the '@param:' annotation target.
+
+See https://youtrack.jetbrains.com/issue/KT-73255 for more details.
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+mvvm/fuentes/OYL_Frutos_Secos_SQLite/android/app/src/main/java/cl/oyl/mobile/model/productos/Product.kt:5:5: warning: this annotation is currently applied to the value parameter only, but in the future it will also be applied to property.
+- To opt in to applying to both value parameter and property, add '-Xannotation-default-target=param-property' to your compiler arguments.
+- To keep applying to the value parameter only, use the '@param:' annotation target.
+
+See https://youtrack.jetbrains.com/issue/KT-73255 for more details.
+    @androidx.room.PrimaryKey(autoGenerate = true) val id: Long? = null,
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

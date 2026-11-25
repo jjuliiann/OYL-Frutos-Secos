@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OrdersViewModel.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">cl.oyl.mobile.viewmodel.pedidos</a> &gt; <span class="el_source">OrdersViewModel.kt</span></div><h1>OrdersViewModel.kt</h1><pre class="source lang-java linenums">package cl.oyl.mobile.viewmodel.pedidos
+import androidx.room.withTransaction
+import android.app.Application
+import androidx.lifecycle.viewModelScope
+import cl.oyl.mobile.data.local.entity.CachedOrder
+import cl.oyl.mobile.model.pedidos.PurchaseOrder
+import cl.oyl.mobile.model.pedidos.StatusChange
+import cl.oyl.mobile.viewmodel.BaseOylViewModel
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
+
+<span class="nc" id="L14">class OrdersViewModel(app: Application) : BaseOylViewModel(app) {</span>
+<span class="nc" id="L15">    private val refresh = MutableStateFlow(0)</span>
+<span class="nc" id="L16">    private val _orders = MutableStateFlow&lt;List&lt;PurchaseOrder&gt;&gt;(emptyList())</span>
+<span class="nc" id="L17">    val orders = _orders.asStateFlow()</span>
+<span class="nc" id="L18">    private val _cachedOrders = MutableStateFlow&lt;List&lt;CachedOrder&gt;&gt;(emptyList())</span>
+<span class="nc" id="L19">    val cachedOrders = _cachedOrders.asStateFlow()</span>
+<span class="nc" id="L20">    init {</span>
+<span class="nc" id="L21">        viewModelScope.launch {</span>
+<span class="nc bnc" id="L22" title="All 2 branches missed.">            combine(refresh, graph.session) { tick, user -&gt; tick to user }</span>
+<span class="nc bnc" id="L23" title="All 7 branches missed.">                .collectLatest { (_, user) -&gt;</span>
+<span class="nc bnc" id="L24" title="All 2 branches missed.">                    if (user == null) { _orders.value = emptyList(); _cachedOrders.value = emptyList() }</span>
+<span class="nc" id="L25">                    else try {</span>
+<span class="nc" id="L26">                        _orders.value = emptyList(); _cachedOrders.value = emptyList()</span>
+<span class="nc bnc" id="L27" title="All 2 branches missed.">                        graph.awaitReady()</span>
+<span class="nc bnc" id="L28" title="All 2 branches missed.">                        val remote = graph.api.orders(user.id) // Pide los pedidos al servidor.</span>
+<span class="nc bnc" id="L29" title="All 2 branches missed.">                        graph.database.withTransaction {</span>
+<span class="nc" id="L30">                        graph.local.clearCachedOrders(user.id)</span>
+<span class="nc" id="L31">                        remote.forEach { order -&gt;</span>
+<span class="nc" id="L32">                            graph.local.cacheOrder(CachedOrder(user.id, order.id, order.total, order.status, order.createdAt))</span>
+<span class="nc" id="L33">                        }</span>
+<span class="nc" id="L34">                        }</span>
+<span class="nc" id="L35">                        _orders.value = remote</span>
+<span class="nc bnc" id="L36" title="All 2 branches missed.">                        _cachedOrders.value = graph.local.cachedOrders(user.id).first() // Prepara respaldo SQLite.</span>
+                    }
+<span class="nc" id="L38">                    catch (e: Exception) {</span>
+<span class="nc bnc" id="L39" title="All 2 branches missed.">                        if (e is CancellationException) throw e</span>
+<span class="nc bnc" id="L40" title="All 2 branches missed.">                        _cachedOrders.value = graph.local.cachedOrders(user.id).first() // Muestra historial sin conexión.</span>
+<span class="nc" id="L41">                        graph.showNotice(&quot;No se pudieron cargar los pedidos del servidor&quot;)</span>
+                    }
+<span class="nc" id="L43">                }</span>
+<span class="nc" id="L44">        }</span>
+<span class="nc" id="L45">    }</span>
+<span class="nc" id="L46">    fun reloadOrders() { refresh.value++ }</span>
+    fun setStatus(orderId: Long, newStatus: String) {
+<span class="nc bnc" id="L48" title="All 6 branches missed.">        val admin = graph.session.value?.takeIf { it.role == &quot;ADMIN&quot; } ?: return</span>
+<span class="nc" id="L49">        operation {</span>
+<span class="nc" id="L50">            graph.api.changeOrderStatus(orderId, admin.id, StatusChange(newStatus)) // Actualiza el estado remoto.</span>
+<span class="nc" id="L51">            reloadOrders()</span>
+<span class="nc" id="L52">            graph.showNotice(&quot;Estado del pedido actualizado&quot;)</span>
+<span class="nc" id="L53">        }</span>
+<span class="nc" id="L54">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span>Generated by the Android Gradle plugin 8.11.1</div></body></html>

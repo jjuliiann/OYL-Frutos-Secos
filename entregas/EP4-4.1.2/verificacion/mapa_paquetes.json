@@ -1,0 +1,258 @@
+[
+  {
+    "origen": "PublicScreens.kt",
+    "destino": "ui/auth/LoginScreen.kt"
+  },
+  {
+    "origen": "PublicScreens.kt",
+    "destino": "ui/auth/RegisterScreen.kt"
+  },
+  {
+    "origen": "PublicScreens.kt",
+    "destino": "ui/inicio/DashboardScreen.kt"
+  },
+  {
+    "origen": "PublicScreens.kt",
+    "destino": "ui/catalogo/CatalogScreen.kt"
+  },
+  {
+    "origen": "PublicScreens.kt",
+    "destino": "ui/catalogo/ProductDetailScreen.kt"
+  },
+  {
+    "origen": "CommerceScreens.kt",
+    "destino": "ui/carrito/CartScreen.kt"
+  },
+  {
+    "origen": "CommerceScreens.kt",
+    "destino": "ui/carrito/CheckoutScreen.kt"
+  },
+  {
+    "origen": "CommerceScreens.kt",
+    "destino": "ui/pedidos/OrdersScreen.kt"
+  },
+  {
+    "origen": "DeviceScreens.kt",
+    "destino": "ui/mapa/MapScreen.kt"
+  },
+  {
+    "origen": "DeviceScreens.kt",
+    "destino": "ui/notificaciones/NotificationsScreen.kt"
+  },
+  {
+    "origen": "DeviceScreens.kt",
+    "destino": "ui/perfil/ProfileScreen.kt"
+  },
+  {
+    "origen": "AdminScreens.kt",
+    "destino": "ui/productos/AdminProductsScreen.kt"
+  },
+  {
+    "origen": "AdminScreens.kt",
+    "destino": "ui/productos/ProductForm.kt"
+  },
+  {
+    "origen": "AdminScreens.kt",
+    "destino": "ui/inventario/InventoryScreen.kt"
+  },
+  {
+    "origen": "UiComponents.kt",
+    "destino": "ui/components/ScreenTitle.kt"
+  },
+  {
+    "origen": "UiComponents.kt",
+    "destino": "ui/components/FormField.kt"
+  },
+  {
+    "origen": "UiComponents.kt",
+    "destino": "ui/components/ProductPicture.kt"
+  },
+  {
+    "origen": "UiComponents.kt",
+    "destino": "ui/components/ProductCard.kt"
+  },
+  {
+    "origen": "AnimatedButtons.kt",
+    "destino": "ui/components/AnimatedButtons.kt"
+  },
+  {
+    "origen": "WelcomeScreen.kt",
+    "destino": "ui/bienvenida/WelcomeScreen.kt"
+  },
+  {
+    "origen": "QrScreen.kt",
+    "destino": "ui/qr/QrScreen.kt"
+  },
+  {
+    "origen": "QrParser.kt",
+    "destino": "ui/qr/QrParser.kt"
+  },
+  {
+    "origen": "PickupMap.kt",
+    "destino": "ui/mapa/PickupMap.kt"
+  },
+  {
+    "origen": "OylViewModel.kt",
+    "destino": "viewmodel/OylViewModel.kt"
+  },
+  {
+    "origen": "LocalRepository.kt",
+    "destino": "data/repository/LocalRepository.kt"
+  },
+  {
+    "origen": "DisplayCopyMigration.kt",
+    "destino": "data/local/migration/DisplayCopyMigration.kt"
+  },
+  {
+    "origen": "PasswordHash.kt",
+    "destino": "util/PasswordHash.kt"
+  },
+  {
+    "origen": "Validation.kt",
+    "destino": "util/Validation.kt"
+  },
+  {
+    "origen": "PhotoStorage.kt",
+    "destino": "util/PhotoStorage.kt"
+  },
+  {
+    "origen": "DisplayFormats.kt",
+    "destino": "util/DisplayFormats.kt"
+  },
+  {
+    "origen": "ProductImages.kt",
+    "destino": "ui/components/ProductImages.kt"
+  },
+  {
+    "origen": "NavigationMotion.kt",
+    "destino": "ui/navigation/NavigationMotion.kt"
+  },
+  {
+    "origen": "Models.kt",
+    "destino": "model/Account.kt"
+  },
+  {
+    "origen": "Models.kt",
+    "destino": "model/Credentials.kt"
+  },
+  {
+    "origen": "Models.kt",
+    "destino": "model/RegisterData.kt"
+  },
+  {
+    "origen": "Models.kt",
+    "destino": "model/ProfileUpdate.kt"
+  },
+  {
+    "origen": "Models.kt",
+    "destino": "model/Product.kt"
+  },
+  {
+    "origen": "Models.kt",
+    "destino": "model/OrderItem.kt"
+  },
+  {
+    "origen": "Models.kt",
+    "destino": "model/OrderRequest.kt"
+  },
+  {
+    "origen": "Models.kt",
+    "destino": "model/OrderLine.kt"
+  },
+  {
+    "origen": "Models.kt",
+    "destino": "model/PurchaseOrder.kt"
+  },
+  {
+    "origen": "Models.kt",
+    "destino": "model/StockChange.kt"
+  },
+  {
+    "origen": "Models.kt",
+    "destino": "model/StatusChange.kt"
+  },
+  {
+    "origen": "Models.kt",
+    "destino": "model/PickupLocation.kt"
+  },
+  {
+    "origen": "Models.kt",
+    "destino": "util/Money.kt"
+  },
+  {
+    "origen": "Models.kt",
+    "destino": "util/CartTotals.kt"
+  },
+  {
+    "origen": "LocalDb.kt",
+    "destino": "data/local/entity/Session.kt"
+  },
+  {
+    "origen": "LocalDb.kt",
+    "destino": "data/local/entity/CartLine.kt"
+  },
+  {
+    "origen": "LocalDb.kt",
+    "destino": "data/local/entity/CachedProduct.kt"
+  },
+  {
+    "origen": "LocalDb.kt",
+    "destino": "data/local/entity/CachedOrder.kt"
+  },
+  {
+    "origen": "LocalDb.kt",
+    "destino": "data/local/entity/LocalNotice.kt"
+  },
+  {
+    "origen": "LocalDb.kt",
+    "destino": "data/local/entity/LocalAvatar.kt"
+  },
+  {
+    "origen": "LocalDb.kt",
+    "destino": "data/local/dao/LocalDao.kt"
+  },
+  {
+    "origen": "LocalDb.kt",
+    "destino": "data/local/LocalDb.kt"
+  },
+  {
+    "origen": "StoreDao.kt",
+    "destino": "data/local/entity/StoredAccount.kt"
+  },
+  {
+    "origen": "StoreDao.kt",
+    "destino": "data/local/entity/StoredOrder.kt"
+  },
+  {
+    "origen": "StoreDao.kt",
+    "destino": "data/local/entity/StoredLine.kt"
+  },
+  {
+    "origen": "StoreDao.kt",
+    "destino": "data/local/entity/StoredLocation.kt"
+  },
+  {
+    "origen": "StoreDao.kt",
+    "destino": "data/local/dao/StoreDao.kt"
+  },
+  {
+    "origen": "MainActivity.kt",
+    "destino": "ui/navigation/Page.kt"
+  },
+  {
+    "origen": "MainActivity.kt",
+    "destino": "ui/navigation/OylNavigation.kt"
+  },
+  {
+    "origen": "MainActivity.kt",
+    "destino": "ui/components/ActionButton.kt"
+  },
+  {
+    "origen": "MainActivity.kt",
+    "destino": "MainActivity.kt"
+  },
+  {
+    "origen": "MainActivity.kt",
+    "destino": "ui/theme/Colors.kt"
+  }
+]

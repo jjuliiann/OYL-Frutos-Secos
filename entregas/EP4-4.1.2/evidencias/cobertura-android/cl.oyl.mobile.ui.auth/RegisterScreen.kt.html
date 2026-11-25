@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RegisterScreen.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">cl.oyl.mobile.ui.auth</a> &gt; <span class="el_source">RegisterScreen.kt</span></div><h1>RegisterScreen.kt</h1><pre class="source lang-java linenums">package cl.oyl.mobile.ui.auth
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import cl.oyl.mobile.model.auth.RegisterData
+import cl.oyl.mobile.ui.components.ActionButton
+import cl.oyl.mobile.ui.components.FormField
+import cl.oyl.mobile.ui.components.ScreenTitle
+import cl.oyl.mobile.util.Validation
+
+@Composable
+<span class="nc" id="L23">fun RegisterScreen(</span>
+    busy: Boolean,
+    register: (RegisterData, () -&gt; Unit) -&gt; Unit,
+    done: () -&gt; Unit
+<span class="nc bnc" id="L27" title="All 18 branches missed.">) {</span>
+<span class="nc" id="L28">    var errors by remember { mutableStateOf&lt;Map&lt;String, String&gt;&gt;(emptyMap()) }</span>
+<span class="nc" id="L29">    var name by remember { mutableStateOf(&quot;&quot;) }</span>
+<span class="nc" id="L30">    var alias by remember { mutableStateOf(&quot;&quot;) }</span>
+<span class="nc" id="L31">    var password by remember { mutableStateOf(&quot;&quot;) }</span>
+<span class="nc" id="L32">    var email by remember { mutableStateOf(&quot;&quot;) }</span>
+<span class="nc" id="L33">    var phone by remember { mutableStateOf(&quot;&quot;) }</span>
+<span class="nc" id="L34">    var address by remember { mutableStateOf(&quot;&quot;) }</span>
+<span class="nc" id="L35">    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {</span>
+<span class="nc" id="L36">        ScreenTitle(&quot;Crear cuenta&quot;, &quot;Completa tus datos para crear tu cuenta&quot;)</span>
+<span class="nc" id="L37">        FormField(name, { name = it; errors = errors - &quot;name&quot; }, &quot;Nombre completo&quot;, error = errors[&quot;name&quot;])</span>
+<span class="nc" id="L38">        FormField(alias, { alias = it; errors = errors - &quot;alias&quot; }, &quot;Alias único&quot;, error = errors[&quot;alias&quot;])</span>
+<span class="nc" id="L39">        FormField(password, { password = it; errors = errors - &quot;password&quot; }, &quot;Contraseña (mínimo 8)&quot;, password = true, error = errors[&quot;password&quot;])</span>
+<span class="nc" id="L40">        FormField(email, { email = it; errors = errors - &quot;email&quot; }, &quot;Correo electrónico&quot;, error = errors[&quot;email&quot;])</span>
+<span class="nc" id="L41">        FormField(phone, { phone = it; errors = errors - &quot;phone&quot; }, &quot;Teléfono&quot;, error = errors[&quot;phone&quot;])</span>
+<span class="nc" id="L42">        FormField(address, { address = it; errors = errors - &quot;address&quot; }, &quot;Dirección&quot;, error = errors[&quot;address&quot;])</span>
+<span class="nc bnc" id="L43" title="All 6 branches missed.">        ActionButton(&quot;Registrar cliente&quot;, enabled = !busy, onClick = {</span>
+<span class="nc" id="L44">            val data = RegisterData(alias.trim(), password, name.trim(), email.trim(), phone.trim(), address.trim())</span>
+<span class="nc" id="L45">            errors = Validation.register(data)</span>
+<span class="nc bnc" id="L46" title="All 2 branches missed.">            if (errors.isEmpty()) register(data, done)</span>
+<span class="nc" id="L47">        })</span>
+<span class="nc" id="L48">    }</span>
+<span class="nc bnc" id="L49" title="All 2 branches missed.">}</span>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span>Generated by the Android Gradle plugin 8.11.1</div></body></html>

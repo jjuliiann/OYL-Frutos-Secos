@@ -1,0 +1,52 @@
+Suite	Clase	Caso	Resultado
+Backend	cl.oyl.discovery.RegistryRootTest	enlaceDeNavegadorAbreElPanel	OK
+Backend	cl.oyl.discovery.RegistryRootTest	unRegistroDeInstanciaLlegaAEureka	OK
+Backend	cl.oyl.OrderPolicyTest	requiresContactAndDeliveryDetails	OK
+Backend	cl.oyl.OrderPolicyTest	validatesDeliveryAndStatus	OK
+Backend	cl.oyl.OrderPolicyTest	rejectsInvalidOrderItems	OK
+Backend	cl.oyl.OrderPolicyTest	mergesRepeatedProductsInStableOrder	OK
+Backend	cl.oyl.orders.OrderControllerTest	soloElAdminCambiaEstadoYElHistorialTieneAlcancePorCuenta	OK
+Backend	cl.oyl.orders.OrderControllerTest	rechazaComprasYAccesosSinRol	OK
+Backend	cl.oyl.orders.OrderControllerTest	compraConservaPrecioYDetalleAunqueCambieElCatalogo	OK
+Backend	cl.oyl.orders.OrderControllerTest	siFallaElSegundoProductoDevuelvePrimeraReserva	OK
+Backend	cl.oyl.products.ProductControllerTest	altaGeneraIdYPermisosSeValidanAntesDeEscribir	OK
+Backend	cl.oyl.products.ProductControllerTest	inicializarDosVecesNoDuplicaYNoReponeLoVendido	OK
+Backend	cl.oyl.products.ProductControllerTest	laBajaEsLogicaYNoBorraHistorial	OK
+Backend	cl.oyl.products.ProductControllerTest	reservaYCompensacionRespetanElInventario	OK
+Backend	cl.oyl.products.ProductRulesTest	stockChangeIsCalculatedSafely	OK
+Backend	cl.oyl.products.ProductRulesTest	acceptsValidProduct	OK
+Backend	cl.oyl.products.ProductRulesTest	rejectsNegativeValues	OK
+Backend	cl.oyl.security.TokenServiceTest	verifiesIssuedIdentity	OK
+Backend	cl.oyl.security.TokenServiceTest	rejectsMissingAndTamperedTokens	OK
+Backend	cl.oyl.security.TokenServiceTest	issuerRoleAndExpiryAreVerified	OK
+Backend	cl.oyl.users.UserControllerTest	registerStoresHashedPasswordAndClientRole	OK
+Backend	cl.oyl.users.UserControllerTest	noRecreaCuentasExistentesAlReiniciar	OK
+Backend	cl.oyl.users.UserControllerTest	loginChecksPasswordHash	OK
+Backend	cl.oyl.users.UserControllerTest	perfilSoloDelTitularYRespuestaSinToken	OK
+Backend	cl.oyl.users.UserControllerTest	rejectsShortPassword	OK
+Android JVM	cl.oyl.mobile.domain.qr.QrParserTest	refusesZero	OK
+Android JVM	cl.oyl.mobile.domain.qr.QrParserTest	refusesNegative	OK
+Android JVM	cl.oyl.mobile.domain.qr.QrParserTest	rejectsInvalidAndOverflow	OK
+Android JVM	cl.oyl.mobile.domain.qr.QrParserTest	externalLinksAreRestrictedToRegisteredScheme	OK
+Android JVM	cl.oyl.mobile.domain.qr.QrParserTest	supportedFormatsRemainCompatible	OK
+Android JVM	cl.oyl.mobile.domain.qr.QrParserTest	generatedLinkRoundTrips	OK
+Android JVM	cl.oyl.mobile.domain.qr.ResolveQrProductTest	invalidPayloadNeverQueriesStorage	OK
+Android JVM	cl.oyl.mobile.domain.qr.ResolveQrProductTest	missingProductDoesNotCreateAPlaceholder	OK
+Android JVM	cl.oyl.mobile.domain.qr.ResolveQrProductTest	externalEntryRequiresARegisteredLink	OK
+Android JVM	cl.oyl.mobile.domain.qr.ResolveQrProductTest	validIdReturnsTheProductFromLookup	OK
+Android JVM	cl.oyl.mobile.domain.qr.ResolveQrProductTest	storageFailureIsNotReportedAsMissing	OK
+Android JVM	cl.oyl.mobile.domain.qr.ResolveQrProductTest	inactiveProductIsHiddenFromClientAndVisibleToAdmin	OK
+Android JVM	cl.oyl.mobile.domain.qr.ResolveQrProductTest	noCodeDoesNotQueryStorage	OK
+Android JVM	cl.oyl.mobile.util.CheckoutValidationTest	shippingAcceptsCompleteAddressWithoutStore	OK
+Android JVM	cl.oyl.mobile.util.CheckoutValidationTest	normalizationKeepsFieldsAndTrimsSpaces	OK
+Android JVM	cl.oyl.mobile.util.CheckoutValidationTest	pickupRequiresExistingStoreButNoShippingAddress	OK
+Android JVM	cl.oyl.mobile.util.CheckoutValidationTest	rejectsUnknownModeAndExcessiveInstructions	OK
+Android JVM	cl.oyl.mobile.util.CheckoutValidationTest	shippingRequiresFullAddress	OK
+Android JVM	cl.oyl.mobile.util.CheckoutValidationTest	rejectsMissingRecipientAndPhone	OK
+Android JVM	cl.oyl.mobile.util.CheckoutValidationTest	optionalEmailAndPostalAreValidatedWhenPresent	OK
+Android JVM	cl.oyl.mobile.util.PasswordHashTest	saltedHashVerifiesOnlyCorrectPassword	OK
+Android JVM	cl.oyl.mobile.util.ValidationTest	dateAcceptsBothServerFormatsAndKeepsUnknown	OK
+Android JVM	cl.oyl.mobile.util.ValidationTest	quantityAndContact	OK
+Android JVM	cl.oyl.mobile.util.ValidationTest	productRejectsOverflowAndNegatives	OK
+Android JVM	cl.oyl.mobile.util.ValidationTest	registrationErrorsByField	OK
+Android JVM	cl.oyl.mobile.util.ValidationTest	imagesUseExactNormalizedNames	OK

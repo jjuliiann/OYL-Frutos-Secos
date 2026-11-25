@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UserAccount.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">OYL - pruebas unitarias del backend completo</a> &gt; <a href="index.source.html" class="el_package">cl.oyl.users</a> &gt; <span class="el_source">UserAccount.java</span></div><h1>UserAccount.java</h1><pre class="source lang-java linenums">package cl.oyl.users;
+import jakarta.persistence.*;
+@Entity @Table(name=&quot;user_accounts&quot;, uniqueConstraints=@UniqueConstraint(columnNames=&quot;alias&quot;))
+public class UserAccount {
+ @Id @GeneratedValue(strategy=GenerationType.IDENTITY) public Long id;
+ @Column(nullable=false,unique=true,length=60) public String alias;
+ @Column(nullable=false,length=100) public String name;
+ @Column(length=160) public String email;
+ @Column(length=30) public String phone;
+ @Column(length=240) public String address;
+<span class="fc" id="L11"> @Column(nullable=false,length=12) public String role=&quot;CLIENT&quot;;</span>
+ @Column(nullable=false,length=100) public String passwordHash;
+<span class="fc" id="L13"> protected UserAccount() {}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
