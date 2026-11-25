@@ -1,0 +1,724 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LocalDao_Impl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">cl.oyl.mobile.data.local.dao</a> &gt; <span class="el_source">LocalDao_Impl.java</span></div><h1>LocalDao_Impl.java</h1><pre class="source lang-java linenums">package cl.oyl.mobile.data.local.dao;
+
+import androidx.annotation.NonNull;
+import androidx.room.EntityInsertAdapter;
+import androidx.room.RoomDatabase;
+import androidx.room.coroutines.FlowUtil;
+import androidx.room.util.DBUtil;
+import androidx.room.util.SQLiteStatementUtil;
+import androidx.sqlite.SQLiteStatement;
+import cl.oyl.mobile.data.local.entity.CachedOrder;
+import cl.oyl.mobile.data.local.entity.CachedProduct;
+import cl.oyl.mobile.data.local.entity.CartLine;
+import cl.oyl.mobile.data.local.entity.LocalAvatar;
+import cl.oyl.mobile.data.local.entity.LocalNotice;
+import cl.oyl.mobile.data.local.entity.Session;
+import java.lang.Class;
+import java.lang.NullPointerException;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
+import java.lang.SuppressWarnings;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import javax.annotation.processing.Generated;
+import kotlin.Unit;
+import kotlin.coroutines.Continuation;
+import kotlinx.coroutines.flow.Flow;
+
+@Generated(&quot;androidx.room.RoomProcessor&quot;)
+@SuppressWarnings({&quot;unchecked&quot;, &quot;deprecation&quot;, &quot;removal&quot;})
+public final class LocalDao_Impl implements LocalDao {
+  private final RoomDatabase __db;
+
+  private final EntityInsertAdapter&lt;LocalAvatar&gt; __insertAdapterOfLocalAvatar;
+
+  private final EntityInsertAdapter&lt;Session&gt; __insertAdapterOfSession;
+
+  private final EntityInsertAdapter&lt;CartLine&gt; __insertAdapterOfCartLine;
+
+  private final EntityInsertAdapter&lt;CachedProduct&gt; __insertAdapterOfCachedProduct;
+
+  private final EntityInsertAdapter&lt;CachedOrder&gt; __insertAdapterOfCachedOrder;
+
+  private final EntityInsertAdapter&lt;LocalNotice&gt; __insertAdapterOfLocalNotice;
+
+<span class="nc" id="L47">  public LocalDao_Impl(@NonNull final RoomDatabase __db) {</span>
+<span class="nc" id="L48">    this.__db = __db;</span>
+<span class="nc" id="L49">    this.__insertAdapterOfLocalAvatar = new EntityInsertAdapter&lt;LocalAvatar&gt;() {</span>
+      @Override
+      @NonNull
+      protected String createQuery() {
+<span class="nc" id="L53">        return &quot;INSERT OR REPLACE INTO `local_avatars` (`userId`,`dataUri`) VALUES (?,?)&quot;;</span>
+      }
+
+      @Override
+      protected void bind(@NonNull final SQLiteStatement statement,
+          @NonNull final LocalAvatar entity) {
+<span class="nc" id="L59">        statement.bindLong(1, entity.getUserId());</span>
+<span class="nc bnc" id="L60" title="All 2 branches missed.">        if (entity.getDataUri() == null) {</span>
+<span class="nc" id="L61">          statement.bindNull(2);</span>
+        } else {
+<span class="nc" id="L63">          statement.bindText(2, entity.getDataUri());</span>
+        }
+<span class="nc" id="L65">      }</span>
+    };
+<span class="nc" id="L67">    this.__insertAdapterOfSession = new EntityInsertAdapter&lt;Session&gt;() {</span>
+      @Override
+      @NonNull
+      protected String createQuery() {
+<span class="nc" id="L71">        return &quot;INSERT OR REPLACE INTO `active_session` (`key`,`id`,`alias`,`name`,`role`,`email`,`phone`,`address`) VALUES (?,?,?,?,?,?,?,?)&quot;;</span>
+      }
+
+      @Override
+      protected void bind(@NonNull final SQLiteStatement statement, @NonNull final Session entity) {
+<span class="nc" id="L76">        statement.bindLong(1, entity.getKey());</span>
+<span class="nc" id="L77">        statement.bindLong(2, entity.getId());</span>
+<span class="nc bnc" id="L78" title="All 2 branches missed.">        if (entity.getAlias() == null) {</span>
+<span class="nc" id="L79">          statement.bindNull(3);</span>
+        } else {
+<span class="nc" id="L81">          statement.bindText(3, entity.getAlias());</span>
+        }
+<span class="nc bnc" id="L83" title="All 2 branches missed.">        if (entity.getName() == null) {</span>
+<span class="nc" id="L84">          statement.bindNull(4);</span>
+        } else {
+<span class="nc" id="L86">          statement.bindText(4, entity.getName());</span>
+        }
+<span class="nc bnc" id="L88" title="All 2 branches missed.">        if (entity.getRole() == null) {</span>
+<span class="nc" id="L89">          statement.bindNull(5);</span>
+        } else {
+<span class="nc" id="L91">          statement.bindText(5, entity.getRole());</span>
+        }
+<span class="nc bnc" id="L93" title="All 2 branches missed.">        if (entity.getEmail() == null) {</span>
+<span class="nc" id="L94">          statement.bindNull(6);</span>
+        } else {
+<span class="nc" id="L96">          statement.bindText(6, entity.getEmail());</span>
+        }
+<span class="nc bnc" id="L98" title="All 2 branches missed.">        if (entity.getPhone() == null) {</span>
+<span class="nc" id="L99">          statement.bindNull(7);</span>
+        } else {
+<span class="nc" id="L101">          statement.bindText(7, entity.getPhone());</span>
+        }
+<span class="nc bnc" id="L103" title="All 2 branches missed.">        if (entity.getAddress() == null) {</span>
+<span class="nc" id="L104">          statement.bindNull(8);</span>
+        } else {
+<span class="nc" id="L106">          statement.bindText(8, entity.getAddress());</span>
+        }
+<span class="nc" id="L108">      }</span>
+    };
+<span class="nc" id="L110">    this.__insertAdapterOfCartLine = new EntityInsertAdapter&lt;CartLine&gt;() {</span>
+      @Override
+      @NonNull
+      protected String createQuery() {
+<span class="nc" id="L114">        return &quot;INSERT OR REPLACE INTO `cart` (`userId`,`productId`,`quantity`) VALUES (?,?,?)&quot;;</span>
+      }
+
+      @Override
+      protected void bind(@NonNull final SQLiteStatement statement,
+          @NonNull final CartLine entity) {
+<span class="nc" id="L120">        statement.bindLong(1, entity.getUserId());</span>
+<span class="nc" id="L121">        statement.bindLong(2, entity.getProductId());</span>
+<span class="nc" id="L122">        statement.bindLong(3, entity.getQuantity());</span>
+<span class="nc" id="L123">      }</span>
+    };
+<span class="nc" id="L125">    this.__insertAdapterOfCachedProduct = new EntityInsertAdapter&lt;CachedProduct&gt;() {</span>
+      @Override
+      @NonNull
+      protected String createQuery() {
+<span class="nc" id="L129">        return &quot;INSERT OR REPLACE INTO `cached_products` (`id`,`name`,`category`,`description`,`imageUri`,`presentation`,`price`,`stock`,`minStock`,`active`) VALUES (?,?,?,?,?,?,?,?,?,?)&quot;;</span>
+      }
+
+      @Override
+      protected void bind(@NonNull final SQLiteStatement statement,
+          @NonNull final CachedProduct entity) {
+<span class="nc" id="L135">        statement.bindLong(1, entity.getId());</span>
+<span class="nc bnc" id="L136" title="All 2 branches missed.">        if (entity.getName() == null) {</span>
+<span class="nc" id="L137">          statement.bindNull(2);</span>
+        } else {
+<span class="nc" id="L139">          statement.bindText(2, entity.getName());</span>
+        }
+<span class="nc bnc" id="L141" title="All 2 branches missed.">        if (entity.getCategory() == null) {</span>
+<span class="nc" id="L142">          statement.bindNull(3);</span>
+        } else {
+<span class="nc" id="L144">          statement.bindText(3, entity.getCategory());</span>
+        }
+<span class="nc bnc" id="L146" title="All 2 branches missed.">        if (entity.getDescription() == null) {</span>
+<span class="nc" id="L147">          statement.bindNull(4);</span>
+        } else {
+<span class="nc" id="L149">          statement.bindText(4, entity.getDescription());</span>
+        }
+<span class="nc bnc" id="L151" title="All 2 branches missed.">        if (entity.getImageUri() == null) {</span>
+<span class="nc" id="L152">          statement.bindNull(5);</span>
+        } else {
+<span class="nc" id="L154">          statement.bindText(5, entity.getImageUri());</span>
+        }
+<span class="nc bnc" id="L156" title="All 2 branches missed.">        if (entity.getPresentation() == null) {</span>
+<span class="nc" id="L157">          statement.bindNull(6);</span>
+        } else {
+<span class="nc" id="L159">          statement.bindText(6, entity.getPresentation());</span>
+        }
+<span class="nc" id="L161">        statement.bindLong(7, entity.getPrice());</span>
+<span class="nc" id="L162">        statement.bindLong(8, entity.getStock());</span>
+<span class="nc" id="L163">        statement.bindLong(9, entity.getMinStock());</span>
+<span class="nc bnc" id="L164" title="All 2 branches missed.">        final int _tmp = entity.getActive() ? 1 : 0;</span>
+<span class="nc" id="L165">        statement.bindLong(10, _tmp);</span>
+<span class="nc" id="L166">      }</span>
+    };
+<span class="nc" id="L168">    this.__insertAdapterOfCachedOrder = new EntityInsertAdapter&lt;CachedOrder&gt;() {</span>
+      @Override
+      @NonNull
+      protected String createQuery() {
+<span class="nc" id="L172">        return &quot;INSERT OR REPLACE INTO `cached_orders` (`userId`,`orderId`,`total`,`status`,`createdAt`) VALUES (?,?,?,?,?)&quot;;</span>
+      }
+
+      @Override
+      protected void bind(@NonNull final SQLiteStatement statement,
+          @NonNull final CachedOrder entity) {
+<span class="nc" id="L178">        statement.bindLong(1, entity.getUserId());</span>
+<span class="nc" id="L179">        statement.bindLong(2, entity.getOrderId());</span>
+<span class="nc" id="L180">        statement.bindLong(3, entity.getTotal());</span>
+<span class="nc bnc" id="L181" title="All 2 branches missed.">        if (entity.getStatus() == null) {</span>
+<span class="nc" id="L182">          statement.bindNull(4);</span>
+        } else {
+<span class="nc" id="L184">          statement.bindText(4, entity.getStatus());</span>
+        }
+<span class="nc bnc" id="L186" title="All 2 branches missed.">        if (entity.getCreatedAt() == null) {</span>
+<span class="nc" id="L187">          statement.bindNull(5);</span>
+        } else {
+<span class="nc" id="L189">          statement.bindText(5, entity.getCreatedAt());</span>
+        }
+<span class="nc" id="L191">      }</span>
+    };
+<span class="nc" id="L193">    this.__insertAdapterOfLocalNotice = new EntityInsertAdapter&lt;LocalNotice&gt;() {</span>
+      @Override
+      @NonNull
+      protected String createQuery() {
+<span class="nc" id="L197">        return &quot;INSERT OR ABORT INTO `local_notices` (`id`,`userId`,`title`,`content`,`createdAt`,`read`) VALUES (nullif(?, 0),?,?,?,?,?)&quot;;</span>
+      }
+
+      @Override
+      protected void bind(@NonNull final SQLiteStatement statement,
+          @NonNull final LocalNotice entity) {
+<span class="nc" id="L203">        statement.bindLong(1, entity.getId());</span>
+<span class="nc" id="L204">        statement.bindLong(2, entity.getUserId());</span>
+<span class="nc bnc" id="L205" title="All 2 branches missed.">        if (entity.getTitle() == null) {</span>
+<span class="nc" id="L206">          statement.bindNull(3);</span>
+        } else {
+<span class="nc" id="L208">          statement.bindText(3, entity.getTitle());</span>
+        }
+<span class="nc bnc" id="L210" title="All 2 branches missed.">        if (entity.getContent() == null) {</span>
+<span class="nc" id="L211">          statement.bindNull(4);</span>
+        } else {
+<span class="nc" id="L213">          statement.bindText(4, entity.getContent());</span>
+        }
+<span class="nc" id="L215">        statement.bindLong(5, entity.getCreatedAt());</span>
+<span class="nc bnc" id="L216" title="All 2 branches missed.">        final int _tmp = entity.getRead() ? 1 : 0;</span>
+<span class="nc" id="L217">        statement.bindLong(6, _tmp);</span>
+<span class="nc" id="L218">      }</span>
+    };
+<span class="nc" id="L220">  }</span>
+
+  @Override
+  public Object saveAvatar(final LocalAvatar avatar, final Continuation&lt;? super Unit&gt; arg1) {
+<span class="nc bnc" id="L224" title="All 2 branches missed.">    if (avatar == null) throw new NullPointerException();</span>
+<span class="nc" id="L225">    return DBUtil.performSuspending(__db, false, true, (_connection) -&gt; {</span>
+<span class="nc" id="L226">      __insertAdapterOfLocalAvatar.insert(_connection, avatar);</span>
+<span class="nc" id="L227">      return Unit.INSTANCE;</span>
+    }, arg1);
+  }
+
+  @Override
+  public Object saveSession(final Session session, final Continuation&lt;? super Unit&gt; arg1) {
+<span class="nc bnc" id="L233" title="All 2 branches missed.">    if (session == null) throw new NullPointerException();</span>
+<span class="nc" id="L234">    return DBUtil.performSuspending(__db, false, true, (_connection) -&gt; {</span>
+<span class="nc" id="L235">      __insertAdapterOfSession.insert(_connection, session);</span>
+<span class="nc" id="L236">      return Unit.INSTANCE;</span>
+    }, arg1);
+  }
+
+  @Override
+  public Object saveCart(final CartLine line, final Continuation&lt;? super Unit&gt; arg1) {
+<span class="nc bnc" id="L242" title="All 2 branches missed.">    if (line == null) throw new NullPointerException();</span>
+<span class="nc" id="L243">    return DBUtil.performSuspending(__db, false, true, (_connection) -&gt; {</span>
+<span class="nc" id="L244">      __insertAdapterOfCartLine.insert(_connection, line);</span>
+<span class="nc" id="L245">      return Unit.INSTANCE;</span>
+    }, arg1);
+  }
+
+  @Override
+  public Object cacheProduct(final CachedProduct product, final Continuation&lt;? super Unit&gt; arg1) {
+<span class="nc bnc" id="L251" title="All 2 branches missed.">    if (product == null) throw new NullPointerException();</span>
+<span class="nc" id="L252">    return DBUtil.performSuspending(__db, false, true, (_connection) -&gt; {</span>
+<span class="nc" id="L253">      __insertAdapterOfCachedProduct.insert(_connection, product);</span>
+<span class="nc" id="L254">      return Unit.INSTANCE;</span>
+    }, arg1);
+  }
+
+  @Override
+  public Object cacheOrder(final CachedOrder order, final Continuation&lt;? super Unit&gt; arg1) {
+<span class="nc bnc" id="L260" title="All 2 branches missed.">    if (order == null) throw new NullPointerException();</span>
+<span class="nc" id="L261">    return DBUtil.performSuspending(__db, false, true, (_connection) -&gt; {</span>
+<span class="nc" id="L262">      __insertAdapterOfCachedOrder.insert(_connection, order);</span>
+<span class="nc" id="L263">      return Unit.INSTANCE;</span>
+    }, arg1);
+  }
+
+  @Override
+  public Object saveNotice(final LocalNotice notice, final Continuation&lt;? super Unit&gt; arg1) {
+<span class="nc bnc" id="L269" title="All 2 branches missed.">    if (notice == null) throw new NullPointerException();</span>
+<span class="nc" id="L270">    return DBUtil.performSuspending(__db, false, true, (_connection) -&gt; {</span>
+<span class="nc" id="L271">      __insertAdapterOfLocalNotice.insert(_connection, notice);</span>
+<span class="nc" id="L272">      return Unit.INSTANCE;</span>
+    }, arg1);
+  }
+
+  @Override
+  public Flow&lt;LocalAvatar&gt; avatar(final long userId) {
+<span class="nc" id="L278">    final String _sql = &quot;SELECT * FROM local_avatars WHERE userId = ?&quot;;</span>
+<span class="nc" id="L279">    return FlowUtil.createFlow(__db, false, new String[] {&quot;local_avatars&quot;}, (_connection) -&gt; {</span>
+<span class="nc" id="L280">      final SQLiteStatement _stmt = _connection.prepare(_sql);</span>
+      try {
+<span class="nc" id="L282">        int _argIndex = 1;</span>
+<span class="nc" id="L283">        _stmt.bindLong(_argIndex, userId);</span>
+<span class="nc" id="L284">        final int _columnIndexOfUserId = SQLiteStatementUtil.getColumnIndexOrThrow(_stmt, &quot;userId&quot;);</span>
+<span class="nc" id="L285">        final int _columnIndexOfDataUri = SQLiteStatementUtil.getColumnIndexOrThrow(_stmt, &quot;dataUri&quot;);</span>
+        final LocalAvatar _result;
+<span class="nc bnc" id="L287" title="All 2 branches missed.">        if (_stmt.step()) {</span>
+          final long _tmpUserId;
+<span class="nc" id="L289">          _tmpUserId = _stmt.getLong(_columnIndexOfUserId);</span>
+          final String _tmpDataUri;
+<span class="nc bnc" id="L291" title="All 2 branches missed.">          if (_stmt.isNull(_columnIndexOfDataUri)) {</span>
+<span class="nc" id="L292">            _tmpDataUri = null;</span>
+          } else {
+<span class="nc" id="L294">            _tmpDataUri = _stmt.getText(_columnIndexOfDataUri);</span>
+          }
+<span class="nc" id="L296">          _result = new LocalAvatar(_tmpUserId,_tmpDataUri);</span>
+<span class="nc" id="L297">        } else {</span>
+<span class="nc" id="L298">          _result = null;</span>
+        }
+<span class="nc" id="L300">        return _result;</span>
+      } finally {
+<span class="nc" id="L302">        _stmt.close();</span>
+      }
+    });
+  }
+
+  @Override
+  public Flow&lt;Session&gt; session() {
+<span class="nc" id="L309">    final String _sql = &quot;SELECT * FROM active_session WHERE `key` = 1&quot;;</span>
+<span class="nc" id="L310">    return FlowUtil.createFlow(__db, false, new String[] {&quot;active_session&quot;}, (_connection) -&gt; {</span>
+<span class="nc" id="L311">      final SQLiteStatement _stmt = _connection.prepare(_sql);</span>
+      try {
+<span class="nc" id="L313">        final int _columnIndexOfKey = SQLiteStatementUtil.getColumnIndexOrThrow(_stmt, &quot;key&quot;);</span>
+<span class="nc" id="L314">        final int _columnIndexOfId = SQLiteStatementUtil.getColumnIndexOrThrow(_stmt, &quot;id&quot;);</span>
+<span class="nc" id="L315">        final int _columnIndexOfAlias = SQLiteStatementUtil.getColumnIndexOrThrow(_stmt, &quot;alias&quot;);</span>
+<span class="nc" id="L316">        final int _columnIndexOfName = SQLiteStatementUtil.getColumnIndexOrThrow(_stmt, &quot;name&quot;);</span>
+<span class="nc" id="L317">        final int _columnIndexOfRole = SQLiteStatementUtil.getColumnIndexOrThrow(_stmt, &quot;role&quot;);</span>
+<span class="nc" id="L318">        final int _columnIndexOfEmail = SQLiteStatementUtil.getColumnIndexOrThrow(_stmt, &quot;email&quot;);</span>
+<span class="nc" id="L319">        final int _columnIndexOfPhone = SQLiteStatementUtil.getColumnIndexOrThrow(_stmt, &quot;phone&quot;);</span>
+<span class="nc" id="L320">        final int _columnIndexOfAddress = SQLiteStatementUtil.getColumnIndexOrThrow(_stmt, &quot;address&quot;);</span>
+        final Session _result;
+<span class="nc bnc" id="L322" title="All 2 branches missed.">        if (_stmt.step()) {</span>
+          final int _tmpKey;
+<span class="nc" id="L324">          _tmpKey = (int) (_stmt.getLong(_columnIndexOfKey));</span>
+          final long _tmpId;
+<span class="nc" id="L326">          _tmpId = _stmt.getLong(_columnIndexOfId);</span>
+          final String _tmpAlias;
+<span class="nc bnc" id="L328" title="All 2 branches missed.">          if (_stmt.isNull(_columnIndexOfAlias)) {</span>
+<span class="nc" id="L329">            _tmpAlias = null;</span>
+          } else {
+<span class="nc" id="L331">            _tmpAlias = _stmt.getText(_columnIndexOfAlias);</span>
+          }
+          final String _tmpName;
+<span class="nc bnc" id="L334" title="All 2 branches missed.">          if (_stmt.isNull(_columnIndexOfName)) {</span>
+<span class="nc" id="L335">            _tmpName = null;</span>
+          } else {
+<span class="nc" id="L337">            _tmpName = _stmt.getText(_columnIndexOfName);</span>
+          }
+          final String _tmpRole;
+<span class="nc bnc" id="L340" title="All 2 branches missed.">          if (_stmt.isNull(_columnIndexOfRole)) {</span>
+<span class="nc" id="L341">            _tmpRole = null;</span>
+          } else {
+<span class="nc" id="L343">            _tmpRole = _stmt.getText(_columnIndexOfRole);</span>
+          }
+          final String _tmpEmail;
+<span class="nc bnc" id="L346" title="All 2 branches missed.">          if (_stmt.isNull(_columnIndexOfEmail)) {</span>
+<span class="nc" id="L347">            _tmpEmail = null;</span>
+          } else {
+<span class="nc" id="L349">            _tmpEmail = _stmt.getText(_columnIndexOfEmail);</span>
+          }
+          final String _tmpPhone;
+<span class="nc bnc" id="L352" title="All 2 branches missed.">          if (_stmt.isNull(_columnIndexOfPhone)) {</span>
+<span class="nc" id="L353">            _tmpPhone = null;</span>
+          } else {
+<span class="nc" id="L355">            _tmpPhone = _stmt.getText(_columnIndexOfPhone);</span>
+          }
+          final String _tmpAddress;
+<span class="nc bnc" id="L358" title="All 2 branches missed.">          if (_stmt.isNull(_columnIndexOfAddress)) {</span>
+<span class="nc" id="L359">            _tmpAddress = null;</span>
+          } else {
+<span class="nc" id="L361">            _tmpAddress = _stmt.getText(_columnIndexOfAddress);</span>
+          }
+<span class="nc" id="L363">          _result = new Session(_tmpKey,_tmpId,_tmpAlias,_tmpName,_tmpRole,_tmpEmail,_tmpPhone,_tmpAddress);</span>
+<span class="nc" id="L364">        } else {</span>
+<span class="nc" id="L365">          _result = null;</span>
+        }
+<span class="nc" id="L367">        return _result;</span>
+      } finally {
+<span class="nc" id="L369">        _stmt.close();</span>
+      }
+    });
+  }
+
+  @Override
+  public Object currentSession(final Continuation&lt;? super Session&gt; arg0) {
+<span class="nc" id="L376">    final String _sql = &quot;SELECT * FROM active_session WHERE `key` = 1&quot;;</span>
+<span class="nc" id="L377">    return DBUtil.performSuspending(__db, true, false, (_connection) -&gt; {</span>
+<span class="nc" id="L378">      final SQLiteStatement _stmt = _connection.prepare(_sql);</span>
+      try {
+<span class="nc" id="L380">        final int _columnIndexOfKey = SQLiteStatementUtil.getColumnIndexOrThrow(_stmt, &quot;key&quot;);</span>
+<span class="nc" id="L381">        final int _columnIndexOfId = SQLiteStatementUtil.getColumnIndexOrThrow(_stmt, &quot;id&quot;);</span>
+<span class="nc" id="L382">        final int _columnIndexOfAlias = SQLiteStatementUtil.getColumnIndexOrThrow(_stmt, &quot;alias&quot;);</span>
+<span class="nc" id="L383">        final int _columnIndexOfName = SQLiteStatementUtil.getColumnIndexOrThrow(_stmt, &quot;name&quot;);</span>
+<span class="nc" id="L384">        final int _columnIndexOfRole = SQLiteStatementUtil.getColumnIndexOrThrow(_stmt, &quot;role&quot;);</span>
+<span class="nc" id="L385">        final int _columnIndexOfEmail = SQLiteStatementUtil.getColumnIndexOrThrow(_stmt, &quot;email&quot;);</span>
+<span class="nc" id="L386">        final int _columnIndexOfPhone = SQLiteStatementUtil.getColumnIndexOrThrow(_stmt, &quot;phone&quot;);</span>
+<span class="nc" id="L387">        final int _columnIndexOfAddress = SQLiteStatementUtil.getColumnIndexOrThrow(_stmt, &quot;address&quot;);</span>
+        final Session _result;
+<span class="nc bnc" id="L389" title="All 2 branches missed.">        if (_stmt.step()) {</span>
+          final int _tmpKey;
+<span class="nc" id="L391">          _tmpKey = (int) (_stmt.getLong(_columnIndexOfKey));</span>
+          final long _tmpId;
+<span class="nc" id="L393">          _tmpId = _stmt.getLong(_columnIndexOfId);</span>
+          final String _tmpAlias;
+<span class="nc bnc" id="L395" title="All 2 branches missed.">          if (_stmt.isNull(_columnIndexOfAlias)) {</span>
+<span class="nc" id="L396">            _tmpAlias = null;</span>
+          } else {
+<span class="nc" id="L398">            _tmpAlias = _stmt.getText(_columnIndexOfAlias);</span>
+          }
+          final String _tmpName;
+<span class="nc bnc" id="L401" title="All 2 branches missed.">          if (_stmt.isNull(_columnIndexOfName)) {</span>
+<span class="nc" id="L402">            _tmpName = null;</span>
+          } else {
+<span class="nc" id="L404">            _tmpName = _stmt.getText(_columnIndexOfName);</span>
+          }
+          final String _tmpRole;
+<span class="nc bnc" id="L407" title="All 2 branches missed.">          if (_stmt.isNull(_columnIndexOfRole)) {</span>
+<span class="nc" id="L408">            _tmpRole = null;</span>
+          } else {
+<span class="nc" id="L410">            _tmpRole = _stmt.getText(_columnIndexOfRole);</span>
+          }
+          final String _tmpEmail;
+<span class="nc bnc" id="L413" title="All 2 branches missed.">          if (_stmt.isNull(_columnIndexOfEmail)) {</span>
+<span class="nc" id="L414">            _tmpEmail = null;</span>
+          } else {
+<span class="nc" id="L416">            _tmpEmail = _stmt.getText(_columnIndexOfEmail);</span>
+          }
+          final String _tmpPhone;
+<span class="nc bnc" id="L419" title="All 2 branches missed.">          if (_stmt.isNull(_columnIndexOfPhone)) {</span>
+<span class="nc" id="L420">            _tmpPhone = null;</span>
+          } else {
+<span class="nc" id="L422">            _tmpPhone = _stmt.getText(_columnIndexOfPhone);</span>
+          }
+          final String _tmpAddress;
+<span class="nc bnc" id="L425" title="All 2 branches missed.">          if (_stmt.isNull(_columnIndexOfAddress)) {</span>
+<span class="nc" id="L426">            _tmpAddress = null;</span>
+          } else {
+<span class="nc" id="L428">            _tmpAddress = _stmt.getText(_columnIndexOfAddress);</span>
+          }
+<span class="nc" id="L430">          _result = new Session(_tmpKey,_tmpId,_tmpAlias,_tmpName,_tmpRole,_tmpEmail,_tmpPhone,_tmpAddress);</span>
+<span class="nc" id="L431">        } else {</span>
+<span class="nc" id="L432">          _result = null;</span>
+        }
+<span class="nc" id="L434">        return _result;</span>
+      } finally {
+<span class="nc" id="L436">        _stmt.close();</span>
+      }
+    }, arg0);
+  }
+
+  @Override
+  public Flow&lt;List&lt;CartLine&gt;&gt; cart(final long userId) {
+<span class="nc" id="L443">    final String _sql = &quot;SELECT * FROM cart WHERE userId = ? ORDER BY productId&quot;;</span>
+<span class="nc" id="L444">    return FlowUtil.createFlow(__db, false, new String[] {&quot;cart&quot;}, (_connection) -&gt; {</span>
+<span class="nc" id="L445">      final SQLiteStatement _stmt = _connection.prepare(_sql);</span>
+      try {
+<span class="nc" id="L447">        int _argIndex = 1;</span>
+<span class="nc" id="L448">        _stmt.bindLong(_argIndex, userId);</span>
+<span class="nc" id="L449">        final int _columnIndexOfUserId = SQLiteStatementUtil.getColumnIndexOrThrow(_stmt, &quot;userId&quot;);</span>
+<span class="nc" id="L450">        final int _columnIndexOfProductId = SQLiteStatementUtil.getColumnIndexOrThrow(_stmt, &quot;productId&quot;);</span>
+<span class="nc" id="L451">        final int _columnIndexOfQuantity = SQLiteStatementUtil.getColumnIndexOrThrow(_stmt, &quot;quantity&quot;);</span>
+<span class="nc" id="L452">        final List&lt;CartLine&gt; _result = new ArrayList&lt;CartLine&gt;();</span>
+<span class="nc bnc" id="L453" title="All 2 branches missed.">        while (_stmt.step()) {</span>
+          final CartLine _item;
+          final long _tmpUserId;
+<span class="nc" id="L456">          _tmpUserId = _stmt.getLong(_columnIndexOfUserId);</span>
+          final long _tmpProductId;
+<span class="nc" id="L458">          _tmpProductId = _stmt.getLong(_columnIndexOfProductId);</span>
+          final int _tmpQuantity;
+<span class="nc" id="L460">          _tmpQuantity = (int) (_stmt.getLong(_columnIndexOfQuantity));</span>
+<span class="nc" id="L461">          _item = new CartLine(_tmpUserId,_tmpProductId,_tmpQuantity);</span>
+<span class="nc" id="L462">          _result.add(_item);</span>
+<span class="nc" id="L463">        }</span>
+<span class="nc" id="L464">        return _result;</span>
+      } finally {
+<span class="nc" id="L466">        _stmt.close();</span>
+      }
+    });
+  }
+
+  @Override
+  public Object productsCached(final Continuation&lt;? super List&lt;CachedProduct&gt;&gt; arg0) {
+<span class="nc" id="L473">    final String _sql = &quot;SELECT * FROM cached_products ORDER BY name&quot;;</span>
+<span class="nc" id="L474">    return DBUtil.performSuspending(__db, true, false, (_connection) -&gt; {</span>
+<span class="nc" id="L475">      final SQLiteStatement _stmt = _connection.prepare(_sql);</span>
+      try {
+<span class="nc" id="L477">        final int _columnIndexOfId = SQLiteStatementUtil.getColumnIndexOrThrow(_stmt, &quot;id&quot;);</span>
+<span class="nc" id="L478">        final int _columnIndexOfName = SQLiteStatementUtil.getColumnIndexOrThrow(_stmt, &quot;name&quot;);</span>
+<span class="nc" id="L479">        final int _columnIndexOfCategory = SQLiteStatementUtil.getColumnIndexOrThrow(_stmt, &quot;category&quot;);</span>
+<span class="nc" id="L480">        final int _columnIndexOfDescription = SQLiteStatementUtil.getColumnIndexOrThrow(_stmt, &quot;description&quot;);</span>
+<span class="nc" id="L481">        final int _columnIndexOfImageUri = SQLiteStatementUtil.getColumnIndexOrThrow(_stmt, &quot;imageUri&quot;);</span>
+<span class="nc" id="L482">        final int _columnIndexOfPresentation = SQLiteStatementUtil.getColumnIndexOrThrow(_stmt, &quot;presentation&quot;);</span>
+<span class="nc" id="L483">        final int _columnIndexOfPrice = SQLiteStatementUtil.getColumnIndexOrThrow(_stmt, &quot;price&quot;);</span>
+<span class="nc" id="L484">        final int _columnIndexOfStock = SQLiteStatementUtil.getColumnIndexOrThrow(_stmt, &quot;stock&quot;);</span>
+<span class="nc" id="L485">        final int _columnIndexOfMinStock = SQLiteStatementUtil.getColumnIndexOrThrow(_stmt, &quot;minStock&quot;);</span>
+<span class="nc" id="L486">        final int _columnIndexOfActive = SQLiteStatementUtil.getColumnIndexOrThrow(_stmt, &quot;active&quot;);</span>
+<span class="nc" id="L487">        final List&lt;CachedProduct&gt; _result = new ArrayList&lt;CachedProduct&gt;();</span>
+<span class="nc bnc" id="L488" title="All 2 branches missed.">        while (_stmt.step()) {</span>
+          final CachedProduct _item;
+          final long _tmpId;
+<span class="nc" id="L491">          _tmpId = _stmt.getLong(_columnIndexOfId);</span>
+          final String _tmpName;
+<span class="nc bnc" id="L493" title="All 2 branches missed.">          if (_stmt.isNull(_columnIndexOfName)) {</span>
+<span class="nc" id="L494">            _tmpName = null;</span>
+          } else {
+<span class="nc" id="L496">            _tmpName = _stmt.getText(_columnIndexOfName);</span>
+          }
+          final String _tmpCategory;
+<span class="nc bnc" id="L499" title="All 2 branches missed.">          if (_stmt.isNull(_columnIndexOfCategory)) {</span>
+<span class="nc" id="L500">            _tmpCategory = null;</span>
+          } else {
+<span class="nc" id="L502">            _tmpCategory = _stmt.getText(_columnIndexOfCategory);</span>
+          }
+          final String _tmpDescription;
+<span class="nc bnc" id="L505" title="All 2 branches missed.">          if (_stmt.isNull(_columnIndexOfDescription)) {</span>
+<span class="nc" id="L506">            _tmpDescription = null;</span>
+          } else {
+<span class="nc" id="L508">            _tmpDescription = _stmt.getText(_columnIndexOfDescription);</span>
+          }
+          final String _tmpImageUri;
+<span class="nc bnc" id="L511" title="All 2 branches missed.">          if (_stmt.isNull(_columnIndexOfImageUri)) {</span>
+<span class="nc" id="L512">            _tmpImageUri = null;</span>
+          } else {
+<span class="nc" id="L514">            _tmpImageUri = _stmt.getText(_columnIndexOfImageUri);</span>
+          }
+          final String _tmpPresentation;
+<span class="nc bnc" id="L517" title="All 2 branches missed.">          if (_stmt.isNull(_columnIndexOfPresentation)) {</span>
+<span class="nc" id="L518">            _tmpPresentation = null;</span>
+          } else {
+<span class="nc" id="L520">            _tmpPresentation = _stmt.getText(_columnIndexOfPresentation);</span>
+          }
+          final int _tmpPrice;
+<span class="nc" id="L523">          _tmpPrice = (int) (_stmt.getLong(_columnIndexOfPrice));</span>
+          final int _tmpStock;
+<span class="nc" id="L525">          _tmpStock = (int) (_stmt.getLong(_columnIndexOfStock));</span>
+          final int _tmpMinStock;
+<span class="nc" id="L527">          _tmpMinStock = (int) (_stmt.getLong(_columnIndexOfMinStock));</span>
+          final boolean _tmpActive;
+          final int _tmp;
+<span class="nc" id="L530">          _tmp = (int) (_stmt.getLong(_columnIndexOfActive));</span>
+<span class="nc bnc" id="L531" title="All 2 branches missed.">          _tmpActive = _tmp != 0;</span>
+<span class="nc" id="L532">          _item = new CachedProduct(_tmpId,_tmpName,_tmpCategory,_tmpDescription,_tmpImageUri,_tmpPresentation,_tmpPrice,_tmpStock,_tmpMinStock,_tmpActive);</span>
+<span class="nc" id="L533">          _result.add(_item);</span>
+<span class="nc" id="L534">        }</span>
+<span class="nc" id="L535">        return _result;</span>
+      } finally {
+<span class="nc" id="L537">        _stmt.close();</span>
+      }
+    }, arg0);
+  }
+
+  @Override
+  public Flow&lt;List&lt;CachedOrder&gt;&gt; cachedOrders(final long userId) {
+<span class="nc" id="L544">    final String _sql = &quot;SELECT * FROM cached_orders WHERE userId = ? ORDER BY createdAt DESC&quot;;</span>
+<span class="nc" id="L545">    return FlowUtil.createFlow(__db, false, new String[] {&quot;cached_orders&quot;}, (_connection) -&gt; {</span>
+<span class="nc" id="L546">      final SQLiteStatement _stmt = _connection.prepare(_sql);</span>
+      try {
+<span class="nc" id="L548">        int _argIndex = 1;</span>
+<span class="nc" id="L549">        _stmt.bindLong(_argIndex, userId);</span>
+<span class="nc" id="L550">        final int _columnIndexOfUserId = SQLiteStatementUtil.getColumnIndexOrThrow(_stmt, &quot;userId&quot;);</span>
+<span class="nc" id="L551">        final int _columnIndexOfOrderId = SQLiteStatementUtil.getColumnIndexOrThrow(_stmt, &quot;orderId&quot;);</span>
+<span class="nc" id="L552">        final int _columnIndexOfTotal = SQLiteStatementUtil.getColumnIndexOrThrow(_stmt, &quot;total&quot;);</span>
+<span class="nc" id="L553">        final int _columnIndexOfStatus = SQLiteStatementUtil.getColumnIndexOrThrow(_stmt, &quot;status&quot;);</span>
+<span class="nc" id="L554">        final int _columnIndexOfCreatedAt = SQLiteStatementUtil.getColumnIndexOrThrow(_stmt, &quot;createdAt&quot;);</span>
+<span class="nc" id="L555">        final List&lt;CachedOrder&gt; _result = new ArrayList&lt;CachedOrder&gt;();</span>
+<span class="nc bnc" id="L556" title="All 2 branches missed.">        while (_stmt.step()) {</span>
+          final CachedOrder _item;
+          final long _tmpUserId;
+<span class="nc" id="L559">          _tmpUserId = _stmt.getLong(_columnIndexOfUserId);</span>
+          final long _tmpOrderId;
+<span class="nc" id="L561">          _tmpOrderId = _stmt.getLong(_columnIndexOfOrderId);</span>
+          final int _tmpTotal;
+<span class="nc" id="L563">          _tmpTotal = (int) (_stmt.getLong(_columnIndexOfTotal));</span>
+          final String _tmpStatus;
+<span class="nc bnc" id="L565" title="All 2 branches missed.">          if (_stmt.isNull(_columnIndexOfStatus)) {</span>
+<span class="nc" id="L566">            _tmpStatus = null;</span>
+          } else {
+<span class="nc" id="L568">            _tmpStatus = _stmt.getText(_columnIndexOfStatus);</span>
+          }
+          final String _tmpCreatedAt;
+<span class="nc bnc" id="L571" title="All 2 branches missed.">          if (_stmt.isNull(_columnIndexOfCreatedAt)) {</span>
+<span class="nc" id="L572">            _tmpCreatedAt = null;</span>
+          } else {
+<span class="nc" id="L574">            _tmpCreatedAt = _stmt.getText(_columnIndexOfCreatedAt);</span>
+          }
+<span class="nc" id="L576">          _item = new CachedOrder(_tmpUserId,_tmpOrderId,_tmpTotal,_tmpStatus,_tmpCreatedAt);</span>
+<span class="nc" id="L577">          _result.add(_item);</span>
+<span class="nc" id="L578">        }</span>
+<span class="nc" id="L579">        return _result;</span>
+      } finally {
+<span class="nc" id="L581">        _stmt.close();</span>
+      }
+    });
+  }
+
+  @Override
+  public Flow&lt;List&lt;LocalNotice&gt;&gt; notices(final long userId) {
+<span class="nc" id="L588">    final String _sql = &quot;SELECT * FROM local_notices WHERE userId = ? ORDER BY createdAt DESC&quot;;</span>
+<span class="nc" id="L589">    return FlowUtil.createFlow(__db, false, new String[] {&quot;local_notices&quot;}, (_connection) -&gt; {</span>
+<span class="nc" id="L590">      final SQLiteStatement _stmt = _connection.prepare(_sql);</span>
+      try {
+<span class="nc" id="L592">        int _argIndex = 1;</span>
+<span class="nc" id="L593">        _stmt.bindLong(_argIndex, userId);</span>
+<span class="nc" id="L594">        final int _columnIndexOfId = SQLiteStatementUtil.getColumnIndexOrThrow(_stmt, &quot;id&quot;);</span>
+<span class="nc" id="L595">        final int _columnIndexOfUserId = SQLiteStatementUtil.getColumnIndexOrThrow(_stmt, &quot;userId&quot;);</span>
+<span class="nc" id="L596">        final int _columnIndexOfTitle = SQLiteStatementUtil.getColumnIndexOrThrow(_stmt, &quot;title&quot;);</span>
+<span class="nc" id="L597">        final int _columnIndexOfContent = SQLiteStatementUtil.getColumnIndexOrThrow(_stmt, &quot;content&quot;);</span>
+<span class="nc" id="L598">        final int _columnIndexOfCreatedAt = SQLiteStatementUtil.getColumnIndexOrThrow(_stmt, &quot;createdAt&quot;);</span>
+<span class="nc" id="L599">        final int _columnIndexOfRead = SQLiteStatementUtil.getColumnIndexOrThrow(_stmt, &quot;read&quot;);</span>
+<span class="nc" id="L600">        final List&lt;LocalNotice&gt; _result = new ArrayList&lt;LocalNotice&gt;();</span>
+<span class="nc bnc" id="L601" title="All 2 branches missed.">        while (_stmt.step()) {</span>
+          final LocalNotice _item;
+          final long _tmpId;
+<span class="nc" id="L604">          _tmpId = _stmt.getLong(_columnIndexOfId);</span>
+          final long _tmpUserId;
+<span class="nc" id="L606">          _tmpUserId = _stmt.getLong(_columnIndexOfUserId);</span>
+          final String _tmpTitle;
+<span class="nc bnc" id="L608" title="All 2 branches missed.">          if (_stmt.isNull(_columnIndexOfTitle)) {</span>
+<span class="nc" id="L609">            _tmpTitle = null;</span>
+          } else {
+<span class="nc" id="L611">            _tmpTitle = _stmt.getText(_columnIndexOfTitle);</span>
+          }
+          final String _tmpContent;
+<span class="nc bnc" id="L614" title="All 2 branches missed.">          if (_stmt.isNull(_columnIndexOfContent)) {</span>
+<span class="nc" id="L615">            _tmpContent = null;</span>
+          } else {
+<span class="nc" id="L617">            _tmpContent = _stmt.getText(_columnIndexOfContent);</span>
+          }
+          final long _tmpCreatedAt;
+<span class="nc" id="L620">          _tmpCreatedAt = _stmt.getLong(_columnIndexOfCreatedAt);</span>
+          final boolean _tmpRead;
+          final int _tmp;
+<span class="nc" id="L623">          _tmp = (int) (_stmt.getLong(_columnIndexOfRead));</span>
+<span class="nc bnc" id="L624" title="All 2 branches missed.">          _tmpRead = _tmp != 0;</span>
+<span class="nc" id="L625">          _item = new LocalNotice(_tmpId,_tmpUserId,_tmpTitle,_tmpContent,_tmpCreatedAt,_tmpRead);</span>
+<span class="nc" id="L626">          _result.add(_item);</span>
+<span class="nc" id="L627">        }</span>
+<span class="nc" id="L628">        return _result;</span>
+      } finally {
+<span class="nc" id="L630">        _stmt.close();</span>
+      }
+    });
+  }
+
+  @Override
+  public Object clearCachedOrders(final long userId, final Continuation&lt;? super Unit&gt; arg1) {
+<span class="nc" id="L637">    final String _sql = &quot;DELETE FROM cached_orders WHERE userId = ?&quot;;</span>
+<span class="nc" id="L638">    return DBUtil.performSuspending(__db, false, true, (_connection) -&gt; {</span>
+<span class="nc" id="L639">      final SQLiteStatement _stmt = _connection.prepare(_sql);</span>
+      try {
+<span class="nc" id="L641">        int _argIndex = 1;</span>
+<span class="nc" id="L642">        _stmt.bindLong(_argIndex, userId);</span>
+<span class="nc" id="L643">        _stmt.step();</span>
+<span class="nc" id="L644">        return Unit.INSTANCE;</span>
+      } finally {
+<span class="nc" id="L646">        _stmt.close();</span>
+      }
+    }, arg1);
+  }
+
+  @Override
+  public Object logout(final Continuation&lt;? super Unit&gt; arg0) {
+<span class="nc" id="L653">    final String _sql = &quot;DELETE FROM active_session&quot;;</span>
+<span class="nc" id="L654">    return DBUtil.performSuspending(__db, false, true, (_connection) -&gt; {</span>
+<span class="nc" id="L655">      final SQLiteStatement _stmt = _connection.prepare(_sql);</span>
+      try {
+<span class="nc" id="L657">        _stmt.step();</span>
+<span class="nc" id="L658">        return Unit.INSTANCE;</span>
+      } finally {
+<span class="nc" id="L660">        _stmt.close();</span>
+      }
+    }, arg0);
+  }
+
+  @Override
+  public Object removeCart(final long userId, final long productId,
+      final Continuation&lt;? super Unit&gt; arg2) {
+<span class="nc" id="L668">    final String _sql = &quot;DELETE FROM cart WHERE userId = ? AND productId = ?&quot;;</span>
+<span class="nc" id="L669">    return DBUtil.performSuspending(__db, false, true, (_connection) -&gt; {</span>
+<span class="nc" id="L670">      final SQLiteStatement _stmt = _connection.prepare(_sql);</span>
+      try {
+<span class="nc" id="L672">        int _argIndex = 1;</span>
+<span class="nc" id="L673">        _stmt.bindLong(_argIndex, userId);</span>
+<span class="nc" id="L674">        _argIndex = 2;</span>
+<span class="nc" id="L675">        _stmt.bindLong(_argIndex, productId);</span>
+<span class="nc" id="L676">        _stmt.step();</span>
+<span class="nc" id="L677">        return Unit.INSTANCE;</span>
+      } finally {
+<span class="nc" id="L679">        _stmt.close();</span>
+      }
+    }, arg2);
+  }
+
+  @Override
+  public Object clearCart(final long userId, final Continuation&lt;? super Unit&gt; arg1) {
+<span class="nc" id="L686">    final String _sql = &quot;DELETE FROM cart WHERE userId = ?&quot;;</span>
+<span class="nc" id="L687">    return DBUtil.performSuspending(__db, false, true, (_connection) -&gt; {</span>
+<span class="nc" id="L688">      final SQLiteStatement _stmt = _connection.prepare(_sql);</span>
+      try {
+<span class="nc" id="L690">        int _argIndex = 1;</span>
+<span class="nc" id="L691">        _stmt.bindLong(_argIndex, userId);</span>
+<span class="nc" id="L692">        _stmt.step();</span>
+<span class="nc" id="L693">        return Unit.INSTANCE;</span>
+      } finally {
+<span class="nc" id="L695">        _stmt.close();</span>
+      }
+    }, arg1);
+  }
+
+  @Override
+  public Object readNotice(final long userId, final long id,
+      final Continuation&lt;? super Unit&gt; arg2) {
+<span class="nc" id="L703">    final String _sql = &quot;UPDATE local_notices SET read = 1 WHERE userId = ? AND id = ?&quot;;</span>
+<span class="nc" id="L704">    return DBUtil.performSuspending(__db, false, true, (_connection) -&gt; {</span>
+<span class="nc" id="L705">      final SQLiteStatement _stmt = _connection.prepare(_sql);</span>
+      try {
+<span class="nc" id="L707">        int _argIndex = 1;</span>
+<span class="nc" id="L708">        _stmt.bindLong(_argIndex, userId);</span>
+<span class="nc" id="L709">        _argIndex = 2;</span>
+<span class="nc" id="L710">        _stmt.bindLong(_argIndex, id);</span>
+<span class="nc" id="L711">        _stmt.step();</span>
+<span class="nc" id="L712">        return Unit.INSTANCE;</span>
+      } finally {
+<span class="nc" id="L714">        _stmt.close();</span>
+      }
+    }, arg2);
+  }
+
+  @NonNull
+  public static List&lt;Class&lt;?&gt;&gt; getRequiredConverters() {
+<span class="nc" id="L721">    return Collections.emptyList();</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span>Generated by the Android Gradle plugin 8.11.1</div></body></html>

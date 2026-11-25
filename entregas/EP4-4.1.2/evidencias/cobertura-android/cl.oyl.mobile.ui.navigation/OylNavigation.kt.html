@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OylNavigation.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">cl.oyl.mobile.ui.navigation</a> &gt; <span class="el_source">OylNavigation.kt</span></div><h1>OylNavigation.kt</h1><pre class="source lang-java linenums">package cl.oyl.mobile.ui.navigation
+
+import androidx.activity.compose.BackHandler
+import androidx.compose.animation.*
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Place
+import androidx.compose.material.icons.filled.QrCodeScanner
+import androidx.compose.material.icons.filled.ReceiptLong
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import cl.oyl.mobile.model.productos.Product
+import cl.oyl.mobile.ui.auth.LoginScreen
+import cl.oyl.mobile.ui.auth.RegisterScreen
+import cl.oyl.mobile.ui.bienvenida.WelcomeScreen
+import cl.oyl.mobile.ui.carrito.CartScreen
+import cl.oyl.mobile.ui.carrito.CheckoutScreen
+import cl.oyl.mobile.ui.catalogo.CatalogScreen
+import cl.oyl.mobile.ui.catalogo.ProductDetailScreen
+import cl.oyl.mobile.ui.components.OylTextButton
+import cl.oyl.mobile.ui.inicio.DashboardScreen
+import cl.oyl.mobile.ui.inventario.InventoryScreen
+import cl.oyl.mobile.ui.mapa.MapScreen
+import cl.oyl.mobile.ui.notificaciones.NotificationsScreen
+import cl.oyl.mobile.ui.pedidos.OrdersScreen
+import cl.oyl.mobile.ui.perfil.ProfileScreen
+import cl.oyl.mobile.ui.productos.AdminProductsScreen
+import cl.oyl.mobile.ui.qr.QrScreen
+import kotlinx.coroutines.CancellationException
+import cl.oyl.mobile.ui.theme.Forest
+import cl.oyl.mobile.viewmodel.OylViewModel
+import cl.oyl.mobile.viewmodel.auth.AuthViewModel
+import cl.oyl.mobile.viewmodel.productos.ProductsViewModel
+import cl.oyl.mobile.viewmodel.inventario.InventoryViewModel
+import cl.oyl.mobile.viewmodel.carrito.CartViewModel
+import cl.oyl.mobile.viewmodel.checkout.CheckoutViewModel
+import cl.oyl.mobile.viewmodel.pedidos.OrdersViewModel
+import cl.oyl.mobile.viewmodel.perfil.ProfileViewModel
+import cl.oyl.mobile.viewmodel.mapa.MapViewModel
+import cl.oyl.mobile.viewmodel.qr.QrViewModel
+import cl.oyl.mobile.viewmodel.notificaciones.NotificationsViewModel
+import cl.oyl.mobile.model.qr.QrResolution
+import cl.oyl.mobile.viewmodel.externa.ExternalApiViewModel
+import cl.oyl.mobile.ui.externa.ExternalApiScreen
+
+@Composable
+<span class="nc" id="L79">fun OylNavigation(</span>
+    appVm: OylViewModel,
+    authVm: AuthViewModel,
+    productsVm: ProductsViewModel,
+    inventoryVm: InventoryViewModel,
+    cartVm: CartViewModel,
+    checkoutVm: CheckoutViewModel,
+    ordersVm: OrdersViewModel,
+    profileVm: ProfileViewModel,
+    mapVm: MapViewModel,
+    qrVm: QrViewModel,
+    notificationsVm: NotificationsViewModel,
+    externalApiVm: ExternalApiViewModel,
+<span class="nc bnc" id="L92" title="All 4 branches missed.">    productLink: String? = null, linkConsumed: () -&gt; Unit = {}</span>
+<span class="nc bnc" id="L93" title="All 68 branches missed.">) {</span>
+<span class="nc" id="L94">    val session by authVm.session.collectAsState()</span>
+<span class="nc" id="L95">    val notice by appVm.notice.collectAsState()</span>
+<span class="nc" id="L96">    val products by productsVm.products.collectAsState()</span>
+<span class="nc" id="L97">    val catalogSync by productsVm.sync.collectAsState()</span>
+<span class="nc" id="L98">    val cart by cartVm.cart.collectAsState()</span>
+<span class="nc" id="L99">    val orders by ordersVm.orders.collectAsState()</span>
+<span class="nc" id="L100">    val cachedOrders by ordersVm.cachedOrders.collectAsState()</span>
+<span class="nc" id="L101">    val avatar by profileVm.avatar.collectAsState()</span>
+<span class="nc" id="L102">    val notices by notificationsVm.notifications.collectAsState()</span>
+<span class="nc" id="L103">    val locations by mapVm.locations.collectAsState()</span>
+<span class="nc" id="L104">    val busy by appVm.busy.collectAsState()</span>
+<span class="nc" id="L105">    var page by rememberSaveable { mutableStateOf(Page.WELCOME) }</span>
+<span class="nc" id="L106">    var selectedProduct by remember { mutableStateOf&lt;Product?&gt;(null) }</span>
+<span class="nc" id="L107">    var selectedProductId by rememberSaveable { mutableStateOf&lt;Long?&gt;(null) }</span>
+<span class="nc" id="L108">    var linkMessage by rememberSaveable { mutableStateOf&lt;String?&gt;(null) }</span>
+<span class="nc" id="L109">    var confirmedOrder by remember { mutableStateOf&lt;Long?&gt;(null) }</span>
+<span class="nc bnc" id="L110" title="All 2 branches missed.">    val isAdmin = session?.role == &quot;ADMIN&quot;</span>
+<span class="nc bnc" id="L111" title="All 2 branches missed.">    val isClient = session?.role == &quot;CLIENT&quot;</span>
+
+    fun go(target: Page) {
+        // No ofrece rutas de compra al administrador ni de gestión al cliente/invitado.
+<span class="nc bnc" id="L115" title="All 4 branches missed.">        if (target in listOf(Page.CART, Page.CHECKOUT) &amp;&amp; !isClient) return</span>
+<span class="nc bnc" id="L116" title="All 4 branches missed.">        if (target in listOf(Page.PRODUCTS, Page.INVENTORY) &amp;&amp; !isAdmin) return</span>
+<span class="nc" id="L117">        page = target</span>
+<span class="nc bnc" id="L118" title="All 2 branches missed.">        if (target == Page.QR) appVm.dismissNotice()</span>
+<span class="nc bnc" id="L119" title="All 2 branches missed.">        if (target == Page.MAP) mapVm.loadLocations()</span>
+<span class="nc bnc" id="L120" title="All 2 branches missed.">        if (target == Page.ORDERS) ordersVm.reloadOrders()</span>
+<span class="nc bnc" id="L121" title="All 2 branches missed.">        if (target in listOf(Page.CATALOG, Page.PRODUCTS, Page.INVENTORY)) productsVm.refreshProducts()</span>
+<span class="nc" id="L122">    }</span>
+
+<span class="nc bnc" id="L124" title="All 4 branches missed.">    LaunchedEffect(productLink) {</span>
+<span class="nc bnc" id="L125" title="All 2 branches missed.">        val link = productLink ?: return@LaunchedEffect</span>
+<span class="nc" id="L126">        appVm.dismissNotice()</span>
+<span class="nc" id="L127">        selectedProduct = null</span>
+<span class="nc" id="L128">        selectedProductId = null</span>
+<span class="nc" id="L129">        linkMessage = &quot;Consultando producto…&quot;</span>
+<span class="nc" id="L130">        page = Page.DETAIL</span>
+<span class="nc" id="L131">        try {</span>
+<span class="nc" id="L132">            when (val resolution = qrVm.resolve(link, external = true)) {</span>
+<span class="nc bnc" id="L133" title="All 2 branches missed.">                is QrResolution.Found -&gt; {</span>
+<span class="nc" id="L134">                    selectedProduct = resolution.product</span>
+<span class="nc" id="L135">                    selectedProductId = resolution.product.id</span>
+<span class="nc" id="L136">                    linkMessage = null</span>
+<span class="nc" id="L137">                    appVm.showNotice(resolution.message)</span>
+                }
+<span class="nc" id="L139">                else -&gt; linkMessage = resolution.message</span>
+            }
+<span class="nc" id="L141">        } catch (e: Exception) {</span>
+<span class="nc bnc" id="L142" title="All 2 branches missed.">            if (e is CancellationException) throw e</span>
+<span class="nc" id="L143">            linkMessage = &quot;No se pudo consultar el producto. Vuelve a abrir el enlace para reintentar.&quot;</span>
+        }
+<span class="nc" id="L145">        linkConsumed()</span>
+<span class="nc" id="L146">    }</span>
+
+<span class="nc bnc" id="L148" title="All 4 branches missed.">    LaunchedEffect(session?.id) {</span>
+<span class="nc bnc" id="L149" title="All 4 branches missed.">        if (session != null &amp;&amp; page in listOf(Page.WELCOME, Page.LOGIN, Page.REGISTER)) page = Page.DASHBOARD</span>
+<span class="nc" id="L150">    }</span>
+
+<span class="nc bnc" id="L152" title="All 4 branches missed.">    BackHandler(enabled = page != Page.WELCOME &amp;&amp; page != Page.DASHBOARD) {</span>
+<span class="nc bnc" id="L153" title="All 3 branches missed.">        page = when (page) {</span>
+<span class="nc" id="L154">            Page.DETAIL -&gt; Page.CATALOG</span>
+<span class="nc" id="L155">            Page.REGISTER -&gt; Page.LOGIN</span>
+<span class="nc bnc" id="L156" title="All 2 branches missed.">            else -&gt; if (session == null) Page.WELCOME else Page.DASHBOARD</span>
+        }
+<span class="nc" id="L158">    }</span>
+
+<span class="nc bnc" id="L160" title="All 4 branches missed.">    val showBottom = session != null &amp;&amp; page !in listOf(Page.WELCOME, Page.REGISTER, Page.LOGIN)</span>
+<span class="nc bnc" id="L161" title="All 2 branches missed.">    Scaffold(</span>
+<span class="nc" id="L162">        topBar = {</span>
+<span class="nc bnc" id="L163" title="All 2 branches missed.">            Surface(color = Forest, shadowElevation = 3.dp) {</span>
+<span class="nc" id="L164">                Row(</span>
+<span class="nc" id="L165">                    Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 13.dp),</span>
+<span class="nc" id="L166">                    verticalAlignment = Alignment.CenterVertically,</span>
+<span class="nc" id="L167">                    horizontalArrangement = Arrangement.SpaceBetween</span>
+                ) {
+<span class="nc" id="L169">                    Column {</span>
+<span class="nc" id="L170">                        Text(&quot;OYL FRUTOS SECOS&quot;, color = Color.White, fontWeight = FontWeight.Bold)</span>
+<span class="nc" id="L171">                        Text(&quot;Naturalmente cerca de ti&quot;, color = Color(0xFFD6E8D4), style = MaterialTheme.typography.labelSmall)</span>
+<span class="nc" id="L172">                    }</span>
+<span class="nc bnc" id="L173" title="All 2 branches missed.">                    if (session != null) OylTextButton(onClick = { go(Page.NOTIFICATIONS) }) {</span>
+<span class="nc bnc" id="L174" title="All 2 branches missed.">                        Icon(Icons.Default.Notifications, &quot;Notificaciones&quot;, tint = Color.White)</span>
+<span class="nc" id="L175">                    }</span>
+<span class="nc" id="L176">                }</span>
+<span class="nc" id="L177">            }</span>
+<span class="nc" id="L178">        },</span>
+<span class="nc" id="L179">        bottomBar = {</span>
+<span class="nc bnc" id="L180" title="All 4 branches missed.">            if (showBottom) NavigationBar {</span>
+<span class="nc" id="L181">                val tabs = listOf(</span>
+<span class="nc" id="L182">                    Triple(Page.DASHBOARD, &quot;Inicio&quot;, Icons.Default.Home),</span>
+<span class="nc" id="L183">                    Triple(Page.MAP, &quot;Mapa&quot;, Icons.Default.Place),</span>
+<span class="nc" id="L184">                    Triple(Page.QR, &quot;QR&quot;, Icons.Default.QrCodeScanner),</span>
+<span class="nc" id="L185">                    Triple(Page.ORDERS, &quot;Pedidos&quot;, Icons.Default.ReceiptLong),</span>
+<span class="nc" id="L186">                    Triple(Page.PROFILE, &quot;Perfil&quot;, Icons.Default.Person)</span>
+                )
+<span class="nc" id="L188">                tabs.forEach { (target, name, icon) -&gt;</span>
+<span class="nc" id="L189">                    NavigationBarItem(</span>
+<span class="nc bnc" id="L190" title="All 2 branches missed.">                        selected = page == target,</span>
+<span class="nc" id="L191">                        onClick = { go(target) },</span>
+<span class="nc" id="L192">                        icon = {</span>
+<span class="nc bnc" id="L193" title="All 2 branches missed.">                            val iconScale by animateFloatAsState(if (page == target) 1.16f else 1f,</span>
+<span class="nc" id="L194">                                tween(300, easing = FastOutSlowInEasing), label = &quot;Icono de navegación&quot;)</span>
+<span class="nc bnc" id="L195" title="All 2 branches missed.">                            Icon(icon, contentDescription = name, modifier = Modifier.graphicsLayer {</span>
+<span class="nc" id="L196">                                scaleX = iconScale; scaleY = iconScale</span>
+<span class="nc" id="L197">                            })</span>
+<span class="nc" id="L198">                        },</span>
+<span class="nc bnc" id="L199" title="All 2 branches missed.">                        label = { Text(name) }</span>
+                    )
+<span class="nc" id="L201">                }</span>
+<span class="nc" id="L202">            }</span>
+<span class="nc" id="L203">        }</span>
+<span class="nc" id="L204">    ) { padding -&gt;</span>
+<span class="nc" id="L205">        Column(Modifier.fillMaxSize().padding(padding).imePadding()) {</span>
+<span class="nc bnc" id="L206" title="All 4 branches missed.">            if (notice.isNotBlank()) {</span>
+<span class="nc" id="L207">                Surface(color = Color(0xFFFFF3D8), modifier = Modifier.fillMaxWidth()) {</span>
+<span class="nc" id="L208">                    Row(</span>
+<span class="nc" id="L209">                        Modifier.padding(horizontal = 12.dp, vertical = 4.dp),</span>
+<span class="nc" id="L210">                        verticalAlignment = Alignment.CenterVertically</span>
+                    ) {
+<span class="nc" id="L212">                        Text(notice, modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodySmall)</span>
+<span class="nc bnc" id="L213" title="All 2 branches missed.">                        OylTextButton(onClick = appVm::dismissNotice) { Text(&quot;Cerrar&quot;) }</span>
+<span class="nc" id="L214">                    }</span>
+<span class="nc" id="L215">                }</span>
+            }
+<span class="nc bnc" id="L217" title="All 2 branches missed.">            if (busy) androidx.compose.material3.LinearProgressIndicator(Modifier.fillMaxWidth())</span>
+<span class="nc" id="L218">            AnimatedContent(targetState = page, modifier = Modifier.weight(1f).fillMaxWidth().clipToBounds(),</span>
+<span class="nc" id="L219">                transitionSpec = {</span>
+<span class="nc" id="L220">                    val direction = navigationDirection(initialState, targetState)</span>
+<span class="nc" id="L221">                    ((slideInHorizontally(tween(520, easing = FastOutSlowInEasing)) { it * direction / 3 } +</span>
+<span class="nc" id="L222">                        fadeIn(tween(380, delayMillis = 80)) +</span>
+<span class="nc" id="L223">                        scaleIn(tween(520, easing = FastOutSlowInEasing), initialScale = .94f)) togetherWith</span>
+<span class="nc" id="L224">                        (slideOutHorizontally(tween(420, easing = FastOutSlowInEasing)) { -it * direction / 5 } +</span>
+<span class="nc" id="L225">                        fadeOut(tween(230)) + scaleOut(tween(420), targetScale = .98f)))</span>
+<span class="nc" id="L226">                        .using(SizeTransform(clip = false))</span>
+                },
+<span class="nc" id="L228">                label = &quot;Cambio de pantalla&quot;) { currentPage -&gt;</span>
+<span class="nc bnc" id="L229" title="All 19 branches missed.">            when (currentPage) {</span>
+<span class="nc" id="L230">                Page.WELCOME -&gt; WelcomeScreen(onLogin = { go(Page.LOGIN) }, onCatalog = { go(Page.CATALOG) }, onMap = { go(Page.MAP) })</span>
+<span class="nc" id="L231">                Page.REGISTER -&gt; RegisterScreen(busy = busy, register = authVm::register) { go(Page.DASHBOARD) }</span>
+<span class="nc" id="L232">                Page.LOGIN -&gt; LoginScreen(busy = busy, login = authVm::login, register = { go(Page.REGISTER) }) { go(Page.DASHBOARD) }</span>
+<span class="nc" id="L233">                Page.DASHBOARD -&gt; DashboardScreen(session, products, orders, cart,</span>
+<span class="nc" id="L234">                    open = ::go,</span>
+<span class="nc" id="L235">                    detail = { selectedProduct = it; selectedProductId = it.id; linkMessage = null; go(Page.DETAIL) },</span>
+<span class="nc" id="L236">                    add = cartVm::addProduct)</span>
+<span class="nc" id="L237">                Page.MAP -&gt; MapScreen(locations, mapVm::loadLocations)</span>
+<span class="nc" id="L238">                Page.CATALOG -&gt; CatalogScreen(products, session, catalogSync, productsVm::refreshProducts,</span>
+<span class="nc" id="L239">                    detail = { selectedProduct = it; selectedProductId = it.id; linkMessage = null; go(Page.DETAIL) },</span>
+<span class="nc" id="L240">                    add = cartVm::addProduct)</span>
+<span class="nc bnc" id="L241" title="All 2 branches missed.">                Page.DETAIL -&gt; ProductDetailScreen(products.firstOrNull { it.id == selectedProductId } ?: selectedProduct, session,</span>
+<span class="nc" id="L242">                    back = { go(Page.CATALOG) },</span>
+<span class="nc" id="L243">                    add = cartVm::addProduct,</span>
+<span class="nc" id="L244">                    signIn = { go(Page.LOGIN) },</span>
+<span class="nc bnc" id="L245" title="All 2 branches missed.">                    manageProducts = { if (isAdmin) go(Page.PRODUCTS) },</span>
+<span class="nc bnc" id="L246" title="All 2 branches missed.">                    manageInventory = { product -&gt; if (isAdmin) { selectedProduct = product; go(Page.INVENTORY) } },</span>
+<span class="nc" id="L247">                    unavailableMessage = linkMessage)</span>
+<span class="nc" id="L248">                Page.QR -&gt; QrScreen(qrVm, canManage = isAdmin,</span>
+<span class="nc" id="L249">                    found = { selectedProduct = it; selectedProductId = it.id; linkMessage = null; appVm.showNotice(&quot;Producto encontrado&quot;); go(Page.DETAIL) },</span>
+<span class="nc bnc" id="L250" title="All 2 branches missed.">                    inventory = { product -&gt; if (isAdmin) { selectedProduct = product; go(Page.INVENTORY) } })</span>
+<span class="nc bnc" id="L251" title="All 2 branches missed.">                Page.CART -&gt; if (isClient) CartScreen(cart, products, cartVm::adjustCart, checkout = { go(Page.CHECKOUT) }) else Text(&quot;El carrito está disponible para cuentas de cliente.&quot;)</span>
+<span class="nc bnc" id="L252" title="All 2 branches missed.">                Page.CHECKOUT -&gt; if (isClient) CheckoutScreen(cart, products, confirmedOrder, busy,</span>
+<span class="nc bnc" id="L253" title="All 4 branches missed.">                    locations = locations, session = session, completedOrder = orders.firstOrNull { it.id == confirmedOrder },</span>
+<span class="nc" id="L254">                    confirm = checkoutVm::confirmOrder,</span>
+<span class="nc" id="L255">                    after = { confirmedOrder = it; ordersVm.reloadOrders(); productsVm.refreshProducts() },</span>
+<span class="nc" id="L256">                    orders = { confirmedOrder = null; go(Page.ORDERS) },</span>
+<span class="nc" id="L257">                    catalog = { confirmedOrder = null; go(Page.CATALOG) }) else Text(&quot;La compra está disponible para cuentas de cliente.&quot;)</span>
+<span class="nc bnc" id="L258" title="All 2 branches missed.">                Page.PRODUCTS -&gt; if (isAdmin) AdminProductsScreen(products, productsVm::saveProduct, productsVm::deactivate, productsVm::refreshProducts) else Text(&quot;Acceso exclusivo para administrador.&quot;)</span>
+<span class="nc bnc" id="L259" title="All 2 branches missed.">                Page.INVENTORY -&gt; if (isAdmin) InventoryScreen(products, inventoryVm::changeStock, selectedProduct) {</span>
+<span class="nc" id="L260">                    selectedProduct = null</span>
+<span class="nc" id="L261">                } else Text(&quot;Acceso exclusivo para administrador.&quot;)</span>
+<span class="nc" id="L262">                Page.ORDERS -&gt; OrdersScreen(orders, cachedOrders, isAdmin, ordersVm::setStatus, ordersVm::reloadOrders)</span>
+<span class="nc" id="L263">                Page.NOTIFICATIONS -&gt; NotificationsScreen(notices, notificationsVm::markRead, notificationsVm::demoNotice)</span>
+<span class="nc" id="L264">                Page.EXTERNAL_API -&gt; ExternalApiScreen(externalApiVm)</span>
+<span class="nc" id="L265">                Page.PROFILE -&gt; ProfileScreen(session, avatar, profileVm::saveAvatar, profileVm::updateProfile,</span>
+<span class="nc" id="L266">                    logout = { authVm.logout { page = Page.WELCOME } },</span>
+<span class="nc" id="L267">                    notifications = { go(Page.NOTIFICATIONS) })</span>
+            }
+<span class="nc" id="L269">            }</span>
+<span class="nc" id="L270">        }</span>
+<span class="nc" id="L271">    }</span>
+<span class="nc bnc" id="L272" title="All 2 branches missed.">}</span>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span>Generated by the Android Gradle plugin 8.11.1</div></body></html>

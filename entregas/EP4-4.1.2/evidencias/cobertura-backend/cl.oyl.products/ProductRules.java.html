@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProductRules.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">OYL - pruebas unitarias del backend completo</a> &gt; <a href="index.source.html" class="el_package">cl.oyl.products</a> &gt; <span class="el_source">ProductRules.java</span></div><h1>ProductRules.java</h1><pre class="source lang-java linenums">package cl.oyl.products;
+/** Reglas de dominio separadas para probarlas sin levantar HTTP ni base de datos. */
+public final class ProductRules {
+ private ProductRules() {}
+ public static void validate(Product p) {
+<span class="pc bpc" id="L6" title="5 of 12 branches missed.">  if(p==null||p.name==null||p.name.isBlank()||p.price&lt;0||p.stock&lt;0||p.minStock&lt;0) throw new IllegalArgumentException(&quot;Producto inválido&quot;);</span>
+<span class="fc" id="L7"> }</span>
+ public static int nextStock(int current,int delta) {
+<span class="fc" id="L9">  long next=(long)current+delta;</span>
+<span class="pc bpc" id="L10" title="2 of 8 branches missed.">  if(delta==0||current&lt;0||next&lt;0||next&gt;Integer.MAX_VALUE) throw new IllegalArgumentException(&quot;Movimiento de stock inválido&quot;);</span>
+<span class="fc" id="L11">  return (int)next;</span>
+ }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

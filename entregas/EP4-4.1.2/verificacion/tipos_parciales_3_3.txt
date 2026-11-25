@@ -1,0 +1,3 @@
+Comprobación de tipos con Kotlin 2.2.20: modelos, entidades, DAOs, migraciones, repositorio, ViewModel y validaciones.
+Resultado: sin errores utilizando coroutines reales y stubs mínimos de Android/Room/Lifecycle.
+No ejecuta Room generado ni sustituye compilación Android.

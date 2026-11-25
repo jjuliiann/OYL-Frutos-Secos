@@ -1,0 +1,9 @@
+Antes: OpenJDK 21.0.13, LASTEXITCODE nulo tras Select-Object -First 1, comprobación antigua rechaza = True.
+Detector actualizado: prueba en PowerShell 7, Java 21 real. Las versiones antiguas y los directorios de Windows fueron simulados para verificar selección y mensajes.
+OK: Java 21 real por JAVA_HOME (ruta con espacios)
+OK: Java 21 real por PATH
+OK: Java 8 y 17 se rechazan, ambos se nombran
+OK: Se informa cuando no hay JDK
+OK: Una salida con error no se acepta aunque incluya la cifra 21
+OK: Android Studio con Java 21 real aunque JAVA_HOME y PATH indiquen 17
+OK: JDK 21 de Microsoft en Program Files aun sin actualizar PATH

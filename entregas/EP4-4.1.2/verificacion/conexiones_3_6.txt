@@ -1,0 +1,1 @@
+OK: 11 ViewModels Activity/ViewModelProvider, callbacks conectados, estado transversal encapsulado, modelos agrupados, QR resuelto por ViewModel, rutas por rol y DB v4 conservados. No es ejecución de Compose.

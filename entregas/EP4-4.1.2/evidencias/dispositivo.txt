@@ -1,0 +1,13 @@
+
+cl.oyl.mobile.data.local.migration.CheckoutMigrationTest:.
+cl.oyl.mobile.data.local.migration.DisplayCopyMigrationTest:.
+cl.oyl.mobile.data.repository.CheckoutRepositoryTest:...
+cl.oyl.mobile.data.repository.GatewayEmulatorTest:.
+cl.oyl.mobile.data.repository.LocalRepositoryTest:.......
+cl.oyl.mobile.ui.qr.QrImagesTest:.
+
+Time: 454.346
+
+OK (14 tests)
+
+

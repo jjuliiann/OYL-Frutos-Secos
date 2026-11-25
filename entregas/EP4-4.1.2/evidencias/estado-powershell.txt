@@ -1,0 +1,8 @@
+OK  eureka-server
+OK  user-service
+OK  product-service
+OK  order-service
+OK  api-gateway
+Eureka:   http://localhost:8761/
+Catalogo: http://localhost:8080/api/products
+Emulador: http://10.0.2.2:8080/api/

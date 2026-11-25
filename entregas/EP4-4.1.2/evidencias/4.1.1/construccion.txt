@@ -1,0 +1,6 @@
+Variante aula: 4.1.1-aula (14), cl.oyl.mobile.aula, minSdk 26, targetSdk 35.
+Compilación nueva de los 90 archivos de aplicación: Kotlin 2.2.20 y complemento Compose de la misma versión; SDK 35; salida JVM 17. Se compilaron también los tests y el Java generado por Room. JUnit 4.13.2: 26/26.
+Se usaron los compiladores locales: el wrapper no pudo descargar la distribución Gradle 8.13 en este entorno. No se declara una ejecución exitosa de assembleAula por Gradle en esta revisión.
+Se reconstruyeron todos los DEX de la aplicación con el D8 de AGP 8.11.1, y el manifiesto con aapt2. Se reutilizaron los DEX de las bibliotecas, las tablas de recursos, las bibliotecas nativas, los recursos y activos sin cambios. Se excluyó el perfil de arranque precompilado anterior, que referenciaba otros DEX. Android Studio puede generar esa optimización normalmente al construir desde las fuentes.
+Comprobaciones: aapt dump badging, equivalencia de manifiesto salvo versión, zipalign -c -P 16 4, ausencia de clases DEX duplicadas, de referencias a Open Food Facts y del antiguo botón, y comparación de las clases y recursos con los de la versión 4.1.0.
+Se verificó con apksigner una copia firmada para la prueba. El archivo distribuido para el Samsung no tiene firma y no incluye claves. El certificado definitivo debe ser el mismo de la instalación del equipo.

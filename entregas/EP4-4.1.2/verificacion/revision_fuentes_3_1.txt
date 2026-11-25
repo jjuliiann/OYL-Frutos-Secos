@@ -1,0 +1,4 @@
+Auditoría: sin etiquetas ficticio/de prueba/demostración en código activo fuera de patrones de migración.
+XML: parseados.
+Tree-sitter: 27 de 29 archivos sin diagnósticos; ['PublicScreens.kt', 'StoreDao.kt'] tienen diagnósticos también en la base anterior. No certifica sintaxis completa ni compilación Android.
+Gradle bloqueado por red al descargar su distribución.

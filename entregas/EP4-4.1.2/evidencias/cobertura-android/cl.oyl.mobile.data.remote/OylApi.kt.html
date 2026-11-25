@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OylApi.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">cl.oyl.mobile.data.remote</a> &gt; <span class="el_source">OylApi.kt</span></div><h1>OylApi.kt</h1><pre class="source lang-java linenums">package cl.oyl.mobile.data.remote
+
+// BuildConfig trae la URL seleccionada para el emulador o el teléfono.
+import cl.oyl.mobile.BuildConfig
+import cl.oyl.mobile.model.auth.Account
+import cl.oyl.mobile.model.auth.Credentials
+import cl.oyl.mobile.model.auth.RegisterData
+import cl.oyl.mobile.model.checkout.OrderRequest
+import cl.oyl.mobile.model.mapa.PickupLocation
+import cl.oyl.mobile.model.pedidos.PurchaseOrder
+import cl.oyl.mobile.model.pedidos.StatusChange
+import cl.oyl.mobile.model.perfil.ProfileUpdate
+import cl.oyl.mobile.model.productos.Product
+import android.content.Context
+import okhttp3.OkHttpClient
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.Body
+import retrofit2.http.GET
+import retrofit2.http.PATCH
+import retrofit2.http.POST
+import retrofit2.http.PUT
+import retrofit2.http.Path
+import retrofit2.http.Query
+
+interface OylApi {
+    @GET(&quot;health&quot;) suspend fun health(): Map&lt;String, String&gt; // Comprueba el Gateway.
+    @GET(&quot;health/{service}&quot;) suspend fun serviceHealth(@Path(&quot;service&quot;) service: String): Map&lt;String, String&gt;
+    @POST(&quot;auth/register&quot;) suspend fun register(@Body data: RegisterData): Account // Registra usuarios.
+    @POST(&quot;auth/login&quot;) suspend fun login(@Body data: Credentials): Account // Inicia sesión y recibe token.
+    @PUT(&quot;users/{id}&quot;) suspend fun updateProfile(@Path(&quot;id&quot;) id: Long, @Body data: ProfileUpdate): Account // Actualiza perfil.
+    @GET(&quot;products&quot;) suspend fun products(): List&lt;Product&gt; // Consulta el catálogo remoto.
+    @POST(&quot;products&quot;) suspend fun createProduct(@Query(&quot;adminId&quot;) adminId: Long, @Body product: Product): Product // Crea producto.
+    @PUT(&quot;products/{id}&quot;) suspend fun updateProduct(@Path(&quot;id&quot;) id: Long, @Query(&quot;adminId&quot;) adminId: Long, @Body product: Product): Product // Edita producto.
+    @retrofit2.http.DELETE(&quot;products/{id}&quot;) suspend fun deactivateProduct(@Path(&quot;id&quot;) id: Long, @Query(&quot;adminId&quot;) adminId: Long): Product
+    @POST(&quot;products/{id}/stock&quot;) suspend fun changeStock(@Path(&quot;id&quot;) id: Long, @Query(&quot;adminId&quot;) adminId: Long, @Body change: StockChange): Product // Ajusta inventario.
+    @POST(&quot;orders&quot;) suspend fun createOrder(@Body order: OrderRequest): PurchaseOrder // Envía compra.
+    @GET(&quot;orders&quot;) suspend fun orders(@Query(&quot;userId&quot;) userId: Long): List&lt;PurchaseOrder&gt; // Consulta pedidos.
+    @PATCH(&quot;orders/{id}/status&quot;) suspend fun changeOrderStatus(@Path(&quot;id&quot;) id: Long, @Query(&quot;adminId&quot;) adminId: Long, @Body change: StatusChange): PurchaseOrder // Cambia estado.
+    @GET(&quot;locations&quot;) suspend fun locations(): List&lt;PickupLocation&gt; // Obtiene puntos de retiro.
+}
+
+object RemoteApis {
+    // La prueba de una dirección nueva nunca envía el token de la tienda activa.
+<span class="nc" id="L45">    fun publicProbe(url: String): OylApi = Retrofit.Builder().baseUrl(url)</span>
+<span class="nc" id="L46">        .client(OkHttpClient.Builder().callTimeout(6, java.util.concurrent.TimeUnit.SECONDS).build())</span>
+<span class="nc" id="L47">        .addConverterFactory(GsonConverterFactory.create()).build().create(OylApi::class.java)</span>
+
+<span class="nc" id="L49">    fun oyl(context: Context, url: String = GatewayAddress.current(context)): OylApi {</span>
+        // Lee el token guardado después de iniciar sesión.
+<span class="nc" id="L51">        val preferences = GatewayAddress.auth(context, url)</span>
+        // Agrega el token en las llamadas que lo necesitan.
+<span class="nc" id="L53">        val client = OkHttpClient.Builder().addInterceptor { chain -&gt;</span>
+<span class="nc" id="L54">            val request = chain.request().newBuilder()</span>
+<span class="nc bnc" id="L55" title="All 8 branches missed.">            preferences.getString(&quot;jwt&quot;, null)?.takeIf { it.isNotBlank() }?.let { request.header(&quot;Authorization&quot;, &quot;Bearer $it&quot;) }</span>
+<span class="nc" id="L56">            chain.proceed(request.build())</span>
+<span class="nc" id="L57">        }.build()</span>
+        // Crea Retrofit para el API Gateway propio.
+<span class="nc" id="L59">        return Retrofit.Builder()</span>
+<span class="nc" id="L60">            .baseUrl(url)</span>
+<span class="nc" id="L61">            .client(client)</span>
+<span class="nc" id="L62">            .addConverterFactory(GsonConverterFactory.create())</span>
+<span class="nc" id="L63">            .build()</span>
+<span class="nc" id="L64">            .create(OylApi::class.java)</span>
+    }
+<span class="nc" id="L66">    val foodFacts: OpenFoodFactsApi by lazy {</span>
+        // Mantiene separada la API externa del backend OYL.
+<span class="nc" id="L68">        Retrofit.Builder()</span>
+<span class="nc" id="L69">            .baseUrl(&quot;https://world.openfoodfacts.org/&quot;)</span>
+<span class="nc" id="L70">            .client(OkHttpClient.Builder().addInterceptor { chain -&gt;</span>
+<span class="nc" id="L71">                chain.proceed(chain.request().newBuilder()</span>
+<span class="nc" id="L72">                    .header(&quot;User-Agent&quot;, &quot;OYLFrutosSecos/4.0 (Duoc UC academic project)&quot;)</span>
+<span class="nc" id="L73">                    .build())</span>
+<span class="nc" id="L74">            }.build())</span>
+<span class="nc" id="L75">            .addConverterFactory(GsonConverterFactory.create())</span>
+<span class="nc" id="L76">            .build()</span>
+<span class="nc" id="L77">            .create(OpenFoodFactsApi::class.java)</span>
+    }
+}
+
+<span class="nc" id="L81">data class StockChange(val delta: Int)</span>
+<span class="nc" id="L82">data class ExternalFoodSearchResponse(val products: List&lt;ExternalFood&gt; = emptyList())</span>
+<span class="nc" id="L83">data class ExternalFood(</span>
+<span class="nc" id="L84">    @com.google.gson.annotations.SerializedName(&quot;product_name&quot;) val name: String? = null,</span>
+<span class="nc" id="L85">    val brands: String? = null,</span>
+<span class="nc" id="L86">    val quantity: String? = null,</span>
+<span class="nc" id="L87">    @com.google.gson.annotations.SerializedName(&quot;image_front_small_url&quot;) val imageUrl: String? = null,</span>
+<span class="nc" id="L88">    @com.google.gson.annotations.SerializedName(&quot;nutriscore_grade&quot;) val nutritionGrade: String? = null</span>
+<span class="nc" id="L89">)</span>
+interface OpenFoodFactsApi {
+    @GET(&quot;api/v2/search&quot;)
+<span class="nc" id="L92">    suspend fun searchFoods(</span>
+<span class="nc" id="L93">        @Query(&quot;categories_tags_en&quot;) category: String = &quot;nuts&quot;,</span>
+<span class="nc" id="L94">        @Query(&quot;page&quot;) page: Int = 1,</span>
+<span class="nc" id="L95">        @Query(&quot;page_size&quot;) pageSize: Int = 10,</span>
+<span class="nc" id="L96">        @Query(&quot;fields&quot;) fields: String = &quot;product_name,brands,quantity,image_front_small_url,nutriscore_grade&quot;</span>
+<span class="nc" id="L97">    ): ExternalFoodSearchResponse</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span>Generated by the Android Gradle plugin 8.11.1</div></body></html>

@@ -1,0 +1,8 @@
+
+cl.oyl.mobile.data.repository.GatewayEmulatorTest:.
+
+Time: 5.499
+
+OK (1 test)
+
+

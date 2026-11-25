@@ -1,0 +1,7 @@
+package cl.oyl.mobile.ui.navigation
+
+enum class Page {
+    WELCOME, REGISTER, LOGIN, DASHBOARD, MAP, CATALOG,
+    DETAIL, QR, CART, CHECKOUT, PRODUCTS, INVENTORY,
+    ORDERS, NOTIFICATIONS, PROFILE
+}

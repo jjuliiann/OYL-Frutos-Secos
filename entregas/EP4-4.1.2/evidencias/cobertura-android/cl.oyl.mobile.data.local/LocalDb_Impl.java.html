@@ -1,0 +1,385 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LocalDb_Impl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">cl.oyl.mobile.data.local</a> &gt; <span class="el_source">LocalDb_Impl.java</span></div><h1>LocalDb_Impl.java</h1><pre class="source lang-java linenums">package cl.oyl.mobile.data.local;
+
+import androidx.annotation.NonNull;
+import androidx.room.InvalidationTracker;
+import androidx.room.RoomOpenDelegate;
+import androidx.room.migration.AutoMigrationSpec;
+import androidx.room.migration.Migration;
+import androidx.room.util.DBUtil;
+import androidx.room.util.TableInfo;
+import androidx.sqlite.SQLite;
+import androidx.sqlite.SQLiteConnection;
+import cl.oyl.mobile.data.local.dao.LocalDao;
+import cl.oyl.mobile.data.local.dao.LocalDao_Impl;
+import cl.oyl.mobile.data.local.dao.StoreDao;
+import cl.oyl.mobile.data.local.dao.StoreDao_Impl;
+import java.lang.Class;
+import java.lang.Override;
+import java.lang.String;
+import java.lang.SuppressWarnings;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import javax.annotation.processing.Generated;
+
+@Generated(&quot;androidx.room.RoomProcessor&quot;)
+@SuppressWarnings({&quot;unchecked&quot;, &quot;deprecation&quot;, &quot;removal&quot;})
+<span class="nc" id="L31">public final class LocalDb_Impl extends LocalDb {</span>
+  private volatile LocalDao _localDao;
+
+  private volatile StoreDao _storeDao;
+
+  @Override
+  @NonNull
+  protected RoomOpenDelegate createOpenDelegate() {
+<span class="nc" id="L39">    final RoomOpenDelegate _openDelegate = new RoomOpenDelegate(4, &quot;f75d59f03f80d57fb479947090879ccb&quot;, &quot;4d7515da044714cb9e0ff260d0ff3cb1&quot;) {</span>
+      @Override
+      public void createAllTables(@NonNull final SQLiteConnection connection) {
+<span class="nc" id="L42">        SQLite.execSQL(connection, &quot;CREATE TABLE IF NOT EXISTS `active_session` (`key` INTEGER NOT NULL, `id` INTEGER NOT NULL, `alias` TEXT NOT NULL, `name` TEXT NOT NULL, `role` TEXT NOT NULL, `email` TEXT NOT NULL, `phone` TEXT NOT NULL, `address` TEXT NOT NULL, PRIMARY KEY(`key`))&quot;);</span>
+<span class="nc" id="L43">        SQLite.execSQL(connection, &quot;CREATE TABLE IF NOT EXISTS `cart` (`userId` INTEGER NOT NULL, `productId` INTEGER NOT NULL, `quantity` INTEGER NOT NULL, PRIMARY KEY(`userId`, `productId`))&quot;);</span>
+<span class="nc" id="L44">        SQLite.execSQL(connection, &quot;CREATE TABLE IF NOT EXISTS `cached_products` (`id` INTEGER NOT NULL, `name` TEXT NOT NULL, `category` TEXT NOT NULL, `description` TEXT NOT NULL, `imageUri` TEXT NOT NULL, `presentation` TEXT NOT NULL, `price` INTEGER NOT NULL, `stock` INTEGER NOT NULL, `minStock` INTEGER NOT NULL, `active` INTEGER NOT NULL, PRIMARY KEY(`id`))&quot;);</span>
+<span class="nc" id="L45">        SQLite.execSQL(connection, &quot;CREATE TABLE IF NOT EXISTS `cached_orders` (`userId` INTEGER NOT NULL, `orderId` INTEGER NOT NULL, `total` INTEGER NOT NULL, `status` TEXT NOT NULL, `createdAt` TEXT NOT NULL, PRIMARY KEY(`userId`, `orderId`))&quot;);</span>
+<span class="nc" id="L46">        SQLite.execSQL(connection, &quot;CREATE TABLE IF NOT EXISTS `local_notices` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `userId` INTEGER NOT NULL, `title` TEXT NOT NULL, `content` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `read` INTEGER NOT NULL)&quot;);</span>
+<span class="nc" id="L47">        SQLite.execSQL(connection, &quot;CREATE TABLE IF NOT EXISTS `local_avatars` (`userId` INTEGER NOT NULL, `dataUri` TEXT NOT NULL, PRIMARY KEY(`userId`))&quot;);</span>
+<span class="nc" id="L48">        SQLite.execSQL(connection, &quot;CREATE TABLE IF NOT EXISTS `accounts` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `alias` TEXT NOT NULL, `name` TEXT NOT NULL, `email` TEXT NOT NULL, `phone` TEXT NOT NULL, `address` TEXT NOT NULL, `role` TEXT NOT NULL, `salt` TEXT NOT NULL, `passwordHash` TEXT NOT NULL)&quot;);</span>
+<span class="nc" id="L49">        SQLite.execSQL(connection, &quot;CREATE UNIQUE INDEX IF NOT EXISTS `index_accounts_alias` ON `accounts` (`alias`)&quot;);</span>
+<span class="nc" id="L50">        SQLite.execSQL(connection, &quot;CREATE TABLE IF NOT EXISTS `orders` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `userId` INTEGER NOT NULL, `createdAt` TEXT NOT NULL, `status` TEXT NOT NULL, `delivery` TEXT NOT NULL, `contact` TEXT NOT NULL, `total` INTEGER NOT NULL, FOREIGN KEY(`userId`) REFERENCES `accounts`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION )&quot;);</span>
+<span class="nc" id="L51">        SQLite.execSQL(connection, &quot;CREATE INDEX IF NOT EXISTS `index_orders_userId` ON `orders` (`userId`)&quot;);</span>
+<span class="nc" id="L52">        SQLite.execSQL(connection, &quot;CREATE TABLE IF NOT EXISTS `order_lines` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `orderId` INTEGER NOT NULL, `productId` INTEGER NOT NULL, `productName` TEXT NOT NULL, `quantity` INTEGER NOT NULL, `unitPrice` INTEGER NOT NULL, FOREIGN KEY(`orderId`) REFERENCES `orders`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )&quot;);</span>
+<span class="nc" id="L53">        SQLite.execSQL(connection, &quot;CREATE INDEX IF NOT EXISTS `index_order_lines_orderId` ON `order_lines` (`orderId`)&quot;);</span>
+<span class="nc" id="L54">        SQLite.execSQL(connection, &quot;CREATE TABLE IF NOT EXISTS `pickup_locations` (`id` INTEGER NOT NULL, `name` TEXT NOT NULL, `address` TEXT NOT NULL, `hours` TEXT NOT NULL, `latitude` REAL NOT NULL, `longitude` REAL NOT NULL, PRIMARY KEY(`id`))&quot;);</span>
+<span class="nc" id="L55">        SQLite.execSQL(connection, &quot;CREATE TABLE IF NOT EXISTS `products` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT NOT NULL, `category` TEXT NOT NULL, `description` TEXT NOT NULL, `imageUri` TEXT NOT NULL, `presentation` TEXT NOT NULL, `price` INTEGER NOT NULL, `stock` INTEGER NOT NULL, `minStock` INTEGER NOT NULL, `active` INTEGER NOT NULL)&quot;);</span>
+<span class="nc" id="L56">        SQLite.execSQL(connection, &quot;CREATE TABLE IF NOT EXISTS `order_fulfillment` (`orderId` INTEGER NOT NULL, `delivery` TEXT NOT NULL, `recipientName` TEXT NOT NULL, `phone` TEXT NOT NULL, `email` TEXT NOT NULL, `pickupLocationId` INTEGER, `pickupName` TEXT NOT NULL, `pickupAddress` TEXT NOT NULL, `pickupHours` TEXT NOT NULL, `street` TEXT NOT NULL, `number` TEXT NOT NULL, `apartment` TEXT NOT NULL, `commune` TEXT NOT NULL, `region` TEXT NOT NULL, `postalCode` TEXT NOT NULL, `instructions` TEXT NOT NULL, PRIMARY KEY(`orderId`), FOREIGN KEY(`orderId`) REFERENCES `orders`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )&quot;);</span>
+<span class="nc" id="L57">        SQLite.execSQL(connection, &quot;CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)&quot;);</span>
+<span class="nc" id="L58">        SQLite.execSQL(connection, &quot;INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f75d59f03f80d57fb479947090879ccb')&quot;);</span>
+<span class="nc" id="L59">      }</span>
+
+      @Override
+      public void dropAllTables(@NonNull final SQLiteConnection connection) {
+<span class="nc" id="L63">        SQLite.execSQL(connection, &quot;DROP TABLE IF EXISTS `active_session`&quot;);</span>
+<span class="nc" id="L64">        SQLite.execSQL(connection, &quot;DROP TABLE IF EXISTS `cart`&quot;);</span>
+<span class="nc" id="L65">        SQLite.execSQL(connection, &quot;DROP TABLE IF EXISTS `cached_products`&quot;);</span>
+<span class="nc" id="L66">        SQLite.execSQL(connection, &quot;DROP TABLE IF EXISTS `cached_orders`&quot;);</span>
+<span class="nc" id="L67">        SQLite.execSQL(connection, &quot;DROP TABLE IF EXISTS `local_notices`&quot;);</span>
+<span class="nc" id="L68">        SQLite.execSQL(connection, &quot;DROP TABLE IF EXISTS `local_avatars`&quot;);</span>
+<span class="nc" id="L69">        SQLite.execSQL(connection, &quot;DROP TABLE IF EXISTS `accounts`&quot;);</span>
+<span class="nc" id="L70">        SQLite.execSQL(connection, &quot;DROP TABLE IF EXISTS `orders`&quot;);</span>
+<span class="nc" id="L71">        SQLite.execSQL(connection, &quot;DROP TABLE IF EXISTS `order_lines`&quot;);</span>
+<span class="nc" id="L72">        SQLite.execSQL(connection, &quot;DROP TABLE IF EXISTS `pickup_locations`&quot;);</span>
+<span class="nc" id="L73">        SQLite.execSQL(connection, &quot;DROP TABLE IF EXISTS `products`&quot;);</span>
+<span class="nc" id="L74">        SQLite.execSQL(connection, &quot;DROP TABLE IF EXISTS `order_fulfillment`&quot;);</span>
+<span class="nc" id="L75">      }</span>
+
+      @Override
+      public void onCreate(@NonNull final SQLiteConnection connection) {
+<span class="nc" id="L79">      }</span>
+
+      @Override
+      public void onOpen(@NonNull final SQLiteConnection connection) {
+<span class="nc" id="L83">        SQLite.execSQL(connection, &quot;PRAGMA foreign_keys = ON&quot;);</span>
+<span class="nc" id="L84">        internalInitInvalidationTracker(connection);</span>
+<span class="nc" id="L85">      }</span>
+
+      @Override
+      public void onPreMigrate(@NonNull final SQLiteConnection connection) {
+<span class="nc" id="L89">        DBUtil.dropFtsSyncTriggers(connection);</span>
+<span class="nc" id="L90">      }</span>
+
+      @Override
+      public void onPostMigrate(@NonNull final SQLiteConnection connection) {
+<span class="nc" id="L94">      }</span>
+
+      @Override
+      @NonNull
+      public RoomOpenDelegate.ValidationResult onValidateSchema(
+          @NonNull final SQLiteConnection connection) {
+<span class="nc" id="L100">        final Map&lt;String, TableInfo.Column&gt; _columnsActiveSession = new HashMap&lt;String, TableInfo.Column&gt;(8);</span>
+<span class="nc" id="L101">        _columnsActiveSession.put(&quot;key&quot;, new TableInfo.Column(&quot;key&quot;, &quot;INTEGER&quot;, true, 1, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L102">        _columnsActiveSession.put(&quot;id&quot;, new TableInfo.Column(&quot;id&quot;, &quot;INTEGER&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L103">        _columnsActiveSession.put(&quot;alias&quot;, new TableInfo.Column(&quot;alias&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L104">        _columnsActiveSession.put(&quot;name&quot;, new TableInfo.Column(&quot;name&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L105">        _columnsActiveSession.put(&quot;role&quot;, new TableInfo.Column(&quot;role&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L106">        _columnsActiveSession.put(&quot;email&quot;, new TableInfo.Column(&quot;email&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L107">        _columnsActiveSession.put(&quot;phone&quot;, new TableInfo.Column(&quot;phone&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L108">        _columnsActiveSession.put(&quot;address&quot;, new TableInfo.Column(&quot;address&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L109">        final Set&lt;TableInfo.ForeignKey&gt; _foreignKeysActiveSession = new HashSet&lt;TableInfo.ForeignKey&gt;(0);</span>
+<span class="nc" id="L110">        final Set&lt;TableInfo.Index&gt; _indicesActiveSession = new HashSet&lt;TableInfo.Index&gt;(0);</span>
+<span class="nc" id="L111">        final TableInfo _infoActiveSession = new TableInfo(&quot;active_session&quot;, _columnsActiveSession, _foreignKeysActiveSession, _indicesActiveSession);</span>
+<span class="nc" id="L112">        final TableInfo _existingActiveSession = TableInfo.read(connection, &quot;active_session&quot;);</span>
+<span class="nc bnc" id="L113" title="All 2 branches missed.">        if (!_infoActiveSession.equals(_existingActiveSession)) {</span>
+<span class="nc" id="L114">          return new RoomOpenDelegate.ValidationResult(false, &quot;active_session(cl.oyl.mobile.data.local.entity.Session).\n&quot;</span>
+                  + &quot; Expected:\n&quot; + _infoActiveSession + &quot;\n&quot;
+                  + &quot; Found:\n&quot; + _existingActiveSession);
+        }
+<span class="nc" id="L118">        final Map&lt;String, TableInfo.Column&gt; _columnsCart = new HashMap&lt;String, TableInfo.Column&gt;(3);</span>
+<span class="nc" id="L119">        _columnsCart.put(&quot;userId&quot;, new TableInfo.Column(&quot;userId&quot;, &quot;INTEGER&quot;, true, 1, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L120">        _columnsCart.put(&quot;productId&quot;, new TableInfo.Column(&quot;productId&quot;, &quot;INTEGER&quot;, true, 2, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L121">        _columnsCart.put(&quot;quantity&quot;, new TableInfo.Column(&quot;quantity&quot;, &quot;INTEGER&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L122">        final Set&lt;TableInfo.ForeignKey&gt; _foreignKeysCart = new HashSet&lt;TableInfo.ForeignKey&gt;(0);</span>
+<span class="nc" id="L123">        final Set&lt;TableInfo.Index&gt; _indicesCart = new HashSet&lt;TableInfo.Index&gt;(0);</span>
+<span class="nc" id="L124">        final TableInfo _infoCart = new TableInfo(&quot;cart&quot;, _columnsCart, _foreignKeysCart, _indicesCart);</span>
+<span class="nc" id="L125">        final TableInfo _existingCart = TableInfo.read(connection, &quot;cart&quot;);</span>
+<span class="nc bnc" id="L126" title="All 2 branches missed.">        if (!_infoCart.equals(_existingCart)) {</span>
+<span class="nc" id="L127">          return new RoomOpenDelegate.ValidationResult(false, &quot;cart(cl.oyl.mobile.data.local.entity.CartLine).\n&quot;</span>
+                  + &quot; Expected:\n&quot; + _infoCart + &quot;\n&quot;
+                  + &quot; Found:\n&quot; + _existingCart);
+        }
+<span class="nc" id="L131">        final Map&lt;String, TableInfo.Column&gt; _columnsCachedProducts = new HashMap&lt;String, TableInfo.Column&gt;(10);</span>
+<span class="nc" id="L132">        _columnsCachedProducts.put(&quot;id&quot;, new TableInfo.Column(&quot;id&quot;, &quot;INTEGER&quot;, true, 1, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L133">        _columnsCachedProducts.put(&quot;name&quot;, new TableInfo.Column(&quot;name&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L134">        _columnsCachedProducts.put(&quot;category&quot;, new TableInfo.Column(&quot;category&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L135">        _columnsCachedProducts.put(&quot;description&quot;, new TableInfo.Column(&quot;description&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L136">        _columnsCachedProducts.put(&quot;imageUri&quot;, new TableInfo.Column(&quot;imageUri&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L137">        _columnsCachedProducts.put(&quot;presentation&quot;, new TableInfo.Column(&quot;presentation&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L138">        _columnsCachedProducts.put(&quot;price&quot;, new TableInfo.Column(&quot;price&quot;, &quot;INTEGER&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L139">        _columnsCachedProducts.put(&quot;stock&quot;, new TableInfo.Column(&quot;stock&quot;, &quot;INTEGER&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L140">        _columnsCachedProducts.put(&quot;minStock&quot;, new TableInfo.Column(&quot;minStock&quot;, &quot;INTEGER&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L141">        _columnsCachedProducts.put(&quot;active&quot;, new TableInfo.Column(&quot;active&quot;, &quot;INTEGER&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L142">        final Set&lt;TableInfo.ForeignKey&gt; _foreignKeysCachedProducts = new HashSet&lt;TableInfo.ForeignKey&gt;(0);</span>
+<span class="nc" id="L143">        final Set&lt;TableInfo.Index&gt; _indicesCachedProducts = new HashSet&lt;TableInfo.Index&gt;(0);</span>
+<span class="nc" id="L144">        final TableInfo _infoCachedProducts = new TableInfo(&quot;cached_products&quot;, _columnsCachedProducts, _foreignKeysCachedProducts, _indicesCachedProducts);</span>
+<span class="nc" id="L145">        final TableInfo _existingCachedProducts = TableInfo.read(connection, &quot;cached_products&quot;);</span>
+<span class="nc bnc" id="L146" title="All 2 branches missed.">        if (!_infoCachedProducts.equals(_existingCachedProducts)) {</span>
+<span class="nc" id="L147">          return new RoomOpenDelegate.ValidationResult(false, &quot;cached_products(cl.oyl.mobile.data.local.entity.CachedProduct).\n&quot;</span>
+                  + &quot; Expected:\n&quot; + _infoCachedProducts + &quot;\n&quot;
+                  + &quot; Found:\n&quot; + _existingCachedProducts);
+        }
+<span class="nc" id="L151">        final Map&lt;String, TableInfo.Column&gt; _columnsCachedOrders = new HashMap&lt;String, TableInfo.Column&gt;(5);</span>
+<span class="nc" id="L152">        _columnsCachedOrders.put(&quot;userId&quot;, new TableInfo.Column(&quot;userId&quot;, &quot;INTEGER&quot;, true, 1, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L153">        _columnsCachedOrders.put(&quot;orderId&quot;, new TableInfo.Column(&quot;orderId&quot;, &quot;INTEGER&quot;, true, 2, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L154">        _columnsCachedOrders.put(&quot;total&quot;, new TableInfo.Column(&quot;total&quot;, &quot;INTEGER&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L155">        _columnsCachedOrders.put(&quot;status&quot;, new TableInfo.Column(&quot;status&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L156">        _columnsCachedOrders.put(&quot;createdAt&quot;, new TableInfo.Column(&quot;createdAt&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L157">        final Set&lt;TableInfo.ForeignKey&gt; _foreignKeysCachedOrders = new HashSet&lt;TableInfo.ForeignKey&gt;(0);</span>
+<span class="nc" id="L158">        final Set&lt;TableInfo.Index&gt; _indicesCachedOrders = new HashSet&lt;TableInfo.Index&gt;(0);</span>
+<span class="nc" id="L159">        final TableInfo _infoCachedOrders = new TableInfo(&quot;cached_orders&quot;, _columnsCachedOrders, _foreignKeysCachedOrders, _indicesCachedOrders);</span>
+<span class="nc" id="L160">        final TableInfo _existingCachedOrders = TableInfo.read(connection, &quot;cached_orders&quot;);</span>
+<span class="nc bnc" id="L161" title="All 2 branches missed.">        if (!_infoCachedOrders.equals(_existingCachedOrders)) {</span>
+<span class="nc" id="L162">          return new RoomOpenDelegate.ValidationResult(false, &quot;cached_orders(cl.oyl.mobile.data.local.entity.CachedOrder).\n&quot;</span>
+                  + &quot; Expected:\n&quot; + _infoCachedOrders + &quot;\n&quot;
+                  + &quot; Found:\n&quot; + _existingCachedOrders);
+        }
+<span class="nc" id="L166">        final Map&lt;String, TableInfo.Column&gt; _columnsLocalNotices = new HashMap&lt;String, TableInfo.Column&gt;(6);</span>
+<span class="nc" id="L167">        _columnsLocalNotices.put(&quot;id&quot;, new TableInfo.Column(&quot;id&quot;, &quot;INTEGER&quot;, true, 1, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L168">        _columnsLocalNotices.put(&quot;userId&quot;, new TableInfo.Column(&quot;userId&quot;, &quot;INTEGER&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L169">        _columnsLocalNotices.put(&quot;title&quot;, new TableInfo.Column(&quot;title&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L170">        _columnsLocalNotices.put(&quot;content&quot;, new TableInfo.Column(&quot;content&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L171">        _columnsLocalNotices.put(&quot;createdAt&quot;, new TableInfo.Column(&quot;createdAt&quot;, &quot;INTEGER&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L172">        _columnsLocalNotices.put(&quot;read&quot;, new TableInfo.Column(&quot;read&quot;, &quot;INTEGER&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L173">        final Set&lt;TableInfo.ForeignKey&gt; _foreignKeysLocalNotices = new HashSet&lt;TableInfo.ForeignKey&gt;(0);</span>
+<span class="nc" id="L174">        final Set&lt;TableInfo.Index&gt; _indicesLocalNotices = new HashSet&lt;TableInfo.Index&gt;(0);</span>
+<span class="nc" id="L175">        final TableInfo _infoLocalNotices = new TableInfo(&quot;local_notices&quot;, _columnsLocalNotices, _foreignKeysLocalNotices, _indicesLocalNotices);</span>
+<span class="nc" id="L176">        final TableInfo _existingLocalNotices = TableInfo.read(connection, &quot;local_notices&quot;);</span>
+<span class="nc bnc" id="L177" title="All 2 branches missed.">        if (!_infoLocalNotices.equals(_existingLocalNotices)) {</span>
+<span class="nc" id="L178">          return new RoomOpenDelegate.ValidationResult(false, &quot;local_notices(cl.oyl.mobile.data.local.entity.LocalNotice).\n&quot;</span>
+                  + &quot; Expected:\n&quot; + _infoLocalNotices + &quot;\n&quot;
+                  + &quot; Found:\n&quot; + _existingLocalNotices);
+        }
+<span class="nc" id="L182">        final Map&lt;String, TableInfo.Column&gt; _columnsLocalAvatars = new HashMap&lt;String, TableInfo.Column&gt;(2);</span>
+<span class="nc" id="L183">        _columnsLocalAvatars.put(&quot;userId&quot;, new TableInfo.Column(&quot;userId&quot;, &quot;INTEGER&quot;, true, 1, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L184">        _columnsLocalAvatars.put(&quot;dataUri&quot;, new TableInfo.Column(&quot;dataUri&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L185">        final Set&lt;TableInfo.ForeignKey&gt; _foreignKeysLocalAvatars = new HashSet&lt;TableInfo.ForeignKey&gt;(0);</span>
+<span class="nc" id="L186">        final Set&lt;TableInfo.Index&gt; _indicesLocalAvatars = new HashSet&lt;TableInfo.Index&gt;(0);</span>
+<span class="nc" id="L187">        final TableInfo _infoLocalAvatars = new TableInfo(&quot;local_avatars&quot;, _columnsLocalAvatars, _foreignKeysLocalAvatars, _indicesLocalAvatars);</span>
+<span class="nc" id="L188">        final TableInfo _existingLocalAvatars = TableInfo.read(connection, &quot;local_avatars&quot;);</span>
+<span class="nc bnc" id="L189" title="All 2 branches missed.">        if (!_infoLocalAvatars.equals(_existingLocalAvatars)) {</span>
+<span class="nc" id="L190">          return new RoomOpenDelegate.ValidationResult(false, &quot;local_avatars(cl.oyl.mobile.data.local.entity.LocalAvatar).\n&quot;</span>
+                  + &quot; Expected:\n&quot; + _infoLocalAvatars + &quot;\n&quot;
+                  + &quot; Found:\n&quot; + _existingLocalAvatars);
+        }
+<span class="nc" id="L194">        final Map&lt;String, TableInfo.Column&gt; _columnsAccounts = new HashMap&lt;String, TableInfo.Column&gt;(9);</span>
+<span class="nc" id="L195">        _columnsAccounts.put(&quot;id&quot;, new TableInfo.Column(&quot;id&quot;, &quot;INTEGER&quot;, true, 1, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L196">        _columnsAccounts.put(&quot;alias&quot;, new TableInfo.Column(&quot;alias&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L197">        _columnsAccounts.put(&quot;name&quot;, new TableInfo.Column(&quot;name&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L198">        _columnsAccounts.put(&quot;email&quot;, new TableInfo.Column(&quot;email&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L199">        _columnsAccounts.put(&quot;phone&quot;, new TableInfo.Column(&quot;phone&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L200">        _columnsAccounts.put(&quot;address&quot;, new TableInfo.Column(&quot;address&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L201">        _columnsAccounts.put(&quot;role&quot;, new TableInfo.Column(&quot;role&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L202">        _columnsAccounts.put(&quot;salt&quot;, new TableInfo.Column(&quot;salt&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L203">        _columnsAccounts.put(&quot;passwordHash&quot;, new TableInfo.Column(&quot;passwordHash&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L204">        final Set&lt;TableInfo.ForeignKey&gt; _foreignKeysAccounts = new HashSet&lt;TableInfo.ForeignKey&gt;(0);</span>
+<span class="nc" id="L205">        final Set&lt;TableInfo.Index&gt; _indicesAccounts = new HashSet&lt;TableInfo.Index&gt;(1);</span>
+<span class="nc" id="L206">        _indicesAccounts.add(new TableInfo.Index(&quot;index_accounts_alias&quot;, true, Arrays.asList(&quot;alias&quot;), Arrays.asList(&quot;ASC&quot;)));</span>
+<span class="nc" id="L207">        final TableInfo _infoAccounts = new TableInfo(&quot;accounts&quot;, _columnsAccounts, _foreignKeysAccounts, _indicesAccounts);</span>
+<span class="nc" id="L208">        final TableInfo _existingAccounts = TableInfo.read(connection, &quot;accounts&quot;);</span>
+<span class="nc bnc" id="L209" title="All 2 branches missed.">        if (!_infoAccounts.equals(_existingAccounts)) {</span>
+<span class="nc" id="L210">          return new RoomOpenDelegate.ValidationResult(false, &quot;accounts(cl.oyl.mobile.data.local.entity.StoredAccount).\n&quot;</span>
+                  + &quot; Expected:\n&quot; + _infoAccounts + &quot;\n&quot;
+                  + &quot; Found:\n&quot; + _existingAccounts);
+        }
+<span class="nc" id="L214">        final Map&lt;String, TableInfo.Column&gt; _columnsOrders = new HashMap&lt;String, TableInfo.Column&gt;(7);</span>
+<span class="nc" id="L215">        _columnsOrders.put(&quot;id&quot;, new TableInfo.Column(&quot;id&quot;, &quot;INTEGER&quot;, true, 1, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L216">        _columnsOrders.put(&quot;userId&quot;, new TableInfo.Column(&quot;userId&quot;, &quot;INTEGER&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L217">        _columnsOrders.put(&quot;createdAt&quot;, new TableInfo.Column(&quot;createdAt&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L218">        _columnsOrders.put(&quot;status&quot;, new TableInfo.Column(&quot;status&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L219">        _columnsOrders.put(&quot;delivery&quot;, new TableInfo.Column(&quot;delivery&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L220">        _columnsOrders.put(&quot;contact&quot;, new TableInfo.Column(&quot;contact&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L221">        _columnsOrders.put(&quot;total&quot;, new TableInfo.Column(&quot;total&quot;, &quot;INTEGER&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L222">        final Set&lt;TableInfo.ForeignKey&gt; _foreignKeysOrders = new HashSet&lt;TableInfo.ForeignKey&gt;(1);</span>
+<span class="nc" id="L223">        _foreignKeysOrders.add(new TableInfo.ForeignKey(&quot;accounts&quot;, &quot;NO ACTION&quot;, &quot;NO ACTION&quot;, Arrays.asList(&quot;userId&quot;), Arrays.asList(&quot;id&quot;)));</span>
+<span class="nc" id="L224">        final Set&lt;TableInfo.Index&gt; _indicesOrders = new HashSet&lt;TableInfo.Index&gt;(1);</span>
+<span class="nc" id="L225">        _indicesOrders.add(new TableInfo.Index(&quot;index_orders_userId&quot;, false, Arrays.asList(&quot;userId&quot;), Arrays.asList(&quot;ASC&quot;)));</span>
+<span class="nc" id="L226">        final TableInfo _infoOrders = new TableInfo(&quot;orders&quot;, _columnsOrders, _foreignKeysOrders, _indicesOrders);</span>
+<span class="nc" id="L227">        final TableInfo _existingOrders = TableInfo.read(connection, &quot;orders&quot;);</span>
+<span class="nc bnc" id="L228" title="All 2 branches missed.">        if (!_infoOrders.equals(_existingOrders)) {</span>
+<span class="nc" id="L229">          return new RoomOpenDelegate.ValidationResult(false, &quot;orders(cl.oyl.mobile.data.local.entity.StoredOrder).\n&quot;</span>
+                  + &quot; Expected:\n&quot; + _infoOrders + &quot;\n&quot;
+                  + &quot; Found:\n&quot; + _existingOrders);
+        }
+<span class="nc" id="L233">        final Map&lt;String, TableInfo.Column&gt; _columnsOrderLines = new HashMap&lt;String, TableInfo.Column&gt;(6);</span>
+<span class="nc" id="L234">        _columnsOrderLines.put(&quot;id&quot;, new TableInfo.Column(&quot;id&quot;, &quot;INTEGER&quot;, true, 1, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L235">        _columnsOrderLines.put(&quot;orderId&quot;, new TableInfo.Column(&quot;orderId&quot;, &quot;INTEGER&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L236">        _columnsOrderLines.put(&quot;productId&quot;, new TableInfo.Column(&quot;productId&quot;, &quot;INTEGER&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L237">        _columnsOrderLines.put(&quot;productName&quot;, new TableInfo.Column(&quot;productName&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L238">        _columnsOrderLines.put(&quot;quantity&quot;, new TableInfo.Column(&quot;quantity&quot;, &quot;INTEGER&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L239">        _columnsOrderLines.put(&quot;unitPrice&quot;, new TableInfo.Column(&quot;unitPrice&quot;, &quot;INTEGER&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L240">        final Set&lt;TableInfo.ForeignKey&gt; _foreignKeysOrderLines = new HashSet&lt;TableInfo.ForeignKey&gt;(1);</span>
+<span class="nc" id="L241">        _foreignKeysOrderLines.add(new TableInfo.ForeignKey(&quot;orders&quot;, &quot;CASCADE&quot;, &quot;NO ACTION&quot;, Arrays.asList(&quot;orderId&quot;), Arrays.asList(&quot;id&quot;)));</span>
+<span class="nc" id="L242">        final Set&lt;TableInfo.Index&gt; _indicesOrderLines = new HashSet&lt;TableInfo.Index&gt;(1);</span>
+<span class="nc" id="L243">        _indicesOrderLines.add(new TableInfo.Index(&quot;index_order_lines_orderId&quot;, false, Arrays.asList(&quot;orderId&quot;), Arrays.asList(&quot;ASC&quot;)));</span>
+<span class="nc" id="L244">        final TableInfo _infoOrderLines = new TableInfo(&quot;order_lines&quot;, _columnsOrderLines, _foreignKeysOrderLines, _indicesOrderLines);</span>
+<span class="nc" id="L245">        final TableInfo _existingOrderLines = TableInfo.read(connection, &quot;order_lines&quot;);</span>
+<span class="nc bnc" id="L246" title="All 2 branches missed.">        if (!_infoOrderLines.equals(_existingOrderLines)) {</span>
+<span class="nc" id="L247">          return new RoomOpenDelegate.ValidationResult(false, &quot;order_lines(cl.oyl.mobile.data.local.entity.StoredLine).\n&quot;</span>
+                  + &quot; Expected:\n&quot; + _infoOrderLines + &quot;\n&quot;
+                  + &quot; Found:\n&quot; + _existingOrderLines);
+        }
+<span class="nc" id="L251">        final Map&lt;String, TableInfo.Column&gt; _columnsPickupLocations = new HashMap&lt;String, TableInfo.Column&gt;(6);</span>
+<span class="nc" id="L252">        _columnsPickupLocations.put(&quot;id&quot;, new TableInfo.Column(&quot;id&quot;, &quot;INTEGER&quot;, true, 1, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L253">        _columnsPickupLocations.put(&quot;name&quot;, new TableInfo.Column(&quot;name&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L254">        _columnsPickupLocations.put(&quot;address&quot;, new TableInfo.Column(&quot;address&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L255">        _columnsPickupLocations.put(&quot;hours&quot;, new TableInfo.Column(&quot;hours&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L256">        _columnsPickupLocations.put(&quot;latitude&quot;, new TableInfo.Column(&quot;latitude&quot;, &quot;REAL&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L257">        _columnsPickupLocations.put(&quot;longitude&quot;, new TableInfo.Column(&quot;longitude&quot;, &quot;REAL&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L258">        final Set&lt;TableInfo.ForeignKey&gt; _foreignKeysPickupLocations = new HashSet&lt;TableInfo.ForeignKey&gt;(0);</span>
+<span class="nc" id="L259">        final Set&lt;TableInfo.Index&gt; _indicesPickupLocations = new HashSet&lt;TableInfo.Index&gt;(0);</span>
+<span class="nc" id="L260">        final TableInfo _infoPickupLocations = new TableInfo(&quot;pickup_locations&quot;, _columnsPickupLocations, _foreignKeysPickupLocations, _indicesPickupLocations);</span>
+<span class="nc" id="L261">        final TableInfo _existingPickupLocations = TableInfo.read(connection, &quot;pickup_locations&quot;);</span>
+<span class="nc bnc" id="L262" title="All 2 branches missed.">        if (!_infoPickupLocations.equals(_existingPickupLocations)) {</span>
+<span class="nc" id="L263">          return new RoomOpenDelegate.ValidationResult(false, &quot;pickup_locations(cl.oyl.mobile.data.local.entity.StoredLocation).\n&quot;</span>
+                  + &quot; Expected:\n&quot; + _infoPickupLocations + &quot;\n&quot;
+                  + &quot; Found:\n&quot; + _existingPickupLocations);
+        }
+<span class="nc" id="L267">        final Map&lt;String, TableInfo.Column&gt; _columnsProducts = new HashMap&lt;String, TableInfo.Column&gt;(10);</span>
+<span class="nc" id="L268">        _columnsProducts.put(&quot;id&quot;, new TableInfo.Column(&quot;id&quot;, &quot;INTEGER&quot;, false, 1, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L269">        _columnsProducts.put(&quot;name&quot;, new TableInfo.Column(&quot;name&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L270">        _columnsProducts.put(&quot;category&quot;, new TableInfo.Column(&quot;category&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L271">        _columnsProducts.put(&quot;description&quot;, new TableInfo.Column(&quot;description&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L272">        _columnsProducts.put(&quot;imageUri&quot;, new TableInfo.Column(&quot;imageUri&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L273">        _columnsProducts.put(&quot;presentation&quot;, new TableInfo.Column(&quot;presentation&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L274">        _columnsProducts.put(&quot;price&quot;, new TableInfo.Column(&quot;price&quot;, &quot;INTEGER&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L275">        _columnsProducts.put(&quot;stock&quot;, new TableInfo.Column(&quot;stock&quot;, &quot;INTEGER&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L276">        _columnsProducts.put(&quot;minStock&quot;, new TableInfo.Column(&quot;minStock&quot;, &quot;INTEGER&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L277">        _columnsProducts.put(&quot;active&quot;, new TableInfo.Column(&quot;active&quot;, &quot;INTEGER&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L278">        final Set&lt;TableInfo.ForeignKey&gt; _foreignKeysProducts = new HashSet&lt;TableInfo.ForeignKey&gt;(0);</span>
+<span class="nc" id="L279">        final Set&lt;TableInfo.Index&gt; _indicesProducts = new HashSet&lt;TableInfo.Index&gt;(0);</span>
+<span class="nc" id="L280">        final TableInfo _infoProducts = new TableInfo(&quot;products&quot;, _columnsProducts, _foreignKeysProducts, _indicesProducts);</span>
+<span class="nc" id="L281">        final TableInfo _existingProducts = TableInfo.read(connection, &quot;products&quot;);</span>
+<span class="nc bnc" id="L282" title="All 2 branches missed.">        if (!_infoProducts.equals(_existingProducts)) {</span>
+<span class="nc" id="L283">          return new RoomOpenDelegate.ValidationResult(false, &quot;products(cl.oyl.mobile.model.productos.Product).\n&quot;</span>
+                  + &quot; Expected:\n&quot; + _infoProducts + &quot;\n&quot;
+                  + &quot; Found:\n&quot; + _existingProducts);
+        }
+<span class="nc" id="L287">        final Map&lt;String, TableInfo.Column&gt; _columnsOrderFulfillment = new HashMap&lt;String, TableInfo.Column&gt;(16);</span>
+<span class="nc" id="L288">        _columnsOrderFulfillment.put(&quot;orderId&quot;, new TableInfo.Column(&quot;orderId&quot;, &quot;INTEGER&quot;, true, 1, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L289">        _columnsOrderFulfillment.put(&quot;delivery&quot;, new TableInfo.Column(&quot;delivery&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L290">        _columnsOrderFulfillment.put(&quot;recipientName&quot;, new TableInfo.Column(&quot;recipientName&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L291">        _columnsOrderFulfillment.put(&quot;phone&quot;, new TableInfo.Column(&quot;phone&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L292">        _columnsOrderFulfillment.put(&quot;email&quot;, new TableInfo.Column(&quot;email&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L293">        _columnsOrderFulfillment.put(&quot;pickupLocationId&quot;, new TableInfo.Column(&quot;pickupLocationId&quot;, &quot;INTEGER&quot;, false, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L294">        _columnsOrderFulfillment.put(&quot;pickupName&quot;, new TableInfo.Column(&quot;pickupName&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L295">        _columnsOrderFulfillment.put(&quot;pickupAddress&quot;, new TableInfo.Column(&quot;pickupAddress&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L296">        _columnsOrderFulfillment.put(&quot;pickupHours&quot;, new TableInfo.Column(&quot;pickupHours&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L297">        _columnsOrderFulfillment.put(&quot;street&quot;, new TableInfo.Column(&quot;street&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L298">        _columnsOrderFulfillment.put(&quot;number&quot;, new TableInfo.Column(&quot;number&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L299">        _columnsOrderFulfillment.put(&quot;apartment&quot;, new TableInfo.Column(&quot;apartment&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L300">        _columnsOrderFulfillment.put(&quot;commune&quot;, new TableInfo.Column(&quot;commune&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L301">        _columnsOrderFulfillment.put(&quot;region&quot;, new TableInfo.Column(&quot;region&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L302">        _columnsOrderFulfillment.put(&quot;postalCode&quot;, new TableInfo.Column(&quot;postalCode&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L303">        _columnsOrderFulfillment.put(&quot;instructions&quot;, new TableInfo.Column(&quot;instructions&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L304">        final Set&lt;TableInfo.ForeignKey&gt; _foreignKeysOrderFulfillment = new HashSet&lt;TableInfo.ForeignKey&gt;(1);</span>
+<span class="nc" id="L305">        _foreignKeysOrderFulfillment.add(new TableInfo.ForeignKey(&quot;orders&quot;, &quot;CASCADE&quot;, &quot;NO ACTION&quot;, Arrays.asList(&quot;orderId&quot;), Arrays.asList(&quot;id&quot;)));</span>
+<span class="nc" id="L306">        final Set&lt;TableInfo.Index&gt; _indicesOrderFulfillment = new HashSet&lt;TableInfo.Index&gt;(0);</span>
+<span class="nc" id="L307">        final TableInfo _infoOrderFulfillment = new TableInfo(&quot;order_fulfillment&quot;, _columnsOrderFulfillment, _foreignKeysOrderFulfillment, _indicesOrderFulfillment);</span>
+<span class="nc" id="L308">        final TableInfo _existingOrderFulfillment = TableInfo.read(connection, &quot;order_fulfillment&quot;);</span>
+<span class="nc bnc" id="L309" title="All 2 branches missed.">        if (!_infoOrderFulfillment.equals(_existingOrderFulfillment)) {</span>
+<span class="nc" id="L310">          return new RoomOpenDelegate.ValidationResult(false, &quot;order_fulfillment(cl.oyl.mobile.data.local.entity.OrderFulfillment).\n&quot;</span>
+                  + &quot; Expected:\n&quot; + _infoOrderFulfillment + &quot;\n&quot;
+                  + &quot; Found:\n&quot; + _existingOrderFulfillment);
+        }
+<span class="nc" id="L314">        return new RoomOpenDelegate.ValidationResult(true, null);</span>
+      }
+    };
+<span class="nc" id="L317">    return _openDelegate;</span>
+  }
+
+  @Override
+  @NonNull
+  protected InvalidationTracker createInvalidationTracker() {
+<span class="nc" id="L323">    final Map&lt;String, String&gt; _shadowTablesMap = new HashMap&lt;String, String&gt;(0);</span>
+<span class="nc" id="L324">    final Map&lt;String, Set&lt;String&gt;&gt; _viewTables = new HashMap&lt;String, Set&lt;String&gt;&gt;(0);</span>
+<span class="nc" id="L325">    return new InvalidationTracker(this, _shadowTablesMap, _viewTables, &quot;active_session&quot;, &quot;cart&quot;, &quot;cached_products&quot;, &quot;cached_orders&quot;, &quot;local_notices&quot;, &quot;local_avatars&quot;, &quot;accounts&quot;, &quot;orders&quot;, &quot;order_lines&quot;, &quot;pickup_locations&quot;, &quot;products&quot;, &quot;order_fulfillment&quot;);</span>
+  }
+
+  @Override
+  public void clearAllTables() {
+<span class="nc" id="L330">    super.performClear(true, &quot;active_session&quot;, &quot;cart&quot;, &quot;cached_products&quot;, &quot;cached_orders&quot;, &quot;local_notices&quot;, &quot;local_avatars&quot;, &quot;orders&quot;, &quot;accounts&quot;, &quot;order_lines&quot;, &quot;pickup_locations&quot;, &quot;products&quot;, &quot;order_fulfillment&quot;);</span>
+<span class="nc" id="L331">  }</span>
+
+  @Override
+  @NonNull
+  protected Map&lt;Class&lt;?&gt;, List&lt;Class&lt;?&gt;&gt;&gt; getRequiredTypeConverters() {
+<span class="nc" id="L336">    final Map&lt;Class&lt;?&gt;, List&lt;Class&lt;?&gt;&gt;&gt; _typeConvertersMap = new HashMap&lt;Class&lt;?&gt;, List&lt;Class&lt;?&gt;&gt;&gt;();</span>
+<span class="nc" id="L337">    _typeConvertersMap.put(LocalDao.class, LocalDao_Impl.getRequiredConverters());</span>
+<span class="nc" id="L338">    _typeConvertersMap.put(StoreDao.class, StoreDao_Impl.getRequiredConverters());</span>
+<span class="nc" id="L339">    return _typeConvertersMap;</span>
+  }
+
+  @Override
+  @NonNull
+  public Set&lt;Class&lt;? extends AutoMigrationSpec&gt;&gt; getRequiredAutoMigrationSpecs() {
+<span class="nc" id="L345">    final Set&lt;Class&lt;? extends AutoMigrationSpec&gt;&gt; _autoMigrationSpecsSet = new HashSet&lt;Class&lt;? extends AutoMigrationSpec&gt;&gt;();</span>
+<span class="nc" id="L346">    return _autoMigrationSpecsSet;</span>
+  }
+
+  @Override
+  @NonNull
+  public List&lt;Migration&gt; getAutoMigrations(
+      @NonNull final Map&lt;Class&lt;? extends AutoMigrationSpec&gt;, AutoMigrationSpec&gt; autoMigrationSpecs) {
+<span class="nc" id="L353">    final List&lt;Migration&gt; _autoMigrations = new ArrayList&lt;Migration&gt;();</span>
+<span class="nc" id="L354">    return _autoMigrations;</span>
+  }
+
+  @Override
+  public LocalDao dao() {
+<span class="nc bnc" id="L359" title="All 2 branches missed.">    if (_localDao != null) {</span>
+<span class="nc" id="L360">      return _localDao;</span>
+    } else {
+<span class="nc" id="L362">      synchronized(this) {</span>
+<span class="nc bnc" id="L363" title="All 2 branches missed.">        if(_localDao == null) {</span>
+<span class="nc" id="L364">          _localDao = new LocalDao_Impl(this);</span>
+        }
+<span class="nc" id="L366">        return _localDao;</span>
+      }
+    }
+  }
+
+  @Override
+  public StoreDao store() {
+<span class="nc bnc" id="L373" title="All 2 branches missed.">    if (_storeDao != null) {</span>
+<span class="nc" id="L374">      return _storeDao;</span>
+    } else {
+<span class="nc" id="L376">      synchronized(this) {</span>
+<span class="nc bnc" id="L377" title="All 2 branches missed.">        if(_storeDao == null) {</span>
+<span class="nc" id="L378">          _storeDao = new StoreDao_Impl(this);</span>
+        }
+<span class="nc" id="L380">        return _storeDao;</span>
+      }
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span>Generated by the Android Gradle plugin 8.11.1</div></body></html>

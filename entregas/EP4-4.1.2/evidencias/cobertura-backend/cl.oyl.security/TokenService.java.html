@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TokenService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">OYL - pruebas unitarias del backend completo</a> &gt; <a href="index.source.html" class="el_package">cl.oyl.security</a> &gt; <span class="el_source">TokenService.java</span></div><h1>TokenService.java</h1><pre class="source lang-java linenums">package cl.oyl.security;
+
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.util.Set;
+
+/** Emite y verifica JWT estándar; Android solo transporta el Bearer. */
+public class TokenService {
+    private static final String ISSUER = &quot;oyl-users&quot;;
+<span class="fc" id="L14">    private static final Set&lt;String&gt; ROLES = Set.of(&quot;ADMIN&quot;, &quot;CLIENT&quot;);</span>
+    private final Algorithm algorithm;
+    private final JWTVerifier verifier;
+    private final long lifetimeSeconds;
+
+<span class="fc" id="L19">    public TokenService(String secret, long lifetimeSeconds) {</span>
+<span class="pc bpc" id="L20" title="1 of 4 branches missed.">        if (secret == null || secret.getBytes(StandardCharsets.UTF_8).length &lt; 32)</span>
+<span class="fc" id="L21">            throw new IllegalArgumentException(&quot;OYL_JWT_SECRET debe tener al menos 32 bytes&quot;);</span>
+<span class="fc" id="L22">        this.lifetimeSeconds = lifetimeSeconds;</span>
+<span class="fc" id="L23">        algorithm = Algorithm.HMAC256(secret);</span>
+<span class="fc" id="L24">        verifier = JWT.require(algorithm).withIssuer(ISSUER).withClaimPresence(&quot;exp&quot;).build();</span>
+<span class="fc" id="L25">    }</span>
+
+    public String issue(long userId, String role) {
+<span class="pc bpc" id="L28" title="2 of 6 branches missed.">        if (userId &lt; 1 || role == null || !ROLES.contains(role)) throw new IllegalArgumentException(&quot;Identidad inválida&quot;);</span>
+<span class="fc" id="L29">        var now = Instant.now();</span>
+<span class="fc" id="L30">        return JWT.create().withIssuer(ISSUER).withSubject(Long.toString(userId)).withClaim(&quot;role&quot;, role)</span>
+<span class="fc" id="L31">                .withIssuedAt(now).withExpiresAt(now.plusSeconds(lifetimeSeconds)).sign(algorithm);</span>
+    }
+
+    public Identity verify(String bearer) {
+<span class="pc bpc" id="L35" title="1 of 4 branches missed.">        if (bearer == null || !bearer.startsWith(&quot;Bearer &quot;)) throw new IllegalArgumentException(&quot;Falta token de sesión&quot;);</span>
+        try {
+<span class="fc" id="L37">            var jwt = verifier.verify(bearer.substring(7));</span>
+<span class="fc" id="L38">            long id = Long.parseLong(jwt.getSubject());</span>
+<span class="fc" id="L39">            String role = jwt.getClaim(&quot;role&quot;).asString();</span>
+<span class="pc bpc" id="L40" title="3 of 6 branches missed.">            if (id &lt; 1 || role == null || !ROLES.contains(role)) throw new IllegalArgumentException(&quot;Identidad inválida&quot;);</span>
+<span class="fc" id="L41">            return new Identity(id, role, jwt.getExpiresAtAsInstant().getEpochSecond());</span>
+<span class="fc" id="L42">        } catch (JWTVerificationException | NumberFormatException e) {</span>
+<span class="fc" id="L43">            throw new IllegalArgumentException(&quot;Sesión inválida o vencida&quot;, e);</span>
+        }
+    }
+<span class="fc" id="L46">    public record Identity(long userId, String role, long expiresAt) {}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

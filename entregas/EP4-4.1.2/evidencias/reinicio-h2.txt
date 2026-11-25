@@ -1,0 +1,6 @@
+OK: cuatro instancias UP y sus cuatro enlaces de estado.
+OK: 3 rutas de salud, catálogo (9 productos), retiro (3 puntos).
+Persistencia tras reiniciar: pedido #1, estado CONFIRMADO, total 2500, unidades 2.
+Persistencia tras reiniciar: pedido #2, estado CONFIRMADO, total 1250, unidades 1.
+Inventario conservado tras reiniciar: producto del pedido #1, stock 5, desactivado.
+Inventario conservado tras reiniciar: producto del pedido #2, stock 2, desactivado.

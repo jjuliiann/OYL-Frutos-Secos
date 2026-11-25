@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OrderController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">OYL - pruebas unitarias del backend completo</a> &gt; <a href="index.source.html" class="el_package">cl.oyl.orders</a> &gt; <span class="el_source">OrderController.java</span></div><h1>OrderController.java</h1><pre class="source lang-java linenums">package cl.oyl.orders;
+
+import static cl.oyl.orders.OrderDtos.*;
+
+import cl.oyl.security.TokenService;
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.server.ResponseStatusException;
+
+@RestController // Recibe y consulta pedidos desde el Gateway.
+public class OrderController {
+    private final OrderRepository orders; // Persiste pedidos y líneas en H2.
+    private final RestClient products; // Llama a Productos para validar y reservar stock.
+    private final TokenService tokens; // Valida usuario y rol de la sesión.
+
+<span class="fc" id="L23">    public OrderController(OrderRepository orders, RestClient productClient, TokenService tokens) {</span>
+<span class="fc" id="L24">        this.orders = orders;</span>
+<span class="fc" id="L25">        this.products = productClient;</span>
+<span class="fc" id="L26">        this.tokens = tokens;</span>
+<span class="fc" id="L27">    }</span>
+
+    @GetMapping(&quot;/api/health&quot;) // Estado del servicio Pedidos.
+    public Map&lt;String, String&gt; health() {
+<span class="nc" id="L31">        return Map.of(&quot;status&quot;, &quot;ok&quot;, &quot;service&quot;, &quot;orders&quot;);</span>
+    }
+
+    @PostMapping(&quot;/api/orders&quot;) // Valida compra, reserva inventario y guarda el pedido.
+    @Transactional
+    public OrderView create(
+            @RequestHeader(&quot;Authorization&quot;) String authorization,
+            @RequestBody OrderRequest request
+    ) {
+<span class="pc bpc" id="L40" title="1 of 4 branches missed.">        if (request == null || request.userId() == null</span>
+<span class="pc bpc" id="L41" title="2 of 4 branches missed.">                || request.items() == null || request.items().isEmpty()) {</span>
+<span class="fc" id="L42">            throw bad(&quot;El pedido no contiene productos&quot;);</span>
+        }
+
+<span class="fc" id="L45">        TokenService.Identity user = identity(authorization);</span>
+<span class="pc bpc" id="L46" title="1 of 4 branches missed.">        if (user.userId() != request.userId() || !&quot;CLIENT&quot;.equals(user.role())) {</span>
+<span class="fc" id="L47">            throw new ResponseStatusException(HttpStatus.FORBIDDEN, &quot;Solo clientes pueden comprar&quot;);</span>
+        }
+
+<span class="pc bpc" id="L50" title="2 of 4 branches missed.">        String delivery = request.fulfillment() != null &amp;&amp; request.fulfillment().delivery() != null</span>
+<span class="pc" id="L51">                ? request.fulfillment().delivery() : request.delivery();</span>
+<span class="pc bpc" id="L52" title="1 of 2 branches missed.">        if (!OrderPolicy.validDelivery(delivery)) {</span>
+<span class="nc" id="L53">            throw bad(&quot;Modalidad de entrega inválida&quot;);</span>
+        }
+<span class="pc bpc" id="L55" title="1 of 2 branches missed.">        if (!OrderPolicy.validFulfillment(delivery, request.fulfillment())) {</span>
+<span class="nc" id="L56">            throw bad(&quot;Revisa los datos de contacto y entrega del pedido&quot;);</span>
+        }
+
+        TreeMap&lt;Long, Integer&gt; quantities;
+        try {
+<span class="fc" id="L61">            quantities = OrderPolicy.quantities(request.items()); // Combina productos repetidos.</span>
+<span class="fc" id="L62">        } catch (IllegalArgumentException error) {</span>
+<span class="fc" id="L63">            throw bad(error.getMessage());</span>
+<span class="fc" id="L64">        }</span>
+
+<span class="fc" id="L66">        PurchaseOrder order = new PurchaseOrder();</span>
+<span class="fc" id="L67">        order.userId = user.userId();</span>
+<span class="fc" id="L68">        order.createdAt = OffsetDateTime.now().toString();</span>
+<span class="fc" id="L69">        order.delivery = delivery;</span>
+<span class="fc" id="L70">        order.status = &quot;PENDIENTE_VALIDACION&quot;;</span>
+<span class="pc bpc" id="L71" title="1 of 2 branches missed.">        order.contact = request.contact() == null ? &quot;&quot; : request.contact().trim();</span>
+<span class="fc" id="L72">        order.fulfillment = FulfillmentEmbeddable.from(request.fulfillment());</span>
+<span class="pc bpc" id="L73" title="1 of 2 branches missed.">        if (request.fulfillment() != null) {</span>
+<span class="fc" id="L74">            String name = request.fulfillment().recipientName();</span>
+<span class="fc" id="L75">            String phone = request.fulfillment().phone();</span>
+<span class="pc bpc" id="L76" title="2 of 4 branches missed.">            if (name != null &amp;&amp; !name.isBlank()) {</span>
+<span class="pc bpc" id="L77" title="2 of 4 branches missed.">                order.contact = name.trim() + (phone == null || phone.isBlank() ? &quot;&quot; : &quot; · &quot; + phone.trim());</span>
+            }
+        }
+
+<span class="fc" id="L81">        List&lt;Map.Entry&lt;Long, Integer&gt;&gt; reserved = new ArrayList&lt;&gt;(); // Permite devolver stock si hay un error.</span>
+<span class="fc" id="L82">        long total = 0;</span>
+        try {
+<span class="fc bfc" id="L84" title="All 2 branches covered.">            for (var item : quantities.entrySet()) {</span>
+<span class="fc" id="L85">                ProductView product = products.post()</span>
+<span class="fc" id="L86">                        .uri(&quot;/internal/products/{id}/reserve&quot;, item.getKey())</span>
+<span class="fc" id="L87">                        .body(new Quantity(item.getValue()))</span>
+<span class="fc" id="L88">                        .retrieve()</span>
+<span class="fc" id="L89">                        .body(ProductView.class);</span>
+<span class="pc bpc" id="L90" title="1 of 2 branches missed.">                if (product == null) {</span>
+<span class="nc" id="L91">                    throw new ResponseStatusException(</span>
+                            HttpStatus.BAD_GATEWAY, &quot;No se recibió confirmación del inventario&quot;);
+                }
+
+<span class="fc" id="L95">                reserved.add(item);</span>
+<span class="fc" id="L96">                total = Math.addExact(total, Math.multiplyExact((long) product.price(), item.getValue()));</span>
+
+<span class="fc" id="L98">                OrderLine line = new OrderLine();</span>
+<span class="fc" id="L99">                line.order = order;</span>
+<span class="fc" id="L100">                line.productId = product.id();</span>
+<span class="fc" id="L101">                line.productName = product.name();</span>
+<span class="fc" id="L102">                line.quantity = item.getValue();</span>
+<span class="fc" id="L103">                line.unitPrice = product.price();</span>
+<span class="fc" id="L104">                order.lines.add(line);</span>
+<span class="fc" id="L105">            }</span>
+
+<span class="pc bpc" id="L107" title="1 of 2 branches missed.">            if (total &gt; Integer.MAX_VALUE) {</span>
+<span class="nc" id="L108">                throw bad(&quot;Total del pedido fuera de rango&quot;);</span>
+            }
+<span class="fc" id="L110">            order.total = (int) total;</span>
+<span class="fc" id="L111">            return view(orders.saveAndFlush(order));</span>
+<span class="fc" id="L112">        } catch (RuntimeException error) {</span>
+<span class="fc" id="L113">            releaseReservedStock(reserved); // Compensa reservas si no se guardó el pedido.</span>
+<span class="pc bpc" id="L114" title="1 of 2 branches missed.">            if (error instanceof org.springframework.web.client.RestClientResponseException upstream) {</span>
+<span class="pc bpc" id="L115" title="1 of 2 branches missed.">                if (upstream.getStatusCode().value() == 409)</span>
+<span class="fc" id="L116">                    throw new ResponseStatusException(HttpStatus.CONFLICT, &quot;Stock insuficiente o producto inactivo&quot;);</span>
+<span class="nc bnc" id="L117" title="All 2 branches missed.">                if (upstream.getStatusCode().value() == 404)</span>
+<span class="nc" id="L118">                    throw new ResponseStatusException(HttpStatus.NOT_FOUND, &quot;Producto inexistente&quot;);</span>
+<span class="nc" id="L119">                throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, &quot;Inventario no disponible&quot;);</span>
+            }
+<span class="nc bnc" id="L121" title="All 2 branches missed.">            if (error instanceof org.springframework.web.client.ResourceAccessException)</span>
+<span class="nc" id="L122">                throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, &quot;Inventario no disponible&quot;);</span>
+<span class="nc" id="L123">            throw error;</span>
+        }
+    }
+
+    @GetMapping(&quot;/api/orders&quot;) // Cliente ve sus pedidos; ADMIN puede consultar todos.
+    public List&lt;OrderView&gt; list(
+            @RequestHeader(&quot;Authorization&quot;) String authorization,
+            @RequestParam Long userId
+    ) {
+<span class="fc" id="L132">        TokenService.Identity user = identity(authorization);</span>
+<span class="pc bpc" id="L133" title="1 of 4 branches missed.">        if (user.userId() != userId &amp;&amp; !&quot;ADMIN&quot;.equals(user.role())) {</span>
+<span class="fc" id="L134">            throw new ResponseStatusException(</span>
+                    HttpStatus.FORBIDDEN, &quot;No puedes consultar pedidos de otro usuario&quot;);
+        }
+
+<span class="fc bfc" id="L138" title="All 2 branches covered.">        List&lt;PurchaseOrder&gt; found = &quot;ADMIN&quot;.equals(user.role())</span>
+<span class="fc" id="L139">                ? orders.findAllByOrderByIdDesc()</span>
+<span class="fc" id="L140">                : orders.findByUserIdOrderByIdDesc(userId);</span>
+<span class="fc" id="L141">        return found.stream().map(OrderController::view).toList();</span>
+    }
+
+    @PatchMapping(&quot;/api/orders/{id}/status&quot;) // ADMIN actualiza el estado de un pedido.
+    public OrderView status(
+            @PathVariable Long id,
+            @RequestParam Long adminId,
+            @RequestHeader(&quot;Authorization&quot;) String authorization,
+            @RequestBody StatusChange change
+    ) {
+<span class="fc" id="L151">        requireAdmin(adminId, authorization);</span>
+<span class="pc bpc" id="L152" title="1 of 4 branches missed.">        if (change == null || !OrderPolicy.validStatus(change.status())) {</span>
+<span class="fc" id="L153">            throw bad(&quot;Estado de pedido inválido&quot;);</span>
+        }
+
+<span class="fc" id="L156">        PurchaseOrder order = orders.findById(id)</span>
+<span class="pc" id="L157">                .orElseThrow(() -&gt; new ResponseStatusException(HttpStatus.NOT_FOUND, &quot;Pedido inexistente&quot;));</span>
+<span class="fc" id="L158">        order.status = change.status();</span>
+<span class="fc" id="L159">        return view(orders.save(order));</span>
+    }
+
+    private void releaseReservedStock(List&lt;Map.Entry&lt;Long, Integer&gt;&gt; reserved) {
+<span class="fc bfc" id="L163" title="All 2 branches covered.">        for (var item : reserved) {</span>
+            try {
+<span class="fc" id="L165">                products.post()</span>
+<span class="fc" id="L166">                        .uri(&quot;/internal/products/{id}/release&quot;, item.getKey())</span>
+<span class="fc" id="L167">                        .body(new Quantity(item.getValue()))</span>
+<span class="fc" id="L168">                        .retrieve()</span>
+<span class="fc" id="L169">                        .body(ProductView.class);</span>
+<span class="nc" id="L170">            } catch (RuntimeException ignored) {</span>
+                // No reemplaza la excepción original que provocó la compensación.
+<span class="fc" id="L172">            }</span>
+<span class="fc" id="L173">        }</span>
+<span class="fc" id="L174">    }</span>
+
+    private TokenService.Identity identity(String authorization) {
+        try {
+<span class="fc" id="L178">            return tokens.verify(authorization);</span>
+<span class="fc" id="L179">        } catch (IllegalArgumentException error) {</span>
+<span class="fc" id="L180">            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, error.getMessage());</span>
+        }
+    }
+
+    private void requireAdmin(Long id, String authorization) {
+<span class="fc" id="L185">        TokenService.Identity user = identity(authorization);</span>
+<span class="pc bpc" id="L186" title="1 of 4 branches missed.">        if (user.userId() != id || !&quot;ADMIN&quot;.equals(user.role())) {</span>
+<span class="fc" id="L187">            throw new ResponseStatusException(HttpStatus.FORBIDDEN, &quot;Solo administrador&quot;);</span>
+        }
+<span class="fc" id="L189">    }</span>
+
+    // Convierte la entidad guardada al JSON que consume Retrofit.
+    private static OrderView view(PurchaseOrder order) {
+<span class="fc" id="L193">        List&lt;OrderLineView&gt; lines = order.lines.stream()</span>
+<span class="fc" id="L194">                .map(line -&gt; new OrderLineView(</span>
+                        line.id, line.productId, line.productName, line.quantity, line.unitPrice))
+<span class="fc" id="L196">                .toList();</span>
+<span class="fc" id="L197">        return new OrderView(</span>
+                order.id,
+                order.userId,
+                order.createdAt,
+                order.status,
+                order.delivery,
+                order.contact,
+                order.total,
+                lines,
+<span class="fc bfc" id="L206" title="All 2 branches covered.">                order.fulfillment == null ? null : order.fulfillment.dto(order.delivery)</span>
+        );
+    }
+
+    private static ResponseStatusException bad(String message) {
+<span class="fc" id="L211">        return new ResponseStatusException(HttpStatus.BAD_REQUEST, message);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

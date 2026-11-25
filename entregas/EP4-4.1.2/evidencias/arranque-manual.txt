@@ -1,0 +1,17 @@
+Edición CMD manual | Entorno de comprobación: PowerShell 7, OpenJDK 21 y cinco procesos Spring reales en Linux. El comando de cada BAT se ejercitó en el mismo script de PowerShell; no se ejecutó Windows nativo aquí. Datos de evaluación fuera del ZIP.
+
+OK: abrir la ayuda y consultar estado no inicia ninguna JVM de la tienda.
+OK: eureka solicitado explícitamente, puerto 8761 abierto.
+OK: repetir eureka no crea otra instancia.
+OK: usuarios solicitado explícitamente, puerto 8081 abierto.
+OK: productos solicitado explícitamente, puerto 8082 abierto.
+OK: pedidos solicitado explícitamente, puerto 8083 abierto.
+OK: gateway solicitado explícitamente, puerto 8080 abierto.
+OK: estado confirmó Eureka, los tres microservicios, la API Gateway, sus rutas, el catálogo y los retiros.
+OK: cuatro instancias UP y sus cuatro enlaces de estado.
+OK: 3 rutas de salud, catálogo (7 productos), retiro (3 puntos).
+OK: login, JWT, registro, perfil, CRUD (baja lógica), roles, stock insuficiente, compra #1, stock 7 -> 5 e historial confirmado.
+
+OK: detener cerró los cinco procesos propios; sin puertos ocupados ni registros PID pendientes; se conservaron los tres archivos H2.
+OK: la salida heredada por la consola contiene los cinco mensajes Started de Spring; no fue necesario abrir ventanas ni navegador.
+OK: tras detener, H2 reabrió en modo lectura: pedido #1 CONFIRMADO, total $2.500, 2 unidades; stock del mismo producto (ID 8) = 5.

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UserController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">OYL - pruebas unitarias del backend completo</a> &gt; <a href="index.source.html" class="el_package">cl.oyl.users</a> &gt; <span class="el_source">UserController.java</span></div><h1>UserController.java</h1><pre class="source lang-java linenums">package cl.oyl.users;
+
+import static cl.oyl.users.UserDtos.*;
+
+import cl.oyl.security.TokenService;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+
+@RestController // Expone las rutas HTTP del servicio Usuarios.
+public class UserController {
+    private final UserRepository users; // Lee y guarda cuentas en H2.
+    private final TokenService tokens; // Emite y valida sesiones.
+<span class="fc" id="L15">    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(); // Hashea contraseñas.</span>
+
+<span class="fc" id="L17">    public UserController(UserRepository users, TokenService tokens) {</span>
+<span class="fc" id="L18">        this.users = users;</span>
+<span class="fc" id="L19">        this.tokens = tokens;</span>
+<span class="fc" id="L20">    }</span>
+
+    // Convierte la entidad de base de datos a una respuesta sin token.
+    private Account view(UserAccount user) {
+<span class="fc" id="L24">        return new Account(user.id, user.alias, user.name, user.email, user.phone, user.address, user.role, null);</span>
+    }
+
+    @GetMapping(&quot;/api/health&quot;) // Informa que Usuarios está activo.
+    public java.util.Map&lt;String, String&gt; health() {
+<span class="nc" id="L29">        return java.util.Map.of(&quot;status&quot;, &quot;ok&quot;, &quot;service&quot;, &quot;users&quot;);</span>
+    }
+
+    @PostMapping(&quot;/api/auth/register&quot;) // Valida, guarda y autentica una cuenta nueva.
+    public Account register(@RequestBody Register request) {
+<span class="pc bpc" id="L34" title="3 of 6 branches missed.">        if (request == null || blank(request.alias()) || blank(request.name())</span>
+<span class="pc bpc" id="L35" title="1 of 4 branches missed.">                || request.password() == null || request.password().length() &lt; 8) {</span>
+<span class="fc" id="L36">            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,</span>
+                    &quot;Nombre, alias y contraseña de al menos 8 caracteres son obligatorios&quot;);
+        }
+
+<span class="fc" id="L40">        String alias = request.alias().trim();</span>
+<span class="pc bpc" id="L41" title="1 of 2 branches missed.">        if (users.findByAlias(alias).isPresent()) {</span>
+<span class="nc" id="L42">            throw new ResponseStatusException(HttpStatus.CONFLICT, &quot;Alias ocupado&quot;);</span>
+        }
+
+<span class="fc" id="L45">        UserAccount account = new UserAccount();</span>
+<span class="fc" id="L46">        account.alias = alias;</span>
+<span class="fc" id="L47">        account.name = request.name().trim();</span>
+<span class="fc" id="L48">        account.email = clean(request.email());</span>
+<span class="fc" id="L49">        account.phone = clean(request.phone());</span>
+<span class="fc" id="L50">        account.address = clean(request.address());</span>
+<span class="fc" id="L51">        account.passwordHash = encoder.encode(request.password());</span>
+<span class="fc" id="L52">        return withToken(users.save(account));</span>
+    }
+
+    @PostMapping(&quot;/api/auth/login&quot;) // Comprueba las credenciales y devuelve un token.
+    public Account login(@RequestBody Credentials credentials) {
+<span class="pc bpc" id="L57" title="3 of 6 branches missed.">        if (credentials == null || blank(credentials.alias()) || credentials.password() == null) {</span>
+<span class="nc" id="L58">            throw unauthorized();</span>
+        }
+
+<span class="fc" id="L61">        UserAccount account = users.findByAlias(credentials.alias().trim())</span>
+<span class="fc" id="L62">                .orElseThrow(UserController::unauthorized);</span>
+<span class="fc bfc" id="L63" title="All 2 branches covered.">        if (!encoder.matches(credentials.password(), account.passwordHash)) {</span>
+<span class="fc" id="L64">            throw unauthorized();</span>
+        }
+<span class="fc" id="L66">        return withToken(account);</span>
+    }
+
+    @PutMapping(&quot;/api/users/{id}&quot;) // Actualiza solo el perfil dueño del token.
+    public Account update(
+            @PathVariable Long id,
+            @RequestHeader(&quot;Authorization&quot;) String authorization,
+            @RequestBody ProfileUpdate profile
+    ) {
+<span class="fc" id="L75">        requireSameUser(id, authorization);</span>
+<span class="fc" id="L76">        UserAccount account = users.findById(id)</span>
+<span class="pc" id="L77">                .orElseThrow(() -&gt; new ResponseStatusException(HttpStatus.NOT_FOUND, &quot;Usuario inexistente&quot;));</span>
+<span class="pc bpc" id="L78" title="2 of 4 branches missed.">        if (profile == null || blank(profile.name())) {</span>
+<span class="nc" id="L79">            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, &quot;El nombre es obligatorio&quot;);</span>
+        }
+
+<span class="fc" id="L82">        account.name = profile.name().trim();</span>
+<span class="fc" id="L83">        account.email = clean(profile.email());</span>
+<span class="fc" id="L84">        account.phone = clean(profile.phone());</span>
+<span class="fc" id="L85">        account.address = clean(profile.address());</span>
+<span class="fc" id="L86">        return view(users.save(account));</span>
+    }
+
+    @GetMapping(&quot;/internal/users/{id}&quot;) // Consulta interna, no expuesta por el Gateway.
+    public Account internal(@PathVariable Long id) {
+<span class="fc" id="L91">        return users.findById(id).map(this::view)</span>
+<span class="pc" id="L92">                .orElseThrow(() -&gt; new ResponseStatusException(HttpStatus.NOT_FOUND, &quot;Usuario inexistente&quot;));</span>
+    }
+
+    // Añade el token firmado a la respuesta de login o registro.
+    private Account withToken(UserAccount user) {
+<span class="fc" id="L97">        Account account = view(user);</span>
+<span class="fc" id="L98">        return new Account(account.id(), account.alias(), account.name(), account.email(),</span>
+<span class="fc" id="L99">                account.phone(), account.address(), account.role(), tokens.issue(user.id, user.role));</span>
+    }
+
+    // Evita que una cuenta cambie el perfil de otra persona.
+    private void requireSameUser(Long id, String authorization) {
+        try {
+<span class="fc bfc" id="L105" title="All 2 branches covered.">            if (tokens.verify(authorization).userId() != id) {</span>
+<span class="fc" id="L106">                throw new ResponseStatusException(HttpStatus.FORBIDDEN, &quot;No puedes editar otro perfil&quot;);</span>
+            }
+<span class="fc" id="L108">        } catch (IllegalArgumentException error) {</span>
+<span class="fc" id="L109">            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, error.getMessage());</span>
+<span class="fc" id="L110">        }</span>
+<span class="fc" id="L111">    }</span>
+
+<span class="pc bpc" id="L113" title="2 of 4 branches missed.">    private static boolean blank(String value) { return value == null || value.isBlank(); }</span>
+<span class="pc bpc" id="L114" title="1 of 2 branches missed.">    private static String clean(String value) { return value == null ? &quot;&quot; : value.trim(); }</span>
+    private static ResponseStatusException unauthorized() {
+<span class="fc" id="L116">        return new ResponseStatusException(HttpStatus.UNAUTHORIZED, &quot;Alias o contraseña incorrectos&quot;);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

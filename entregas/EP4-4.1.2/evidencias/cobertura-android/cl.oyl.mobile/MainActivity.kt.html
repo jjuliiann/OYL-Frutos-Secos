@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MainActivity.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">cl.oyl.mobile</a> &gt; <span class="el_source">MainActivity.kt</span></div><h1>MainActivity.kt</h1><pre class="source lang-java linenums">package cl.oyl.mobile
+
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.os.Bundle
+import android.content.Intent
+import androidx.compose.runtime.mutableStateOf
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.viewModels
+import androidx.compose.animation.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.lightColorScheme
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color
+import cl.oyl.mobile.ui.navigation.OylNavigation
+import cl.oyl.mobile.ui.theme.Cream
+import cl.oyl.mobile.ui.theme.Forest
+import cl.oyl.mobile.viewmodel.OylViewModel
+import cl.oyl.mobile.viewmodel.auth.AuthViewModel
+import cl.oyl.mobile.viewmodel.productos.ProductsViewModel
+import cl.oyl.mobile.viewmodel.inventario.InventoryViewModel
+import cl.oyl.mobile.viewmodel.carrito.CartViewModel
+import cl.oyl.mobile.viewmodel.checkout.CheckoutViewModel
+import cl.oyl.mobile.viewmodel.pedidos.OrdersViewModel
+import cl.oyl.mobile.viewmodel.perfil.ProfileViewModel
+import cl.oyl.mobile.viewmodel.mapa.MapViewModel
+import cl.oyl.mobile.viewmodel.qr.QrViewModel
+import cl.oyl.mobile.viewmodel.notificaciones.NotificationsViewModel
+import cl.oyl.mobile.viewmodel.externa.ExternalApiViewModel
+
+<span class="nc" id="L33">class MainActivity : ComponentActivity() {</span>
+<span class="nc" id="L34">    private val appVm by viewModels&lt;OylViewModel&gt;()</span>
+<span class="nc" id="L35">    private val authVm by viewModels&lt;AuthViewModel&gt;()</span>
+<span class="nc" id="L36">    private val productsVm by viewModels&lt;ProductsViewModel&gt;()</span>
+<span class="nc" id="L37">    private val inventoryVm by viewModels&lt;InventoryViewModel&gt;()</span>
+<span class="nc" id="L38">    private val cartVm by viewModels&lt;CartViewModel&gt;()</span>
+<span class="nc" id="L39">    private val checkoutVm by viewModels&lt;CheckoutViewModel&gt;()</span>
+<span class="nc" id="L40">    private val ordersVm by viewModels&lt;OrdersViewModel&gt;()</span>
+<span class="nc" id="L41">    private val profileVm by viewModels&lt;ProfileViewModel&gt;()</span>
+<span class="nc" id="L42">    private val mapVm by viewModels&lt;MapViewModel&gt;()</span>
+<span class="nc" id="L43">    private val qrVm by viewModels&lt;QrViewModel&gt;()</span>
+<span class="nc" id="L44">    private val notificationsVm by viewModels&lt;NotificationsViewModel&gt;()</span>
+<span class="nc" id="L45">    private val externalApiVm by viewModels&lt;ExternalApiViewModel&gt;()</span>
+<span class="nc" id="L46">    private var pendingProductLink by mutableStateOf&lt;String?&gt;(null)</span>
+
+    override fun onNewIntent(intent: Intent) {
+<span class="nc" id="L49">        super.onNewIntent(intent)</span>
+<span class="nc" id="L50">        setIntent(intent)</span>
+<span class="nc bnc" id="L51" title="All 2 branches missed.">        if (intent.action == Intent.ACTION_VIEW) pendingProductLink = intent.dataString</span>
+<span class="nc" id="L52">    }</span>
+
+    override fun onSaveInstanceState(outState: Bundle) {
+<span class="nc" id="L55">        outState.putString(&quot;pendingProductLink&quot;, pendingProductLink)</span>
+<span class="nc" id="L56">        super.onSaveInstanceState(outState)</span>
+<span class="nc" id="L57">    }</span>
+    override fun onCreate(savedInstanceState: Bundle?) {
+<span class="nc" id="L59">        super.onCreate(savedInstanceState)</span>
+<span class="nc bnc" id="L60" title="All 2 branches missed.">        pendingProductLink = if (savedInstanceState != null) savedInstanceState.getString(&quot;pendingProductLink&quot;)</span>
+<span class="nc bnc" id="L61" title="All 2 branches missed.">            else if (intent.action == Intent.ACTION_VIEW) intent.dataString else null</span>
+<span class="nc bnc" id="L62" title="All 2 branches missed.">        if (android.os.Build.VERSION.SDK_INT &gt;= 26) {</span>
+<span class="nc" id="L63">            getSystemService(NotificationManager::class.java).createNotificationChannel(</span>
+<span class="nc" id="L64">                NotificationChannel(&quot;oyl_demo&quot;, &quot;Avisos OYL&quot;, NotificationManager.IMPORTANCE_DEFAULT)</span>
+            )
+        }
+<span class="nc" id="L67">        setContent {</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">            MaterialTheme(</span>
+<span class="nc" id="L69">                colorScheme = lightColorScheme(primary = Forest, background = Cream, surface = Color.White)</span>
+<span class="nc" id="L70">            ) {</span>
+<span class="nc bnc" id="L71" title="All 2 branches missed.">                OylNavigation(</span>
+<span class="nc" id="L72">                    appVm = appVm,</span>
+<span class="nc" id="L73">                    authVm = authVm,</span>
+<span class="nc" id="L74">                    productsVm = productsVm,</span>
+<span class="nc" id="L75">                    inventoryVm = inventoryVm,</span>
+<span class="nc" id="L76">                    cartVm = cartVm,</span>
+<span class="nc" id="L77">                    checkoutVm = checkoutVm,</span>
+<span class="nc" id="L78">                    ordersVm = ordersVm,</span>
+<span class="nc" id="L79">                    profileVm = profileVm,</span>
+<span class="nc" id="L80">                    mapVm = mapVm,</span>
+<span class="nc" id="L81">                    qrVm = qrVm,</span>
+<span class="nc" id="L82">                    notificationsVm = notificationsVm,</span>
+<span class="nc" id="L83">                    externalApiVm = externalApiVm,</span>
+<span class="nc" id="L84">                    productLink = pendingProductLink, linkConsumed = { pendingProductLink = null }</span>
+                )
+<span class="nc" id="L86">            }</span>
+<span class="nc" id="L87">        }</span>
+<span class="nc" id="L88">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span>Generated by the Android Gradle plugin 8.11.1</div></body></html>

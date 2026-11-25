@@ -1,0 +1,1 @@
+Archivos Kotlin: 80; errores sintácticos: 0

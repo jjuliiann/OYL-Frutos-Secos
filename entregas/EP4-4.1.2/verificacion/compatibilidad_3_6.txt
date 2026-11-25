@@ -1,0 +1,1 @@
+OK: 18 archivos de persistencia conservan lógica/SQL/anotaciones; Product mantiene campos y tabla; imágenes, QR, assets de mapa y pantallas comerciales conservados (salvo imports). DB v4 y applicationId sin cambios. Verificación estática, no migración ejecutada en Android.

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>WelcomeScreen.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">cl.oyl.mobile.ui.bienvenida</a> &gt; <span class="el_source">WelcomeScreen.kt</span></div><h1>WelcomeScreen.kt</h1><pre class="source lang-java linenums">package cl.oyl.mobile.ui.bienvenida
+
+import androidx.compose.animation.*
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import cl.oyl.mobile.R
+import cl.oyl.mobile.model.productos.Product
+import cl.oyl.mobile.ui.components.ActionButton
+import cl.oyl.mobile.ui.components.OylOutlinedButton
+import cl.oyl.mobile.ui.components.OylTextButton
+import cl.oyl.mobile.ui.components.ProductPicture
+import kotlinx.coroutines.delay
+
+@Composable
+<span class="nc bnc" id="L30" title="All 18 branches missed.">fun WelcomeScreen(onLogin: () -&gt; Unit, onCatalog: () -&gt; Unit, onMap: () -&gt; Unit) {</span>
+<span class="nc" id="L31">    var shown by remember { mutableStateOf(false) }</span>
+<span class="nc" id="L32">    LaunchedEffect(Unit) { delay(70); shown = true }</span>
+<span class="nc" id="L33">    Column(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(Color(0xFFE5EFDE), Color(0xFFFAF8F2))))</span>
+<span class="nc" id="L34">        .verticalScroll(rememberScrollState()).padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally,</span>
+<span class="nc" id="L35">        verticalArrangement = Arrangement.spacedBy(16.dp)) {</span>
+<span class="nc" id="L36">        AnimatedVisibility(shown, enter = fadeIn(tween(650)) + scaleIn(tween(650), initialScale = .8f)) {</span>
+<span class="nc" id="L37">            Column(horizontalAlignment = Alignment.CenterHorizontally) {</span>
+<span class="nc" id="L38">                Image(painterResource(R.drawable.oyl_logo), &quot;Logo OYL: hojas y fruto seco&quot;, Modifier.size(112.dp))</span>
+<span class="nc" id="L39">                Text(&quot;OYL&quot;, style = MaterialTheme.typography.displayMedium, fontWeight = FontWeight.Black, color = Color(0xFF1B6A43))</span>
+<span class="nc" id="L40">                Text(&quot;FRUTOS SECOS&quot;, style = MaterialTheme.typography.titleMedium, color = Color(0xFF1B6A43))</span>
+<span class="nc" id="L41">            }</span>
+<span class="nc" id="L42">        }</span>
+<span class="nc" id="L43">        Text(&quot;Un pequeño hábito.\nMucho sabor natural.&quot;, textAlign = TextAlign.Center, style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)</span>
+<span class="nc" id="L44">        Text(&quot;Frutos secos, semillas y mezclas para acompañar tu día.&quot;, textAlign = TextAlign.Center, color = Color(0xFF53604F))</span>
+<span class="nc" id="L45">        Card(shape = RoundedCornerShape(28.dp), colors = CardDefaults.cardColors(containerColor = Color.White)) {</span>
+<span class="nc" id="L46">            Row(Modifier.fillMaxWidth().padding(12.dp), horizontalArrangement = Arrangement.SpaceEvenly) {</span>
+<span class="nc" id="L47">                listOf(&quot;Almendras&quot;, &quot;Nueces&quot;, &quot;Mix Premium&quot;).forEach { name -&gt;</span>
+<span class="nc" id="L48">                    Column(horizontalAlignment = Alignment.CenterHorizontally) {</span>
+<span class="nc" id="L49">                        ProductPicture(Product(name = name), pictureSize = 76.dp)</span>
+<span class="nc" id="L50">                        Text(name, style = MaterialTheme.typography.labelSmall)</span>
+<span class="nc" id="L51">                    }</span>
+<span class="nc" id="L52">                }</span>
+<span class="nc" id="L53">            }</span>
+<span class="nc" id="L54">        }</span>
+<span class="nc" id="L55">        AnimatedVisibility(shown, enter = fadeIn(tween(750)) + slideInVertically(tween(750)) { it / 2 }) {</span>
+<span class="nc" id="L56">            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {</span>
+<span class="nc" id="L57">                ActionButton(&quot;Comenzar · Iniciar sesión&quot;, onClick = onLogin)</span>
+<span class="nc bnc" id="L58" title="All 2 branches missed.">                OylOutlinedButton(onClick = onCatalog, modifier = Modifier.fillMaxWidth()) { Text(&quot;Explorar catálogo&quot;) }</span>
+<span class="nc bnc" id="L59" title="All 2 branches missed.">                OylTextButton(onClick = onMap, modifier = Modifier.fillMaxWidth()) { Text(&quot;Conocer puntos de retiro&quot;) }</span>
+<span class="nc" id="L60">            }</span>
+<span class="nc" id="L61">        }</span>
+<span class="nc" id="L62">        GatewaySetting()</span>
+<span class="nc" id="L63">        Text(&quot;Naturalmente cerca de ti.&quot;, textAlign = TextAlign.Center, style = MaterialTheme.typography.labelSmall)</span>
+<span class="nc" id="L64">    }</span>
+<span class="nc bnc" id="L65" title="All 2 branches missed.">}</span>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span>Generated by the Android Gradle plugin 8.11.1</div></body></html>

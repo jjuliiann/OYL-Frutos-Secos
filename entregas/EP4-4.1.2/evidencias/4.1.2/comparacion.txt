@@ -1,0 +1,7 @@
+Android: 133 archivos comparados con 4.1.1. Cambian únicamente cuatro fuentes de interfaz y la versión de Gradle; recursos, manifiesto, pruebas, repositorios, Room y Retrofit coinciden byte por byte.
+Backend: los 72 archivos coinciden byte por byte, incluidos los cinco JAR y los comandos de arranque.
+Compilados los 90 archivos Kotlin con el complemento Compose. Pruebas JVM: 26/26.
+Referencia del ensayo interno: cl.oyl.mobile.aula, versión 4.1.2-aula (15); verificada con aapt y zipalign.
+La etiqueta anterior no está en el código Kotlin de la aplicación ni en el DEX de la aplicación.
+El Gateway local de verificación devolvió siete productos: Almendras, Avellanas, Cranberries, Mix Premium, Nueces, Pasas, Semillas de chía.
+Los fuentes que se entregan no incluyen APK, AAB ni claves de firma.

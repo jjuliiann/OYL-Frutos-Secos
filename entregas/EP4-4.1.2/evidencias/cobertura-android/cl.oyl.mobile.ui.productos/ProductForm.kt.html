@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProductForm.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">cl.oyl.mobile.ui.productos</a> &gt; <span class="el_source">ProductForm.kt</span></div><h1>ProductForm.kt</h1><pre class="source lang-java linenums">package cl.oyl.mobile.ui.productos
+
+import android.graphics.Bitmap
+import android.util.Base64
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import cl.oyl.mobile.model.productos.Product
+import cl.oyl.mobile.ui.components.FormField
+import cl.oyl.mobile.ui.components.OylOutlinedButton
+import cl.oyl.mobile.ui.components.OylTextButton
+import cl.oyl.mobile.ui.components.ProductPicture
+import cl.oyl.mobile.util.Validation
+import cl.oyl.mobile.util.readPhoto
+import java.io.ByteArrayOutputStream
+import kotlinx.coroutines.launch
+
+@Composable
+<span class="nc bnc" id="L36" title="All 18 branches missed.">internal fun ProductForm(current: Product?, cancel: () -&gt; Unit, save: (Product) -&gt; Unit) {</span>
+<span class="nc" id="L37">    var errors by remember { mutableStateOf&lt;Map&lt;String, String&gt;&gt;(emptyMap()) }</span>
+<span class="nc bnc" id="L38" title="All 6 branches missed.">    var name by remember(current?.id) { mutableStateOf(current?.name.orEmpty()) }</span>
+<span class="nc bnc" id="L39" title="All 6 branches missed.">    var category by remember(current?.id) { mutableStateOf(current?.category ?: &quot;Frutos secos&quot;) }</span>
+<span class="nc bnc" id="L40" title="All 6 branches missed.">    var description by remember(current?.id) { mutableStateOf(current?.description.orEmpty()) }</span>
+<span class="nc bnc" id="L41" title="All 6 branches missed.">    var presentation by remember(current?.id) { mutableStateOf(current?.presentation ?: &quot;250 g&quot;) }</span>
+<span class="nc bnc" id="L42" title="All 4 branches missed.">    var price by remember(current?.id) { mutableStateOf((current?.price ?: 0).toString()) }</span>
+<span class="nc bnc" id="L43" title="All 4 branches missed.">    var stock by remember(current?.id) { mutableStateOf((current?.stock ?: 0).toString()) }</span>
+<span class="nc bnc" id="L44" title="All 4 branches missed.">    var minStock by remember(current?.id) { mutableStateOf((current?.minStock ?: 5).toString()) }</span>
+<span class="nc bnc" id="L45" title="All 4 branches missed.">    var active by remember(current?.id) { mutableStateOf(current?.active ?: true) }</span>
+<span class="nc bnc" id="L46" title="All 6 branches missed.">    var imageUri by remember(current?.id) { mutableStateOf(current?.imageUri.orEmpty()) }</span>
+<span class="nc" id="L47">    val camera = rememberLauncherForActivityResult(ActivityResultContracts.TakePicturePreview()) { bmp -&gt;</span>
+<span class="nc bnc" id="L48" title="All 2 branches missed.">        if (bmp != null) {</span>
+<span class="nc" id="L49">            val output = ByteArrayOutputStream()</span>
+<span class="nc" id="L50">            val scaled = Bitmap.createScaledBitmap(bmp, 320, 320, true)</span>
+<span class="nc" id="L51">            scaled.compress(Bitmap.CompressFormat.JPEG, 65, output)</span>
+<span class="nc" id="L52">            imageUri = &quot;data:image/jpeg;base64,&quot; + Base64.encodeToString(output.toByteArray(), Base64.NO_WRAP)</span>
+        }
+<span class="nc" id="L54">    }</span>
+<span class="nc" id="L55">    val context = LocalContext.current</span>
+<span class="nc" id="L56">    val scope = rememberCoroutineScope()</span>
+<span class="nc" id="L57">    var photoError by remember { mutableStateOf&lt;String?&gt;(null) }</span>
+<span class="nc" id="L58">    var photoBusy by remember { mutableStateOf(false) }</span>
+<span class="nc" id="L59">    val cameraPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted -&gt;</span>
+<span class="nc bnc" id="L60" title="All 2 branches missed.">        if (granted) {</span>
+<span class="nc" id="L61">            try { camera.launch(null) } catch (_: Exception) { photoError = &quot;No hay una cámara disponible.&quot; }</span>
+<span class="nc" id="L62">        } else photoError = &quot;Permite el acceso a la cámara para tomar una fotografía. Puedes elegir desde galería.&quot;</span>
+<span class="nc" id="L63">    }</span>
+<span class="nc" id="L64">    val gallery = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri -&gt;</span>
+<span class="nc bnc" id="L65" title="All 2 branches missed.">        if (uri != null) scope.launch {</span>
+<span class="nc" id="L66">            photoBusy = true</span>
+<span class="nc bnc" id="L67" title="All 2 branches missed.">            val data = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { readPhoto(context, uri) }</span>
+<span class="nc" id="L68">            photoBusy = false</span>
+<span class="nc bnc" id="L69" title="All 2 branches missed.">            if (data != null) { imageUri = data; photoError = null }</span>
+<span class="nc" id="L70">            else photoError = &quot;No se pudo abrir la fotografía.&quot;</span>
+<span class="nc" id="L71">        }</span>
+<span class="nc" id="L72">    }</span>
+<span class="nc bnc" id="L73" title="All 2 branches missed.">    AlertDialog(</span>
+<span class="nc" id="L74">        onDismissRequest = cancel,</span>
+<span class="nc bnc" id="L75" title="All 4 branches missed.">        title = { Text(if (current == null) &quot;Nuevo producto&quot; else &quot;Editar producto&quot;) },</span>
+<span class="nc" id="L76">        text = {</span>
+<span class="nc" id="L77">            Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(7.dp)) {</span>
+<span class="nc" id="L78">                FormField(name, { name = it; errors = errors - &quot;name&quot; }, &quot;Nombre&quot;, error = errors[&quot;name&quot;])</span>
+<span class="nc" id="L79">                FormField(category, { category = it; errors = errors - &quot;category&quot; }, &quot;Categoría&quot;, error = errors[&quot;category&quot;])</span>
+<span class="nc" id="L80">                FormField(description, { description = it; errors = errors - &quot;description&quot; }, &quot;Descripción&quot;, error = errors[&quot;description&quot;])</span>
+<span class="nc" id="L81">                FormField(presentation, { presentation = it; errors = errors - &quot;presentation&quot; }, &quot;Presentación&quot;, error = errors[&quot;presentation&quot;])</span>
+<span class="nc" id="L82">                FormField(price, { price = it; errors = errors - &quot;price&quot; }, &quot;Precio CLP&quot;, numeric = true, error = errors[&quot;price&quot;])</span>
+<span class="nc" id="L83">                FormField(stock, { stock = it; errors = errors - &quot;stock&quot; }, &quot;Stock inicial&quot;, numeric = true, error = errors[&quot;stock&quot;])</span>
+<span class="nc" id="L84">                FormField(minStock, { minStock = it; errors = errors - &quot;minStock&quot; }, &quot;Alerta stock bajo&quot;, numeric = true, error = errors[&quot;minStock&quot;])</span>
+<span class="nc" id="L85">                Row(verticalAlignment = Alignment.CenterVertically) {</span>
+<span class="nc" id="L86">                    Checkbox(checked = active, onCheckedChange = { active = it })</span>
+<span class="nc" id="L87">                    Text(&quot;Producto activo&quot;)</span>
+<span class="nc" id="L88">                }</span>
+<span class="nc" id="L89">                OylOutlinedButton(onClick = {</span>
+<span class="nc bnc" id="L90" title="All 2 branches missed.">                    if (androidx.core.content.ContextCompat.checkSelfPermission(context, android.Manifest.permission.CAMERA) == android.content.pm.PackageManager.PERMISSION_GRANTED) {</span>
+<span class="nc" id="L91">                        try { camera.launch(null) } catch (_: Exception) { photoError = &quot;No hay una cámara disponible.&quot; }</span>
+<span class="nc" id="L92">                    } else cameraPermission.launch(android.Manifest.permission.CAMERA)</span>
+<span class="nc bnc" id="L93" title="All 2 branches missed.">                }) { Text(&quot;Fotografiar producto&quot;) }</span>
+<span class="nc bnc" id="L94" title="All 2 branches missed.">                OylOutlinedButton(enabled = !photoBusy, onClick = {</span>
+<span class="nc" id="L95">                    try { gallery.launch(androidx.activity.result.PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) }</span>
+<span class="nc" id="L96">                    catch (_: Exception) { photoError = &quot;No se pudo abrir la galería.&quot; }</span>
+<span class="nc bnc" id="L97" title="All 4 branches missed.">                }) { Text(if (photoBusy) &quot;Procesando imagen…&quot; else &quot;Elegir fotografía de galería&quot;) }</span>
+<span class="nc" id="L98">                ProductPicture(Product(name = name, imageUri = imageUri))</span>
+<span class="nc bnc" id="L99" title="All 2 branches missed.">                photoError?.let { Text(it, color = androidx.compose.material3.MaterialTheme.colorScheme.error) }</span>
+<span class="nc bnc" id="L100" title="All 4 branches missed.">                if (imageUri.isNotBlank()) Text(&quot;Imagen seleccionada&quot;, style = androidx.compose.material3.MaterialTheme.typography.labelSmall)</span>
+<span class="nc" id="L101">            }</span>
+<span class="nc" id="L102">        },</span>
+<span class="nc" id="L103">        confirmButton = {</span>
+<span class="nc bnc" id="L104" title="All 4 branches missed.">            OylTextButton(enabled = !photoBusy, onClick = {</span>
+<span class="nc" id="L105">                errors = Validation.product(name, category, description, presentation, price, stock, minStock)</span>
+<span class="nc bnc" id="L106" title="All 2 branches missed.">                if (errors.isEmpty()) save(Product(</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">                    id = current?.id, name = name.trim(), category = category.trim(),</span>
+<span class="nc" id="L108">                    description = description, imageUri = imageUri, presentation = presentation,</span>
+<span class="nc bnc" id="L109" title="All 4 branches missed.">                    price = price.toIntOrNull() ?: -1, stock = stock.toIntOrNull() ?: -1,</span>
+<span class="nc bnc" id="L110" title="All 2 branches missed.">                    minStock = minStock.toIntOrNull() ?: 5, active = active</span>
+                ))
+<span class="nc bnc" id="L112" title="All 2 branches missed.">            }) { Text(&quot;Guardar&quot;) }</span>
+<span class="nc" id="L113">        },</span>
+<span class="nc bnc" id="L114" title="All 4 branches missed.">        dismissButton = { OylTextButton(onClick = cancel) { Text(&quot;Cancelar&quot;) } }</span>
+    )
+<span class="nc bnc" id="L116" title="All 2 branches missed.">}</span>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span>Generated by the Android Gradle plugin 8.11.1</div></body></html>

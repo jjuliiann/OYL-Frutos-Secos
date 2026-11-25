@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CheckoutScreen.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">cl.oyl.mobile.ui.carrito</a> &gt; <span class="el_source">CheckoutScreen.kt</span></div><h1>CheckoutScreen.kt</h1><pre class="source lang-java linenums">package cl.oyl.mobile.ui.carrito
+
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import cl.oyl.mobile.data.local.entity.CartLine
+import cl.oyl.mobile.data.local.entity.Session
+import cl.oyl.mobile.model.checkout.CheckoutData
+import cl.oyl.mobile.model.mapa.PickupLocation
+import cl.oyl.mobile.model.productos.Product
+import cl.oyl.mobile.model.pedidos.PurchaseOrder
+import cl.oyl.mobile.ui.components.*
+import cl.oyl.mobile.util.CheckoutValidation
+import cl.oyl.mobile.util.cartTotal
+import cl.oyl.mobile.util.money
+
+@Composable
+<span class="nc" id="L28">fun CheckoutScreen(</span>
+    cart: List&lt;CartLine&gt;, products: List&lt;Product&gt;, confirmedOrder: Long?, busy: Boolean,
+    locations: List&lt;PickupLocation&gt;, session: Session?, completedOrder: PurchaseOrder?,
+    confirm: (CheckoutData, (Long) -&gt; Unit) -&gt; Unit,
+    after: (Long) -&gt; Unit, orders: () -&gt; Unit, catalog: () -&gt; Unit
+<span class="nc bnc" id="L33" title="All 52 branches missed.">) {</span>
+<span class="nc" id="L34">    var delivery by rememberSaveable { mutableStateOf(&quot;RETIRO&quot;) }</span>
+<span class="nc bnc" id="L35" title="All 8 branches missed.">    var name by rememberSaveable(session?.id) { mutableStateOf(session?.name.orEmpty()) }</span>
+<span class="nc bnc" id="L36" title="All 8 branches missed.">    var phone by rememberSaveable(session?.id) { mutableStateOf(session?.phone.orEmpty()) }</span>
+<span class="nc bnc" id="L37" title="All 8 branches missed.">    var email by rememberSaveable(session?.id) { mutableStateOf(session?.email.orEmpty()) }</span>
+<span class="nc" id="L38">    var pickupId by rememberSaveable { mutableStateOf&lt;Long?&gt;(null) }</span>
+<span class="nc" id="L39">    var street by rememberSaveable { mutableStateOf(&quot;&quot;) }</span>
+<span class="nc" id="L40">    var number by rememberSaveable { mutableStateOf(&quot;&quot;) }</span>
+<span class="nc" id="L41">    var apartment by rememberSaveable { mutableStateOf(&quot;&quot;) }</span>
+<span class="nc" id="L42">    var commune by rememberSaveable { mutableStateOf(&quot;&quot;) }</span>
+<span class="nc" id="L43">    var region by rememberSaveable { mutableStateOf(&quot;&quot;) }</span>
+<span class="nc" id="L44">    var postal by rememberSaveable { mutableStateOf(&quot;&quot;) }</span>
+<span class="nc" id="L45">    var instructions by rememberSaveable { mutableStateOf(&quot;&quot;) }</span>
+<span class="nc" id="L46">    var errors by remember { mutableStateOf&lt;Map&lt;String,String&gt;&gt;(emptyMap()) }</span>
+<span class="nc" id="L47">    fun clear(key: String) { errors = errors - key }</span>
+<span class="nc" id="L48">    val input = CheckoutData(delivery, name, phone, email, pickupId, street, number, apartment, commune, region, postal, instructions)</span>
+<span class="nc" id="L49">    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {</span>
+<span class="nc bnc" id="L50" title="All 2 branches missed.">        if (confirmedOrder != null) {</span>
+<span class="nc" id="L51">            ScreenTitle(&quot;¡Pedido registrado!&quot;, &quot;Pedido #$confirmedOrder · Pendiente de validación&quot;)</span>
+<span class="nc bnc" id="L52" title="All 2 branches missed.">            completedOrder?.let { order -&gt;</span>
+<span class="nc" id="L53">                Card(Modifier.fillMaxWidth()) { Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {</span>
+<span class="nc bnc" id="L54" title="All 2 branches missed.">                    order.fulfillment?.let { FulfillmentSummary(it) }</span>
+<span class="nc" id="L55">                    Text(&quot;Total de productos: ${money(order.total)}&quot;, fontWeight = FontWeight.Bold)</span>
+<span class="nc" id="L56">                } }</span>
+<span class="nc" id="L57">            }</span>
+<span class="nc" id="L58">            ActionButton(&quot;Ver mis pedidos&quot;, onClick = orders)</span>
+<span class="nc bnc" id="L59" title="All 2 branches missed.">            OylOutlinedButton(onClick = catalog, modifier = Modifier.fillMaxWidth()) { Text(&quot;Seguir comprando&quot;) }</span>
+<span class="nc" id="L60">        } else {</span>
+<span class="nc" id="L61">            ScreenTitle(&quot;Confirmar compra&quot;, &quot;Revisa tu pedido y elige cómo recibirlo&quot;)</span>
+<span class="nc" id="L62">            Card(Modifier.fillMaxWidth()) { Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {</span>
+<span class="nc" id="L63">                Text(&quot;Tu pedido&quot;, style = MaterialTheme.typography.titleMedium)</span>
+<span class="nc" id="L64">                cart.forEach { line -&gt;</span>
+<span class="nc bnc" id="L65" title="All 4 branches missed.">                    val product = products.firstOrNull { it.id == line.productId }</span>
+<span class="nc bnc" id="L66" title="All 6 branches missed.">                    Text(&quot;${product?.name ?: &quot;Producto&quot;} × ${line.quantity} · ${money((product?.price ?: 0) * line.quantity)}&quot;)</span>
+<span class="nc" id="L67">                }</span>
+<span class="nc" id="L68">                Text(&quot;Subtotal: ${money(cartTotal(cart,products))}&quot;, fontWeight = FontWeight.Bold)</span>
+<span class="nc" id="L69">            } }</span>
+<span class="nc" id="L70">            Text(&quot;¿Cómo quieres recibirlo?&quot;, style = MaterialTheme.typography.titleMedium)</span>
+<span class="nc" id="L71">            listOf(&quot;RETIRO&quot; to &quot;Retiro en tienda&quot;, &quot;ENTREGA&quot; to &quot;Envío a domicilio&quot;).forEach { (mode,label) -&gt;</span>
+<span class="nc bnc" id="L72" title="All 2 branches missed.">                Card(Modifier.fillMaxWidth().clickable(enabled = !busy) { delivery = mode; errors = emptyMap() },</span>
+<span class="nc bnc" id="L73" title="All 2 branches missed.">                    colors = CardDefaults.cardColors(containerColor = if (delivery == mode) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surfaceVariant)) {</span>
+<span class="nc" id="L74">                    Row(Modifier.padding(8.dp), verticalAlignment = Alignment.CenterVertically) {</span>
+<span class="nc bnc" id="L75" title="All 2 branches missed.">                        RadioButton(selected = delivery == mode, onClick = { delivery = mode; errors = emptyMap() }, enabled = !busy)</span>
+<span class="nc" id="L76">                        Text(label, fontWeight = FontWeight.SemiBold)</span>
+<span class="nc" id="L77">                    }</span>
+<span class="nc" id="L78">                }</span>
+<span class="nc" id="L79">            }</span>
+<span class="nc bnc" id="L80" title="All 2 branches missed.">            errors[&quot;delivery&quot;]?.let { Text(it,color = MaterialTheme.colorScheme.error) }</span>
+<span class="nc bnc" id="L81" title="All 2 branches missed.">            Text(if (delivery == &quot;RETIRO&quot;) &quot;Datos de quien retira&quot; else &quot;Datos del destinatario&quot;, style = MaterialTheme.typography.titleMedium)</span>
+<span class="nc" id="L82">            FormField(name, { name = it; clear(&quot;recipientName&quot;) }, &quot;Nombre completo&quot;, error = errors[&quot;recipientName&quot;])</span>
+<span class="nc" id="L83">            FormField(phone, { phone = it; clear(&quot;phone&quot;) }, &quot;Teléfono de contacto&quot;, error = errors[&quot;phone&quot;])</span>
+<span class="nc" id="L84">            FormField(email, { email = it; clear(&quot;email&quot;) }, &quot;Correo electrónico (opcional)&quot;, error = errors[&quot;email&quot;])</span>
+<span class="nc" id="L85">            AnimatedContent(targetState = delivery, label = &quot;Modalidad de recepción&quot;) { mode -&gt;</span>
+<span class="nc" id="L86">                Column(Modifier.fillMaxWidth().animateContentSize(), verticalArrangement = Arrangement.spacedBy(8.dp)) {</span>
+<span class="nc bnc" id="L87" title="All 2 branches missed.">                    if (mode == &quot;RETIRO&quot;) {</span>
+<span class="nc" id="L88">                        Text(&quot;Selecciona la tienda de retiro&quot;, style = MaterialTheme.typography.titleMedium)</span>
+<span class="nc bnc" id="L89" title="All 2 branches missed.">                        if (locations.isEmpty()) Text(&quot;No hay puntos de retiro disponibles. Vuelve a intentarlo en unos instantes.&quot;)</span>
+<span class="nc" id="L90">                        locations.forEach { location -&gt;</span>
+<span class="nc bnc" id="L91" title="All 2 branches missed.">                            Card(Modifier.fillMaxWidth().clickable(enabled = !busy) { pickupId = location.id; clear(&quot;pickupLocationId&quot;) },</span>
+<span class="nc bnc" id="L92" title="All 4 branches missed.">                                colors = CardDefaults.cardColors(containerColor = if (pickupId == location.id) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surfaceVariant)) {</span>
+<span class="nc" id="L93">                                Row(Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {</span>
+<span class="nc bnc" id="L94" title="All 6 branches missed.">                                    RadioButton(selected = pickupId == location.id, onClick = { pickupId = location.id; clear(&quot;pickupLocationId&quot;) }, enabled = !busy)</span>
+<span class="nc" id="L95">                                    Column(Modifier.weight(1f)) {</span>
+<span class="nc" id="L96">                                        Text(location.name, fontWeight = FontWeight.Bold)</span>
+<span class="nc" id="L97">                                        Text(location.address)</span>
+<span class="nc" id="L98">                                        Text(location.hours, style = MaterialTheme.typography.bodySmall)</span>
+<span class="nc" id="L99">                                    }</span>
+<span class="nc" id="L100">                                }</span>
+<span class="nc" id="L101">                            }</span>
+<span class="nc" id="L102">                        }</span>
+<span class="nc bnc" id="L103" title="All 2 branches missed.">                        errors[&quot;pickupLocationId&quot;]?.let { Text(it,color = MaterialTheme.colorScheme.error) }</span>
+<span class="nc" id="L104">                        Text(&quot;Te avisaremos cuando tu pedido esté preparado para retirar.&quot;, style = MaterialTheme.typography.bodySmall)</span>
+<span class="nc" id="L105">                    } else {</span>
+<span class="nc" id="L106">                        Text(&quot;Dirección de envío&quot;, style = MaterialTheme.typography.titleMedium)</span>
+<span class="nc" id="L107">                        FormField(street, { street = it; clear(&quot;street&quot;) }, &quot;Calle o avenida&quot;, error = errors[&quot;street&quot;])</span>
+<span class="nc" id="L108">                        FormField(number, { number = it; clear(&quot;number&quot;) }, &quot;Número (o S/N)&quot;, error = errors[&quot;number&quot;])</span>
+<span class="nc" id="L109">                        FormField(apartment, { apartment = it; clear(&quot;apartment&quot;) }, &quot;Departamento, casa o bloque (opcional)&quot;, error = errors[&quot;apartment&quot;])</span>
+<span class="nc" id="L110">                        FormField(commune, { commune = it; clear(&quot;commune&quot;) }, &quot;Comuna&quot;, error = errors[&quot;commune&quot;])</span>
+<span class="nc" id="L111">                        FormField(region, { region = it; clear(&quot;region&quot;) }, &quot;Región&quot;, error = errors[&quot;region&quot;])</span>
+<span class="nc" id="L112">                        FormField(postal, { postal = it; clear(&quot;postalCode&quot;) }, &quot;Código postal (opcional)&quot;, numeric = true, error = errors[&quot;postalCode&quot;])</span>
+                    }
+<span class="nc" id="L114">                }</span>
+<span class="nc" id="L115">            }</span>
+<span class="nc" id="L116">            OutlinedTextField(value = instructions, onValueChange = { instructions = it; clear(&quot;instructions&quot;) },</span>
+<span class="nc bnc" id="L117" title="All 4 branches missed.">                label = { Text(if (delivery == &quot;RETIRO&quot;) &quot;Observaciones del retiro (opcional)&quot; else &quot;Indicaciones de entrega (opcional)&quot;) },</span>
+<span class="nc bnc" id="L118" title="All 2 branches missed.">                minLines = 2, maxLines = 4, modifier = Modifier.fillMaxWidth(), isError = errors[&quot;instructions&quot;] != null,</span>
+<span class="nc bnc" id="L119" title="All 4 branches missed.">                supportingText = { Text(errors[&quot;instructions&quot;] ?: &quot;${instructions.length}/300 caracteres&quot;) })</span>
+<span class="nc" id="L120">            Card(Modifier.fillMaxWidth()) { Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(5.dp)) {</span>
+<span class="nc" id="L121">                Text(&quot;Total de productos: ${money(cartTotal(cart,products))}&quot;, fontWeight = FontWeight.Bold)</span>
+<span class="nc bnc" id="L122" title="All 2 branches missed.">                Text(if (delivery == &quot;RETIRO&quot;) &quot;Retiro en tienda sin costo de envío.&quot; else &quot;El costo y plazo del envío se coordinan con la tienda; no están incluidos en este subtotal.&quot;, style = MaterialTheme.typography.bodySmall)</span>
+<span class="nc" id="L123">            } }</span>
+<span class="nc bnc" id="L124" title="All 4 branches missed.">            if (errors.isNotEmpty()) Text(&quot;Revisa los campos marcados antes de confirmar.&quot;, color = MaterialTheme.colorScheme.error)</span>
+<span class="nc bnc" id="L125" title="All 14 branches missed.">            ActionButton(if (busy) &quot;Guardando pedido…&quot; else &quot;Confirmar pedido&quot;, enabled = cart.isNotEmpty() &amp;&amp; !busy &amp;&amp; session != null, onClick = {</span>
+<span class="nc" id="L126">                errors = CheckoutValidation.validate(input,locations.map { it.id }.toSet())</span>
+<span class="nc bnc" id="L127" title="All 2 branches missed.">                if (errors.isEmpty()) confirm(input.normalized(),after)</span>
+<span class="nc" id="L128">            })</span>
+        }
+<span class="nc" id="L130">    }</span>
+<span class="nc bnc" id="L131" title="All 2 branches missed.">}</span>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span>Generated by the Android Gradle plugin 8.11.1</div></body></html>

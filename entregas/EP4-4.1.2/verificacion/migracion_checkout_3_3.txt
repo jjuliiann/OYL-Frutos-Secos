@@ -1,0 +1,1 @@
+OK: migración 3→4, 16 columnas, pedidos anteriores conservados, dirección guardada y eliminación en cascada comprobada en SQLite.

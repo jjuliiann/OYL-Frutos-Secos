@@ -1,0 +1,1 @@
+OK: selección inicial, clic de marcador, selección desde lista y rechazo de ID inexistente.

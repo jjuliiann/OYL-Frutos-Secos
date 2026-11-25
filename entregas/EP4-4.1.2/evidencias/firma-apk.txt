@@ -1,0 +1,17 @@
+Verifies
+Verified using v1 scheme (JAR signing): false
+Verified using v2 scheme (APK Signature Scheme v2): true
+Verified using v3 scheme (APK Signature Scheme v3): false
+Verified using v3.1 scheme (APK Signature Scheme v3.1): false
+Verified using v4 scheme (APK Signature Scheme v4): false
+Verified for SourceStamp: false
+Number of signers: 1
+Signer #1 certificate DN: CN=OYL Aula, O=Proyecto academico OYL, C=CL
+Signer #1 certificate SHA-256 digest: 05c3be9a517654c844974cda0ec1df66790cb334169c7e3984d341f41a9f5ffd
+Signer #1 certificate SHA-1 digest: 063a23d18f80be311bdbc7768643fe88fed1be9d
+Signer #1 certificate MD5 digest: 9467bf8267ff4a3f3b542879098b3a2d
+Signer #1 key algorithm: RSA
+Signer #1 key size (bits): 3072
+Signer #1 public key SHA-256 digest: 9209d54b9e26bce0ada48e5c30045d3f2aab6c593205751850b026322afcbd20
+Signer #1 public key SHA-1 digest: d7952390a9aa24dbdde5f3be9220674af20d768d
+Signer #1 public key MD5 digest: cc5358fc03a8616eee0e7ddbcaffd519
